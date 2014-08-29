@@ -1,2 +1,19 @@
 [workstations]
 cicws[23:30].douglas.rtss.qc.ca ansible_ssh_host=172.16.133.2[23:30]
+
+[oldworkstations]
+cicws[01:19].douglas.rtss.qc.ca ansible_ssh_host=172.16.133.2[01:19]
+
+[computenodes]
+ciccs[01:10].douglas.rtss.qc.ca ansible_ssh_host=172.16.67.2[20:29]
+
+[fileservers]
+cicss01.douglas.rtss.qc.ca ansible_ssh_host=172.16.67.217
+cicss02.douglas.rtss.qc.ca ansible_ssh_host=172.16.67.218
+
+[loginservers]
+cicus01.douglas.rtss.qc.ca ansible_ssh_host=172.16.67.215
+cicus02.douglas.rtss.qc.ca ansible_ssh_host=172.16.67.216
+
+[backupservers]
+cicbs01.douglas.rtss.qc.ca ansible_ssh_host=172.16.67.219

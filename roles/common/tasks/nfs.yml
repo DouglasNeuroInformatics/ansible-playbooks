@@ -1,0 +1,11 @@
+- name: nfs-common installed
+  apt:  pkg=nfs-common state=latest
+
+- name: autofs installed
+  apt: pkg=autofs state=latest
+
+- name: autofs service started
+  service:  name=autofs     state=started
+
+- name: fstab setup
+  mount:  src="cicss01:/exports/quarantine"       name=/opt/quarantine        fstype=nfs  opts="vers=3,rw"  state=mounted

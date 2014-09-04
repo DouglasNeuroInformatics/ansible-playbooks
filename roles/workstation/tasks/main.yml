@@ -1,0 +1,66 @@
+- name: repos enabled
+  apt_repository: repo='{{ item }}' state=present update_cache=no
+  with_items:
+    - ppa:libreoffice/ppa
+    - deb http://download.mendeley.com/apt/ stable main
+    - ppa:ubuntu-x-swat/x-updates
+    - ppa:xorg-edgers/ppa
+    - deb http://dl.google.com/linux/chrome/deb/ stable main
+    - ppa:inkscape.dev/stable
+    - ppa:otto-kesselgulasch/gimp
+    - ppa:blahota/texstudio
+    - deb http://dl.google.com/linux/talkplugin/deb/ stable main
+    - deb http://download.virtualbox.org/virtualbox/debian trusty contrib
+    - deb http://archive.canonical.com/ubuntu/ trusty partner
+
+- name: apt keys
+  apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
+  with_items:
+    - 6F036044
+    - 7FAC5991
+    - 98AB5139
+
+- name: restrict xorg-edgers
+  copy: src=files/xorg-edgers-pin-400 dest=/etc/apt/preferences.d/xorg-edgers-pin-400
+
+- name: software installed
+  apt:  pkg={{ item }} state=latest force=yes
+  with_items:
+    - screen
+    - tmux
+    - intel-microcode
+    - synaptic
+    - git
+    - cvs
+    - subversion
+    - google-talkplugin
+    - skype
+    - imagej
+    - speedcrunch
+    - openssh-server
+    - build-essential
+    - mendeleydesktop
+    - google-chrome-stable
+    - texlive-full
+    - inkscape
+    - gimp
+    - environment-modules
+    - vim
+    - emacs
+    - parallel
+    - htop
+    - mutt
+    - abook
+    - nvidia-343
+    - nvidia-cuda-toolkit
+    - virtualbox-4.3
+    
+- name: manual deb downloads
+  get_url: url={{ item }} dest=/tmp
+  with_items:
+    - http://download1.rstudio.org/rstudio-0.98.1049-amd64.deb
+
+- name: manual deb installs
+  apt: deb=/tmp/{{ item }}
+  with_items:
+    - rstudio-0.98.1049-amd64.deb

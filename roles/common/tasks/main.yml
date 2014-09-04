@@ -1,1 +1,2 @@
-- include: nfs.yml
+- {include: nfs.yml, tags: nfs}
+- {include: hosts.yml, tags: hosts}

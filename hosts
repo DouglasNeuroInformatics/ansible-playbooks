@@ -1,3 +1,15 @@
+#Storage Servers
+172.16.67.217 cicss01.douglas.rtss.qc.ca cicss01
+172.16.67.218 cicss02.douglas.rtss.qc.ca cicss02
+
+#Login/User Servers
+172.16.67.215 cicus01.douglas.rtss.qc.ca cicus01
+172.16.67.216 cicus02.douglas.rtss.qc.ca cicus02
+
+#Backup Servers
+172.16.67.219 cicbs01.douglas.rtss.qc.ca cicbs01
+
+#Mallar Workstations
 172.16.133.223  cicws23.douglas.rtss.qc.ca cicws23 ws23 mc01
 172.16.133.224  cicws24.douglas.rtss.qc.ca cicws24 ws24 mc02
 172.16.133.225  cicws25.douglas.rtss.qc.ca cicws25 ws25 mc03

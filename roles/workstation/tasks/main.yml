@@ -2,7 +2,7 @@
   copy: src=files/99depth dest=/etc/apt/apt.conf.d
 
 - name: install proxy client
-  apt: pkg=squid-deb-proxy-client state=latest update_cache=yes
+  apt: pkg=squid-deb-proxy-client state=latest 
 
 - name: repos enabled
   apt_repository: repo='{{ item }}' state=present update_cache=no
@@ -20,6 +20,8 @@
     - deb http://archive.canonical.com/ubuntu/ trusty partner
     - deb http://dl.google.com/linux/talkplugin/deb/ stable main
     - ppa:ansible/ansible
+    - deb http://neuro.debian.net/debian data main contrib non-free
+    - deb http://neuro.debian.net/debian trusty main contrib non-free
 
 - name: apt keys
   apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
@@ -27,6 +29,7 @@
     - 6F036044
     - 7FAC5991
     - 98AB5139
+    - 2649A5A9
 
 - name: restrict xorg-edgers
   copy: src=files/xorg-edgers-pin-400 dest=/etc/apt/preferences.d/xorg-edgers-pin-400
@@ -60,6 +63,8 @@
     - mutt
     - abook
     - nvidia-343
+    - nvidia-343-uvm
+    - nvidia-343-dev
     - virtualbox-4.3
     - xfce4-whiskermenu-plugin
     - xfswitch-plugin
@@ -81,7 +86,57 @@
     - thunderbird
     - vlc
     - gnome-terminal
+#fsl-complete expect for fsl-core
+    - fsl-atlases
+    - fsl-bangor-cerebellar-atlas
+    - fsl-first-data
+    - fsl-harvard-oxford-atlases
+    - fsl-harvard-oxford-cortical-lateralized-atlas
+    - fsl-jhu-dti-whitematter-atlas
+    - fsl-juelich-histological-atlas
+    - fsl-mni-structural-atlas
+    - fsl-mni152-templates
+    - fsl-oxford-striatal-atlas
+    - fsl-oxford-thalamic-connectivity-atlas
+    - fsl-possum-data
+    - fsl-resting-connectivity-parcellation-atlases
+    - fsl-subthalamic-nucleus-atlas
+    - fsl-talairach-daemon-atlas
+    - fslview
+    - fslview-doc
+    - libcr0
+    - libgdchart-gd2-noxpm
+    - libgiftiio0
+    - libhwloc-plugins
+    - libhwloc5
+    - libibverbs1
+    - libnetcdfc++4
+    - libnetcdfc7
+    - libnewmat10ldbl
+    - libnifti2
+    - libopenmpi1.6
+    - libpq5
+    - libqt4-designer
+    - libqt4-qt3support
+    - libqwt5-qt4
+    - libtorque2
+    - libvtk5.8
+    - libvtk5.8-qt4
+    - qt-assistant-compat
+    - tcsh
+    - g++
     - cmake
-    
+    - cmake-curses-gui
+    - bison
+    - flex
+    - freeglut3
+    - freeglut3-dev
+    - libxi6
+    - libxi-dev
+    - libxmu6
+    - libxmu-dev
+    - libxmu-headers
+
+
 - name: hide login list and allow username input
   copy: src=files/99-logins.conf dest=/etc/lightdm/lightdm.conf.d

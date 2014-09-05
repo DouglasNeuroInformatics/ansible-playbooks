@@ -10,13 +10,48 @@ ff02::2 ip6-allrouters
 #Storage Servers
 172.16.67.217 cicss01.douglas.rtss.qc.ca cicss01
 172.16.67.218 cicss02.douglas.rtss.qc.ca cicss02
+#Storage Servers IPMI
+172.16.69.52 ipmi-ss01 ipmi-cicss01
+172.16.69.53 ipmi-ss02 ipmi-cicss02
 
 #Login/User Servers
 172.16.67.215 cicus01.douglas.rtss.qc.ca cicus01
 172.16.67.216 cicus02.douglas.rtss.qc.ca cicus02
+#Login/User Servers IPMI
+172.16.69.50 ipmi-us01 ipmi-cicus01
+172.16.69.51 ipmi-us02 ipmi-cicus02
 
 #Backup Servers
-172.16.67.219 cicbs01.douglas.rtss.qc.ca cicbs01
+172.16.67.219 cicbs.douglas.rtss.qc.ca cicbs01
+#Backup Servers IPMI
+172.16.69.64 ipmi-bs   ipmi-cicbs
+172.16.69.64 ipmi-bs   ipmi-cicbs
+172.16.69.65 ipmi-bslib
+172.16.69.66 ipmi-bst01
+172.16.69.67 ipmi-bst02
+
+#Compute Servers
+172.16.67.220 ciccs01.douglas.rtss.qc.ca ciccs01 cs01
+172.16.67.221 ciccs02.douglas.rtss.qc.ca ciccs02 cs02
+172.16.67.222 ciccs03.douglas.rtss.qc.ca ciccs03 cs03
+172.16.67.223 ciccs04.douglas.rtss.qc.ca ciccs04 cs04
+172.16.67.224 ciccs05.douglas.rtss.qc.ca ciccs05 cs05
+172.16.67.225 ciccs06.douglas.rtss.qc.ca ciccs06 cs06
+172.16.67.226 ciccs07.douglas.rtss.qc.ca ciccs07 cs07
+172.16.67.227 ciccs08.douglas.rtss.qc.ca ciccs08 cs08
+172.16.67.228 ciccs09.douglas.rtss.qc.ca ciccs09 cs09
+172.16.67.229 ciccs10.douglas.rtss.qc.ca ciccs10 cs10
+#Compute Server IPMI
+172.16.69.54 ipmi-cs01 ipmi-ciccs01
+172.16.69.55 ipmi-cs02 ipmi-ciccs02
+172.16.69.56 ipmi-cs03 ipmi-ciccs03
+172.16.69.57 ipmi-cs04 ipmi-ciccs04
+172.16.69.58 ipmi-cs05 ipmi-ciccs05
+172.16.69.59 ipmi-cs06 ipmi-ciccs06
+172.16.69.60 ipmi-cs07 ipmi-ciccs07
+172.16.69.61 ipmi-cs08 ipmi-ciccs08
+172.16.69.62 ipmi-cs09 ipmi-ciccs09
+172.16.69.63 ipmi-cs10 ipmi-ciccs10
 
 #Mallar Workstations
 172.16.133.223  cicws23.douglas.rtss.qc.ca cicws23 ws23 mc01
@@ -27,3 +62,40 @@ ff02::2 ip6-allrouters
 172.16.133.228  cicws28.douglas.rtss.qc.ca cicws28 ws28 mc06
 172.16.133.229  cicws29.douglas.rtss.qc.ca cicws29 ws29 mc07
 172.16.133.230  cicws30.douglas.rtss.qc.ca cicws30 ws30 mc08
+
+#Old Workstations
+172.16.133.201 cicws01.douglas.rtss.qc.ca cicws01 ws01
+172.16.133.202 cicws02.douglas.rtss.qc.ca cicws02 ws02
+172.16.133.203 cicws03.douglas.rtss.qc.ca cicws03 ws03
+172.16.133.204 cicws04.douglas.rtss.qc.ca cicws04 ws04
+172.16.133.205 cicws05.douglas.rtss.qc.ca cicws05 ws05
+172.16.133.206 cicws06.douglas.rtss.qc.ca cicws06 ws06
+172.16.133.207 cicws07.douglas.rtss.qc.ca cicws07 ws07
+172.16.133.208 cicws08.douglas.rtss.qc.ca cicws08 ws08
+172.16.133.209 cicws09.douglas.rtss.qc.ca cicws09 ws09
+172.16.133.210 cicws10.douglas.rtss.qc.ca cicws10 ws10
+172.16.133.211 cicws11.douglas.rtss.qc.ca cicws11 ws11
+172.16.133.212 cicws12.douglas.rtss.qc.ca cicws12 ws12
+172.16.133.213 cicws13.douglas.rtss.qc.ca cicws13 ws13
+172.16.133.214 cicws14.douglas.rtss.qc.ca cicws14 ws14
+172.16.133.215 cicws15.douglas.rtss.qc.ca cicws15 ws15
+172.16.133.216 cicws16.douglas.rtss.qc.ca cicws16 ws16
+172.16.133.217 cicws17.douglas.rtss.qc.ca cicws17 ws17
+172.16.133.218 cicws18.douglas.rtss.qc.ca cicws18 ws18
+172.16.133.219 cicws19.douglas.rtss.qc.ca cicws19 ws19
+
+#Other
+172.16.133.220  laborajah2.douglas.rtss.qc.ca laborajah2
+172.16.133.221  laborajah.douglas.rtss.qc.ca laborajah
+
+# the following system is a Biospective server in the Animal MRI scanner lab
+172.16.133.222  cicws22.douglas.rtss.qc.ca cicws22 ws22
+
+172.16.133.42  cic2209 # CIC printer in room 2209
+172.16.133.43  aMRI    # CIC printer in room 1208, Animal MRI console room
+172.16.133.48  NS10058 cicws58 ws58 # Dell Optiplex 7010
+172.16.133.65  NS10059 cicws59 ws59 # Dell Optiplex 7010
+172.16.133.66  NS10062 cicws62 ws62 # Dell laptop
+172.16.133.59  cic2104 # CIC printer in room 2104
+
+172.16.67.99 ch06doug00006.douglas.rtss.qc.ca # mailhub

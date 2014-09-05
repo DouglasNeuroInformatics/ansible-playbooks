@@ -1,11 +1,48 @@
 - name: nfs-common installed
-  apt:  pkg=nfs-common state=latest
+  apt:  pkg=nfs-common state=latest update_cache=yes
 
 - name: autofs installed
   apt: pkg=autofs state=latest
+  
+- name: quarantine fstab
+  mount:  src="cicss01:/exports/quarantine" name=/opt/quarantine fstype=nfs  opts="vers=3,rw,bg,hard,intr"  state=mounted
+  
+- name: scratch fstab
+  mount:  src="cicss01:/exports/scratch" name=/scratch fstype=nfs opts="vers=3,rw,bg,hard,intr"  state=mounted
+  
+- name: exported data
+  mount: src="cicss01:/exports/{{ item }}" name=/data/{{ item }} fstype=nfs opts="vers=3,rw,bg,hard,intr" state=mounted
+  with_items:
+  - berlim
+  - chamal
+  - coubla
+  - dicom
+  - exec
+  - frqs
+  - giros
+  - jollant
+  - lepage
+  - pruessner
+  - pruessner2
+  - rajah
+  - renaud
+  - rosa
+  - steiger
+  - walker
+  
+- name : setup auto.master
+  copy: src=files/auto.master dest=/etc/auto.master
+  
+- name: setup auto.home
+  copy: src=files/auto.home dest=/etc/auto.home
+  
+- name: restart autofs
+  service: name=autofs state=restarted
 
-- name: autofs service started
-  service:  name=autofs     state=started
+- name: create place for homdirs
+  file: path=/home-remote state=directory
 
-- name: fstab setup
-  mount:  src="cicss01:/exports/quarantine"       name=/opt/quarantine        fstype=nfs  opts="vers=3,rw"  state=mounted
+- name: create symlink
+  file: src=/home-remote/cic dest=/home/cic state=link
+  
+

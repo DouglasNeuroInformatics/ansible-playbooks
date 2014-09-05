@@ -1,0 +1,17 @@
+- name: nis installed
+  apt: pkg=nis state=latest
+  
+- name: set defaultdomain
+  copy: src=files/defaultdomain dest=/etc/defaultdomain
+  
+- name: set ypservers
+  copy: src=files/yp.conf dest=/etc/yp.conf
+  
+- name : set nsswitch
+  copy: src=files/nsswitch.conf dest=/etc/nsswitch.conf
+  
+- name: restart portmap
+  service: name=rpcbind state=restarted
+  
+- name: restart ypbind
+  service: name=ypbind state=restarted

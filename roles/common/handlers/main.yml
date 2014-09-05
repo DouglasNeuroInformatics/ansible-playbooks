@@ -3,4 +3,5 @@
   service: name=autofs state=restarted
 
 - name: restart ypbind
+  service: name=rpcbind state=restarted
   service: name=ypbind state=restarted

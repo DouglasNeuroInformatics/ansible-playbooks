@@ -1,3 +1,9 @@
+- name: fix apt http pipeline depth (so it doesn't break squid)
+  copy: src=files/99depth dest=/etc/apt/apt.conf.d
+
+- name: install proxy client
+  apt: pkg=squid-deb-proxy-client state=latest update_cache=yes
+
 - name: repos enabled
   apt_repository: repo='{{ item }}' state=present update_cache=no
   with_items:
@@ -12,6 +18,8 @@
     - deb http://dl.google.com/linux/talkplugin/deb/ stable main
     - deb http://download.virtualbox.org/virtualbox/debian trusty contrib
     - deb http://archive.canonical.com/ubuntu/ trusty partner
+    - deb http://dl.google.com/linux/talkplugin/deb/ stable main
+    - ppa:ansible/ansible
 
 - name: apt keys
   apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
@@ -24,7 +32,7 @@
   copy: src=files/xorg-edgers-pin-400 dest=/etc/apt/preferences.d/xorg-edgers-pin-400
 
 - name: software installed
-  apt:  pkg={{ item }} state=latest force=yes
+  apt:  pkg={{ item }} state=latest update_cache=yes
   with_items:
     - screen
     - tmux
@@ -52,15 +60,28 @@
     - mutt
     - abook
     - nvidia-343
-    - nvidia-cuda-toolkit
     - virtualbox-4.3
+    - xfce4-whiskermenu-plugin
+    - xfswitch-plugin
+    - axel
+    - zip
+    - rar
+    - unrar
+    - unace
+    - gnuplot-qt
+    - gle-graphics
+    - firefox
+    - octave
+    - iotop
+    - ubuntu-restricted-extras
+    - texstudio
+    - gparted
+    - libreoffice
+    - ansible
+    - thunderbird
+    - vlc
+    - gnome-terminal
+    - cmake
     
-- name: manual deb downloads
-  get_url: url={{ item }} dest=/tmp
-  with_items:
-    - http://download1.rstudio.org/rstudio-0.98.1049-amd64.deb
-
-- name: manual deb installs
-  apt: deb=/tmp/{{ item }}
-  with_items:
-    - rstudio-0.98.1049-amd64.deb
+- name: hide login list and allow username input
+  copy: src=files/99-logins.conf dest=/etc/lightdm/lightdm.conf.d

@@ -1,3 +1,6 @@
 ---
 - name: restart execd
   service: name=autofs state=restarted
+
+- name: restart ypbind
+  service: name=ypbind state=restarted

@@ -2,7 +2,11 @@
 - hosts: workstations
   sudo: yes
   tasks:
-   - name: updates a server
+   - name: sudo without password
+     lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+   - name: install keys
+     authorized_key: user=localadmin key="{{ lookup('file', '/home/ace/.ssh/id_rsa.pub') }}"
+   - name: update apt-get cache
      apt: update_cache=yes
-   - name: upgrade a server
+   - name: dist-upgrade
      apt: upgrade=dist

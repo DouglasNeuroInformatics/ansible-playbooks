@@ -1,5 +1,5 @@
 - name: nfs-common installed
-  apt:  pkg=nfs-common state=latest update_cache=yes
+  apt:  pkg=nfs-common state=latest
 
 - name: autofs installed
   apt: pkg=autofs state=latest
@@ -30,17 +30,16 @@
   - steiger
   - walker
   
+- name: create place for homdirs
+  file: path=/home-remote state=directory
+
 - name : setup auto.master
   copy: src=files/auto.master dest=/etc/auto.master
+  notify: restart autofs
   
 - name: setup auto.home
   copy: src=files/auto.home dest=/etc/auto.home
-  
-- name: restart autofs
-  service: name=autofs state=restarted
-
-- name: create place for homdirs
-  file: path=/home-remote state=directory
+  notify: restart autofs
 
 - name: create symlink
   file: src=/home-remote/cic dest=/home/cic state=link

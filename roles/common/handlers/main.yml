@@ -1,0 +1,3 @@
+---
+- name: restart execd
+  service: name=autofs state=restarted

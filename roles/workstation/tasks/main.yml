@@ -66,8 +66,6 @@
     - nvidia-343-uvm
     - nvidia-343-dev
     - virtualbox-4.3
-    - xfce4-whiskermenu-plugin
-    - xfswitch-plugin
     - axel
     - zip
     - rar
@@ -86,6 +84,14 @@
     - thunderbird
     - vlc
     - gnome-terminal
+    - numlockx
+    - gfortran
+    - dcmtk
+    - python-pip
+    - libapparmor1
+    - python-dev
+    - libsqlite3-dev
+    - sqlite3
 #fsl-complete expect for fsl-core
     - fsl-atlases
     - fsl-bangor-cerebellar-atlas
@@ -136,7 +142,17 @@
     - libxmu6
     - libxmu-dev
     - libxmu-headers
+#R build deps
+    - gfortran
+    - libreadline-dev
+    - libcairo-dev
+    - openjdk-7-jdk
 
+- name: install pip software
+  pip: name={{ item }} state=latest
+  with_items:
+    - reprozip
+    - reprounzip
 
-- name: hide login list and allow username input
+- name: configure lightdm login
   copy: src=files/99-logins.conf dest=/etc/lightdm/lightdm.conf.d

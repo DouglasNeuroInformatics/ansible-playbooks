@@ -11,7 +11,7 @@
   mount:  src="cicss01:/exports/scratch" name=/scratch fstype=nfs opts="vers=3,rw,bg,hard,intr"  state=mounted
   
 - name: exported data
-  mount: src="cicss01:/exports/{{ item }}" name=/data/{{ item }} fstype=nfs opts="vers=3,rw,bg,hard,intr" state=mounted
+  mount: src="cicss01:/exports/{{ item }}" name=/data/{{ item }} fstype=nfs opts="vers=3,rw,bg,hard,intr" state=absent
   with_items:
   - berlim
   - chamal
@@ -44,4 +44,6 @@
 - name: create symlink
   file: src=/home-remote/cic dest=/home/cic state=link
   
-
+- name: setup /data
+  copy: src=files/auto.data dest=/etc/auto.data
+  notify: restart autofs

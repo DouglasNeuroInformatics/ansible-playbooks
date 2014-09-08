@@ -2,7 +2,7 @@
 - {include: hosts.yml, tags: hosts}
 - {include: nis.yml, tags: nis}
 - {include: nfs.yml, tags: nfs}
-- name: enable quarantine
-  copy: src=files/quarantine.sh dest=/etc/profile.d mode=0755
-- name: enable keys
+- {include: quarantine.yml, tags: quarantine}
+  
+- name: enable ssh keys
   authorized_key: user=localadmin key="{{ lookup('file', '/home/ace/.ssh/id_rsa.pub') }}"

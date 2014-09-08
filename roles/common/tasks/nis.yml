@@ -3,12 +3,18 @@
   
 - name: set defaultdomain
   copy: src=files/defaultdomain dest=/etc/defaultdomain
-  notify: restart ypbind
+  notify:
+    - restart rpcbind 
+    - restart ypbind
   
 - name: set ypservers
   copy: src=files/yp.conf dest=/etc/yp.conf
-  notify: restart ypbind
+  notify: 
+    - restart rpcbind
+    - restart ypbind
   
 - name : set nsswitch
   copy: src=files/nsswitch.conf dest=/etc/nsswitch.conf
-  notify: restart ypbind
+  notify:
+    - restart rpcbind 
+    - restart ypbind

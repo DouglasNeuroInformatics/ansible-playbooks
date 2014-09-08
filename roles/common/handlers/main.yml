@@ -1,7 +1,9 @@
 ---
-- name: restart execd
-  service: name=autofs state=restarted
+- name: restart rpcbind
+  service: name=rpcbind state=restarted
 
 - name: restart ypbind
-  service: name=rpcbind state=restarted
   service: name=ypbind state=restarted
+
+- name: restart autofs
+  service: name=autofs state=restarted

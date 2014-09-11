@@ -1,6 +1,3 @@
-- name: nis installed
-  apt: pkg=nis state=latest
-  
 - name: set defaultdomain
   copy: src=files/defaultdomain dest=/etc/defaultdomain
   notify:
@@ -10,6 +7,12 @@
 - name: set ypservers
   copy: src=files/yp.conf dest=/etc/yp.conf
   notify: 
+    - restart rpcbind
+    - restart ypbind
+
+- name: nis installed
+  apt: pkg=nis state=latest
+  notify:
     - restart rpcbind
     - restart ypbind
   

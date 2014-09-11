@@ -10,26 +10,6 @@
 - name: scratch fstab
   mount:  src="cicss01:/exports/scratch" name=/scratch fstype=nfs opts="vers=3,rw,bg,hard,intr"  state=mounted
   
-- name: exported data
-  mount: src="cicss01:/exports/{{ item }}" name=/data/{{ item }} fstype=nfs opts="vers=3,rw,bg,hard,intr" state=absent
-  with_items:
-  - berlim
-  - chamal
-  - coubla
-  - dicom
-  - exec
-  - frqs
-  - giros
-  - jollant
-  - lepage
-  - pruessner
-  - pruessner2
-  - rajah
-  - renaud
-  - rosa
-  - steiger
-  - walker
-  
 - name: create place for homdirs
   file: path=/home-remote state=directory
 

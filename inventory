@@ -8,16 +8,13 @@ cicws[01:19]
 ciccs[01:10]
 
 [fileservers]
-cicss01.douglas.rtss.qc.ca
-cicss02.douglas.rtss.qc.ca
+cicss[01:02] ansible_ssh_user=devgab
 
 [loginservers]
-cicus01.douglas.rtss.qc.ca
-cicus02.douglas.rtss.qc.ca
+cicus[01:02] ansible_ssh_user=devgab
 
 [backupservers]
-cicbs01.douglas.rtss.qc.ca
+cicbs01 ansible_ssh_user=devgab
 
 [gridengine_clients:children]
 workstations
-computenodes

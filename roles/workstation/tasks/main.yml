@@ -47,6 +47,7 @@
     - google-talkplugin
     - skype
     - imagej
+    - imagemagick
     - speedcrunch
     - openssh-server
     - build-essential
@@ -65,6 +66,7 @@
     - nvidia-343
     - nvidia-343-uvm
     - nvidia-343-dev
+    - nvidia-opencl-icd-343
     - virtualbox-4.3
     - axel
     - zip
@@ -92,6 +94,9 @@
     - python-dev
     - libsqlite3-dev
     - sqlite3
+    - pspp
+    - nedit
+    - quota
 #fsl-complete expect for fsl-core
     - fsl-atlases
     - fsl-bangor-cerebellar-atlas

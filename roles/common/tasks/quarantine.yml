@@ -1,8 +1,11 @@
 - name: quarantine package
   apt: pkg=environment-modules state=latest
+
 - name: copy quarantine profile
-  copy: src=files/quarantine.sh dest=/etc/profile.d mode=0755
-- name: enable modules xsession
-  file: src=/etc/profile.d/modules.sh dest=/etc/X11/Xsession.d/98modules.sh state=link  
-- name: copy quarantine xsession
-  copy: src=files/quarantine.sh dest=/etc/X11/Xsession.d/99quarantine.sh mode=0755
+  copy: src=files/quarantine.sh dest=/etc/profile.d
+
+- name: enable modules for bash
+  lineinfile: dest=/etc/bash.bashrc line="source /etc/profile.d/modules.sh"
+
+- name: enable quarantine
+  lineinfile: dest=/etc/bash.bashrc line="source /etc/profile.d/quarantine.sh"

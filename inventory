@@ -5,7 +5,7 @@ cicws[23:30] ansible_ssh_user=localadmin
 cicws[01:19]
 
 [computenodes]
-ciccs[01:10]
+ciccs[01:10] ansible_ssh_user=devgab
 
 [fileservers]
 cicss[01:02] ansible_ssh_user=devgab

@@ -1,3 +1,4 @@
+
 mallar -rw,quota cicss01:/exports/mallar     
 prussner2 -rw,quota cicss01:/exports/pruessner2 
 frqs -rw,quota cicss01:/exports/frqs       
@@ -21,3 +22,4 @@ rajah -rw,quota cicss01:/exports/rajah
 pruessner -rw,quota cicss01:/exports/pruessner  
 lepage -rw,quota cicss01:/exports/lepage     
 admin -rw,quota cicss01:/exports/admin
+lalit -rw,quota cicss01:/exports/lalit

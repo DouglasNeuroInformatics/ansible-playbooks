@@ -5,10 +5,10 @@
   apt: pkg=autofs state=latest
   
 - name: quarantine fstab
-  mount:  src="cicss01:/exports/quarantine" name=/opt/quarantine fstype=nfs  opts="vers=3,rw,bg,hard,intr"  state=mounted
+  mount:  src="cicss01:/quarantine" name=/opt/quarantine fstype=nfs  opts="vers=4,rw,nodev,hard,intr,hard,intr,sloppy,async"  state=mounted
   
-- name: scratch fstab
-  mount:  src="cicss01:/exports/scratch" name=/scratch fstype=nfs opts="vers=3,rw,bg,hard,intr"  state=mounted
+- name: scratch fstab nfs4
+  mount:  src="cicss01:/scratch" name=/scratch fstype=nfs opts="vers=4,rw,nodev,hard,intr,hard,intr,sloppy,async"  state=mounted
   
 - name: create place for homdirs
   file: path=/home-remote state=directory
@@ -27,3 +27,6 @@
 - name: setup /data
   copy: src=files/auto.data dest=/etc/auto.data
   notify: restart autofs
+
+- name: configure nfs-common
+  copy: src=files/nfs-common dest=/etc/default/nfs-common

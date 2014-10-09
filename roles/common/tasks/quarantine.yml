@@ -9,3 +9,6 @@
 
 - name: enable quarantine
   lineinfile: dest=/etc/bash.bashrc line="source /etc/profile.d/quarantine.sh"
+
+- name: quarantine fstab
+  mount:  src="cicss01:/quarantine" name=/opt/quarantine fstype=nfs  opts="vers=4,rw,nodev,hard,intr,hard,intr,sloppy,async"  state=mounted

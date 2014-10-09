@@ -5,7 +5,7 @@
   apt: pkg=squid-deb-proxy-client state=latest 
 
 - name: repos enabled
-  apt_repository: repo='{{ item }}' state=present update_cache=no
+  apt_repository: repo='{{item}}' state=present update_cache=no
   with_items:
     - ppa:libreoffice/ppa
     - deb http://download.mendeley.com/apt/ stable main
@@ -35,8 +35,9 @@
   copy: src=files/xorg-edgers-pin-400 dest=/etc/apt/preferences.d/xorg-edgers-pin-400
 
 - name: software installed
-  apt:  pkg={{ item }} state=latest update_cache=yes
+  apt:  pkg={{ item }} state=present update_cache=yes
   with_items:
+    - unattended-upgrades
     - screen
     - tmux
     - intel-microcode
@@ -82,6 +83,7 @@
     - texstudio
     - gparted
     - libreoffice
+    - libreoffice-help-en-us
     - ansible
     - thunderbird
     - vlc
@@ -97,6 +99,11 @@
     - pspp
     - nedit
     - quota
+    - thermald
+    - nvidia-cuda-toolkit
+    - protobuf-c-compiler
+    - protobuf-compiler
+    - python-protobuf
 #fsl-complete expect for fsl-core
     - fsl-atlases
     - fsl-bangor-cerebellar-atlas
@@ -152,6 +159,15 @@
     - libreadline-dev
     - libcairo-dev
     - openjdk-7-jdk
+#CIVET build deps
+    - automake
+    - autoconf
+    - libtool
+    - libblas-dev
+    - liblapack-dev
+    - libnetpbm10-dev
+#Brain-view2
+    - libpcre++0
 
 - name: install pip software
   pip: name={{ item }} state=latest
@@ -161,3 +177,12 @@
 
 - name: configure lightdm login
   copy: src=files/99-logins.conf dest=/etc/lightdm/lightdm.conf.d
+
+- name: configure adblock chrome
+  copy: src=files/cjpalhdlnbpafiamejdnhcphjbkeiagm.json dest=/usr/share/google-chrome/extensions/
+
+- name: fix powerkey
+  lineinfile: dest=/etc/systemd/logind.conf line=HandlePowerKey=ignore
+
+- name: disable apport
+  lineinfile: dest=/etc/default/apport regexp=^enabled= line=enabled=0

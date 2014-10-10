@@ -104,6 +104,7 @@
     - protobuf-c-compiler
     - protobuf-compiler
     - python-protobuf
+    - libssl0.9.8
 #fsl-complete expect for fsl-core
     - fsl-atlases
     - fsl-bangor-cerebellar-atlas

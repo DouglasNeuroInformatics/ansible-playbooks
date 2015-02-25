@@ -2,10 +2,4 @@
   apt: pkg=environment-modules state=latest
 
 - name: copy quarantine profile
-  copy: src=files/quarantine.sh dest=/etc/profile.d
-
-- name: enable modules for bash
-  lineinfile: dest=/etc/bash.bashrc line="source /etc/profile.d/modules.sh"
-
-- name: enable quarantine
-  lineinfile: dest=/etc/bash.bashrc line="source /etc/profile.d/quarantine.sh"
+  copy: src=files/99quarantine.sh dest=/etc/profile.d

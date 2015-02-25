@@ -16,8 +16,12 @@
     - restart rpcbind
     - restart ypbind
   
-- name : set nsswitch
+- name: set nsswitch
   copy: src=files/nsswitch.conf dest=/etc/nsswitch.conf
-  notify:
-    - restart rpcbind 
-    - restart ypbind
+
+- name: automatic nss restart
+  when_changed: $last_task
+  service: name={{ item }} state=restarted
+  with_items:
+    - rpcbind
+    - ypbind

@@ -1,0 +1,11 @@
+- name: configure lightdm login
+  copy: src=files/99-logins.conf dest=/etc/lightdm/lightdm.conf.d
+
+- name: configure adblock chrome
+  copy: src=files/cjpalhdlnbpafiamejdnhcphjbkeiagm.json dest=/usr/share/google-chrome/extensions/
+
+- name: fix powerkey
+  lineinfile: dest=/etc/systemd/logind.conf line=HandlePowerKey=ignore
+
+- name: disable apport
+  lineinfile: dest=/etc/default/apport regexp=^enabled= line=enabled=0

@@ -25,5 +25,5 @@
 # precedence.
 #
 #+auto.master
-/home-remote  /etc/auto.home  --timeout=1200 --ghost
 /data /etc/auto.data --timeout=1200 --ghost
+/backup /etc/auto.backup --timeout=1200 --ghost

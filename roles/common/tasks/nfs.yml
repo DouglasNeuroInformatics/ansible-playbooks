@@ -3,29 +3,35 @@
 
 - name: autofs installed
   apt: pkg=autofs state=latest
-  
+
+- name: create /opt/quarantine
+  file: path=/opt/quarantine state=directory
+
 - name: quarantine fstab
-  mount:  src="cicss01:/quarantine" name=/opt/quarantine fstype=nfs  opts="vers=4,rw,nodev,hard,intr,hard,intr,sloppy,async"  state=mounted
-  
-- name: scratch fstab nfs4
-  mount:  src="cicss01:/scratch" name=/scratch fstype=nfs opts="vers=4,rw,nodev,hard,intr,hard,intr,sloppy,async"  state=mounted
+  mount: src="cicss01:/quarantine" name=/opt/quarantine fstype=nfs  opts="vers=4,rw,nodev,hard,intr,hard,intr,sloppy,async"  state=mounted
   
 - name: create place for homdirs
-  file: path=/home-remote state=directory
+  file: path=/home/cic state=directory
+
+- name: mount homedirs
+  mount: src="cicus01:/users" name=/home/cic fstype=nfs opts="rw,nodev,hard,intr,sloppy,vers=4"
 
 - name : setup auto.master
   copy: src=files/auto.master dest=/etc/auto.master
   notify: restart autofs
   
-- name: setup auto.home
-  copy: src=files/auto.home dest=/etc/auto.home
+- name: create /data
+  file: path=/data state=directory
+
+- name: autofs /data
+  copy: src=files/auto.data dest=/etc/auto.data
   notify: restart autofs
 
-- name: create symlink
-  file: src=/home-remote/cic dest=/home/cic state=link
-  
-- name: setup /data
-  copy: src=files/auto.data dest=/etc/auto.data
+- name: create /backup
+  file: path=/backup state=directory
+
+- name: autofs /backup
+  copy: src=files/auto.backup dest=/etc/auto.backup
   notify: restart autofs
 
 - name: configure nfs-common

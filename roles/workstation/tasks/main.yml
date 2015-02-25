@@ -1,6 +1,3 @@
-- name: fix apt http pipeline depth (so it doesn't break squid)
-  copy: src=files/99depth dest=/etc/apt/apt.conf.d
-
 - name: install proxy client
   apt: pkg=squid-deb-proxy-client state=latest 
 

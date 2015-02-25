@@ -8,4 +8,12 @@
 
 - get_url: url=http://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest dest=/tmp/mendeley.deb force=yes
 
-- apt: deb=/tmp/mypackage.deb
+
+- name: install debs
+  apt: deb={{ item }}
+  with_items:
+    - /tmp/cuda-repo-ubuntu1404_6.5-14_amd64.deb
+    - /tmp/google-chrome-stable_current_amd64.deb
+    - /tmp/pandoc-1.13.2-1-amd64.deb
+    - /tmp/google-talkplugin_current_amd64.deb
+    - /tmp/mendeley.deb

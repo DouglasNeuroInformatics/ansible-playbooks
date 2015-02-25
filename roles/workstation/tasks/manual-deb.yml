@@ -1,0 +1,11 @@
+- get_url: url=http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_6.5-14_amd64.deb dest=/tmp/
+
+- get_url: url=https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb dest=/tmp/
+
+- get_url: url=https://github.com/jgm/pandoc/releases/download/1.13.2/pandoc-1.13.2-1-amd64.deb dest=/tmp/
+
+- get_url: url=https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb dest=/tmp/
+
+- get_url: url=http://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest dest=/tmp/mendeley.deb force=yes
+
+- apt: deb=/tmp/mypackage.deb

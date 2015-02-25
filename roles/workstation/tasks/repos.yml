@@ -1,0 +1,31 @@
+- name: repos enabled
+  apt_repository: repo='{{item}}' state=present update_cache=no
+  with_items:
+    - deb http://downloads.hipchat.com/linux/apt stable main
+    - ppa:inkscape.dev/stable
+    - ppa:ansible/ansible
+    - ppa:libreoffice/ppa
+    - ppa:nilarimogard/webupd8 
+    - ppa:webupd8team/java
+    - ppa:x2go/stable
+    - ppa:otto-kesselgulasch/gimp
+    - ppa:blahota/texstudio
+    - ppa:videolan/stable-daily
+    - ppa:webupd8team/atom
+    - ppa:ubuntu-x-swat/x-updates
+    - ppa:xorg-edgers/ppa
+    - ppa:zfs-native/stable
+    - ppa:tsvetko.tsvetkov/cinnamon
+    - deb http://archive.canonical.com/ precise partner
+    
+- name: apt keys
+  apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
+  with_items:
+    - 6F036044
+    - 7FAC5991
+    - 98AB5139
+    - 2649A5A9
+
+- apt_key: url=https://www.hipchat.com/keys/hipchat-linux.key state=present
+
+- apt: update_cache=yes

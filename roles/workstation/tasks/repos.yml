@@ -17,6 +17,7 @@
     - ppa:zfs-native/stable
     - ppa:tsvetko.tsvetkov/cinnamon
     - deb http://archive.canonical.com/ precise partner
+    - deb http://archive.canonical.com/ubuntu/ trusty partner
     
 - name: apt keys
   apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
@@ -27,5 +28,8 @@
     - 2649A5A9
 
 - apt_key: url=https://www.hipchat.com/keys/hipchat-linux.key state=present
+
+- name: restrict xorg-edgers
+  copy: src=files/xorg-edgers-pin dest=/etc/apt/preferences.d/xorg-edgers-pin
 
 - apt: update_cache=yes

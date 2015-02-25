@@ -1,4 +1,6 @@
-- lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+- name: enable sudo with no password for sudoers
+  lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+
 - {include: hosts.yml, tags: hosts}
 - {include: nis.yml, tags: nis}
 - {include: nfs.yml, tags: nfs}

@@ -1,3 +1,0 @@
----
-- name: restart gridengine-exec
-  service: name=gridengine-exec state=restarted

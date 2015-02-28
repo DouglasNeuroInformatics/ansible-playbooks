@@ -1,5 +1,7 @@
 ---
 - hosts: workstations
+  vars:
+    kernelver: 3.14.34
   sudo: yes
   roles:
     - common

@@ -1,0 +1,4 @@
+- get_url: https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware_1.141_all.deb dest=/tmp/
+
+- name: install firmware
+  apt: deb=linux-firmware_1.141_all.deb

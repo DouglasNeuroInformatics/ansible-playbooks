@@ -8,7 +8,8 @@
 
 - get_url: url=http://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest dest=/tmp/mendeley.deb force=yes
 
-- command: /usr/bin/wget -e robots=off -r --no-parent -nH --cut-dirs=5 -A '*.deb' -R '*i386*','*generic*' -P /tmp/kernel http://kernel.ubuntu.com/~kernel-ppa/mainline/v{{ kernelver }}-utopic/ creates=/tmp/kernel
+- name: download lowlatency kernel
+  command: /usr/bin/wget -e robots=off -r --no-parent -nH --cut-dirs=5 -A '*.deb' -R '*i386*','*generic*' -P /tmp/kernel http://kernel.ubuntu.com/~kernel-ppa/mainline/v{{ kernelver }}-utopic/ creates=/tmp/kernel
 
 - name: install debs
   apt: deb={{ item }}
@@ -23,6 +24,6 @@
   action: command ls -1 /tmp/kernel/*
   register: kernelfiles
 
-- name: install kernel
+- name: install lowlatency kernel
   apt: deb={{ item }}
   with_items: ${kernelfiles.stdout_lines}

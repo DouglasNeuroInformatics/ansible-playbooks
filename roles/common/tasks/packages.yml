@@ -20,7 +20,6 @@
     - landscape-common
     - ssmtp
     - unattended-upgrades
-    - acpi-call-dkms
     - lvm2
     - exfat-utils
     - graphicsmagick-imagemagick-compat
@@ -91,6 +90,9 @@
     - dmsetup
     - kpartx
     - freeipmi
+    - automake
+    - autoconf
+    - libtool
 #libraries
     - ubuntu-restricted-addons
     - ubuntu-restricted-extras
@@ -111,6 +113,17 @@
     - libhdf5-7
     - libhdf5-dev
     - lib32gcc1
+    - libblas-dev
+    - liblapack-dev
+    - libnetpbm10-dev
+    - libpcre++0
+    - bison
+    - flex
+    - libxi6
+    - libxi-dev
+    - libxmu6
+    - libxmu-dev
+    - libxmu-headers
 
 - name: install github and jekyll suppor
   gem: name={{ item }} state=latest

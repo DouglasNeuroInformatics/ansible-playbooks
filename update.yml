@@ -1,0 +1,15 @@
+- hosts: workstations
+  sudo: yes
+  tasks:
+   - name: install proxy client
+     apt: pkg=squid-deb-proxy-client state=latest
+   - name: update apt-get cache
+     apt: update_cache=yes
+   - name: dist-upgrade
+     apt: upgrade=dist
+   - name: update drivedb
+     command: update-smart-drivedb
+   - name: update-pciids
+     command: update-pciids
+   - name: update-usbids
+     command: update-usbids

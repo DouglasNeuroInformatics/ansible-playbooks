@@ -6,7 +6,7 @@
 - name: accept oracle license
   debconf: name='oracle-java7-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
 
-- name: install workstation packages
+- name: install common packages
   apt:  pkg={{ item }} state=latest update_cache=no
   with_items:
     - pv

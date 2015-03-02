@@ -9,6 +9,7 @@
 - name: install workstation packages
   apt:  pkg={{ item }} state=latest update_cache=no
   with_items:
+    - pv
     - openntpd
     - xauth
     - lm-sensors

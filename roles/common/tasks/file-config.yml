@@ -46,3 +46,12 @@
   notify:
     - restart cups
     - restart cups-browsed
+
+- name: setup ssmtp
+  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^root= line=root=root@cicus01
+
+- name: setup mailhub
+  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^mailhub= line=mailhub=cicus01
+
+- name: configure logcheck
+  copy: src=files/logcheck.conf dest=/etc/logcheck/

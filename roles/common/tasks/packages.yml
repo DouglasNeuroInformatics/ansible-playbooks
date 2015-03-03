@@ -18,7 +18,6 @@
     - tmux
     - screen
     - apcupsd
-    - logwatch
     - landscape-common
     - ssmtp
     - unattended-upgrades
@@ -95,6 +94,8 @@
     - autoconf
     - libtool
     - debconf-utils
+    - logcheck
+    - syslog-summary
 #libraries
     - ubuntu-restricted-addons
     - ubuntu-restricted-extras

@@ -2,4 +2,10 @@
   apt: pkg=environment-modules state=latest
 
 - name: copy quarantine profile
-  copy: src=files/99quarantine.sh dest=/etc/profile.d
+  copy: src=files/zzquarantine.sh dest=/etc/profile.d
+
+- name: Create scratch
+  file: path=/scratch state=directory mode=u=rwx,g=rwx,o=rwx
+
+- name: config /etc/bash.bashrc
+  copy: src=files/bash.bashrc dest=/etc

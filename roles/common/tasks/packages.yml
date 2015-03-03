@@ -9,6 +9,7 @@
 - name: install common packages
   apt:  pkg={{ item }} state=latest update_cache=no
   with_items:
+    - python-pip
     - pv
     - openntpd
     - xauth
@@ -44,7 +45,6 @@
     - aptitude
     - intel-microcode
     - libnss-myhostname
-    - mesa-utils
     - nmap
     - oracle-java7-installer
     - lrzip
@@ -74,7 +74,7 @@
     - python-nose
     - python-scitools
     - vim
-    - ctags
+    - exuberant-ctags
     - vim-doc
     - vim-scripts
     - fonts-inconsolata
@@ -94,11 +94,10 @@
     - automake
     - autoconf
     - libtool
+    - debconf-utils
 #libraries
     - ubuntu-restricted-addons
     - ubuntu-restricted-extras
-    - freeglut3
-    - freeglut3-dev
     - cmake
     - cmake-curses-gui
     - protobuf-c-compiler
@@ -125,14 +124,16 @@
     - libxmu6
     - libxmu-dev
     - libxmu-headers
+    - libsqlite3-dev 
 
 - name: install github and jekyll suppor
   gem: name={{ item }} state=latest
+  with_items:
     - jekyll
     - github-pages
 
-- name: install pip software
-  pip: name={{ item }} ee=latest
-  with_items:
-    - reprozip
-    - reprounzip
+#- name: install pip software
+#  pip: name={{ item }} state=latest
+#  with_items:
+#    - reprozip
+#    - reprounzip

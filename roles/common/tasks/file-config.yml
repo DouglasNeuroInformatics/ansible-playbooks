@@ -1,0 +1,48 @@
+- name: disable apport
+  lineinfile: dest=/etc/default/apport regexp=^enabled= line=enabled=0
+
+- name: enable unattended upgrades
+  copy: src=files/50unattended-upgrades dest=/etc/apt/apt.conf.d/
+
+- name: config ntpd
+  copy: src=files/ntpd.conf dest=/etc/openntpd/ntpd.conf
+  notify:
+   - restart ntpd
+
+- name: config network
+  copy: src=files/interfaces dest=/etc/network/interfaces
+
+- name: config smartmontools
+  copy: src=files/smartmontools dest=/etc/default/smartmontools
+
+- name: config smartd.conf
+  copy: src=files/smartd.conf dest=/etc/
+  notify:
+    - restart smartmontools
+
+- name: config apcupsd.conf
+  copy: src=files/apcupsd.conf dest=/etc/apcupsd/apcupsd.conf
+  notify:
+    - restart apcupsd
+
+- name: config apcupsd
+  copy: src=files/apcupsd dest=/etc/default/apcupsd
+  notify:
+    - restart apcupsd
+
+- name: install ppds
+  copy: src={{ item }} dest=/etc/cups/ppd
+  with_items:
+    - files/Kyocera-Mita-TASKalfa-4551ci-KPDL.ppd
+
+- name: install printer.conf
+  copy: src=files/printers.conf dest=/etc/cups
+  notify:
+    - restart cups
+    - restart cups-browsed
+
+- name: install cups-browsed.conf
+  copy: src=files/cups-browsed.conf dest=/etc/cups
+  notify:
+    - restart cups
+    - restart cups-browsed

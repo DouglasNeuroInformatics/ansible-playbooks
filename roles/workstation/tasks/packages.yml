@@ -32,8 +32,7 @@
     - gimp-help-en
     - icc-profiles-free
     - cuda
-    - vdpau-driver
-    - acroread-bin
+    - acroread-bin:i386
     - libldap-2.4-2:i386
     - libgnome-speech7:i386
     - librsvg2-common:i386
@@ -48,7 +47,6 @@
     - hunspell-en-ca
     - libreoffice-help-en-gb
     - libreoffice-l10n-en-gb
-    - libreoffice-l10n-en-za
     - mythes-en-au
     - thunderbird-locale-en-gb
     - firefox-locale-fr
@@ -72,3 +70,15 @@
     - virt-viewer
     - numlockx
     - nedit
+    - xserver-xorg-dev-lts-utopic 
+    - mesa-common-dev-lts-utopic 
+    - libxatracker-dev-lts-utopic 
+    - libopenvg1-mesa-dev-lts-utopic 
+    - libgles2-mesa-dev-lts-utopic 
+    - libgles1-mesa-dev-lts-utopic 
+    - libgl1-mesa-dev-lts-utopic 
+    - libgbm-dev-lts-utopic 
+    - libegl1-mesa-dev-lts-utopic
+    - mesa-utils
+    - freeglut3
+    - freeglut3-dev

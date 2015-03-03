@@ -1,0 +1,45 @@
+- debconf: name=gridengine-common question='shared/gridengineconfig' value=true vtype='boolean'
+- debconf: name=gridengine-common question='shared/gridenginemaster' value='cicus01' vtype='string'
+
+- name: Install GridEngine packages
+  apt: pkg="{{item}}" state=latest
+  with_items:
+    - gridengine-client
+    - gridengine-exec
+    - gridengine-qmon
+  
+- name: ensure execd daemon is running
+  service: name=gridengine-exec state=restarted
+
+#- name: set complex_values limit
+#  shell: "qconf -rattr exechost complex_values slots={{ ansible_processor_cores }},num_proc={{ ansible_processor_vcpus }},h_vmem={{ ansible_swaptotal_mb + ansible_memtotal_mb }} {{ansible_fqdn}}"
+
+- name: ensure execd daemon is running
+  service: name=gridengine-exec state=running
+
+- name: add machine as submission host
+  shell: "qconf -as {{ansible_fqdn}}"
+  changed_when: False
+  ignore_errors: yes
+
+- name: add machine as administration host
+  shell: "qconf -ah {{ansible_fqdn}}"
+  changed_when: False
+  ignore_errors: yes
+
+#- name: upload configuration file for host
+#  template: src=newhost.qconf.j2 dest="/tmp/{{ansible_fqdn}}.conf"
+
+#- name: add machine as execution host
+#  shell: "qconf -de {{ansible_fqdn}}; qconf -Ae /tmp/{{ansible_fqdn}}.conf"
+#  changed_when: False
+#  ignore_errors: yes
+
+#- name: set exec node slots
+#  shell: "qconf -rattr exechost complex_values slots={{ansible_processor_vcpus}}    {{ansible_fqdn}}"
+
+#- name: set exec node num_proc
+#  shell: "qconf -rattr exechost complex_values num_proc={{ansible_processor_vcpus}} {{ansible_fqdn}}"
+
+#- name: set exec node h_vmem
+#  shell: "qconf -rattr exechost complex_values h_vmem={{ansible_memtotal_mb*1024*1024}} {{ansible_fqdn}}"

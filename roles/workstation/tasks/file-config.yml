@@ -1,5 +1,5 @@
 - name: configure lightdm login
-  copy: src=files/99-logins.conf dest=/etc/lightdm/lightdm.conf.d
+  copy: src=files/99-logins.conf dest=/etc/lightdm/lightdm.conf.d/
 
 - name: configure adblock chrome
   copy: src=files/cjpalhdlnbpafiamejdnhcphjbkeiagm.json dest=/usr/share/google-chrome/extensions/

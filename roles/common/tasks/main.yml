@@ -1,13 +1,17 @@
 - name: enable ssh keys
-  authorized_key: user=localadmin key="{{ lookup('file', '/home/ace/.ssh/id_rsa.pub') }}"
+  authorized_key: user=localadmin key="{{ lookup('file', '/home/cic/devgab/.ssh/id_rsa.pub') }}"
 
 - name: enable sudo with no password for sudoers
   lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+
+- name: add devgab to admin group
+  user: name=devgab groups=adm,sudo append=yes
 
 - {include: hosts.yml, tags: hosts}
 - {include: nis.yml, tags: nis}
 - {include: nfs.yml, tags: nfs}
 - {include: quarantine.yml, tags: quarantine}
-- {include: repos.yml, tags: software
+- {include: repos.yml, tags: software}
 - {include: packages.yml, tags: software}
 - {include: manual-deb.yml, tags: software}
+- {include: file-config.yml, tags: files}

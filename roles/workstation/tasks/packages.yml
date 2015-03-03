@@ -82,3 +82,4 @@
     - mesa-utils
     - freeglut3
     - freeglut3-dev
+    - libgnome2-common

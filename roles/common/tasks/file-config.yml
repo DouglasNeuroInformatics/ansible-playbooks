@@ -4,10 +4,16 @@
 - name: enable unattended upgrades
   copy: src=files/50unattended-upgrades dest=/etc/apt/apt.conf.d/
 
+- name: enable periodic upgrades
+  copy: src=files/02periodic dest=/etc/apt/apt.conf.d/
+
 - name: config ntpd
   copy: src=files/ntpd.conf dest=/etc/openntpd/ntpd.conf
   notify:
    - restart ntpd
+
+- name: config ntpd defaults
+  copy: src=files/openntpd dest=/etc/default/
 
 - name: config network
   copy: src=files/interfaces dest=/etc/network/interfaces
@@ -55,3 +61,39 @@
 
 - name: configure logcheck
   copy: src=files/logcheck.conf dest=/etc/logcheck/
+
+- name: ignore ntpd in logcheck
+  copy: src=files/ntpd.logcheck dest=/etc/logcheck/ignore.d.workstation/ntpd
+
+- name: ignore ssmtp logcheck
+  copy: src=files/ssmtp.logcheck dest=/etc/logcheck/ignore.d.workstation/ssmtp
+
+- name: ignore ansible logcheck
+  copy: src=files/ansible.logcheck dest=/etc/logcheck/ignore.d.workstation/ansible
+
+- name: ignore systemd logcheck
+  copy: src=files/systemd.logcheck dest=/etc/logcheck/ignore.d.workstation/systemd
+
+- name: ignore colord logcheck
+  copy: src=files/colord.logcheck dest=/etc/logcheck/ignore.d.workstation/colord
+
+- name: fix ownership of ntp logcheck file
+  file: path=/etc/logcheck/ignore.d.workstation/ntpd state=touch group=logcheck
+
+- name: fix ownership of ssmtp logcheck file
+  file: path=/etc/logcheck/ignore.d.workstation/ssmtp state=touch group=logcheck
+
+- name: fix ownership of ansible logcheck file
+  file: path=/etc/logcheck/ignore.d.workstation/ansible state=touch group=logcheck
+
+- name: fix ownership of systemd logcheck
+  file: path=/etc/logcheck/ignore.d.workstation/systemd state=touch group=logcheck
+
+- name: fix ownership of colord logcheck
+  file: path=/etc/logcheck/ignore.d.workstation/colord state=touch group=logcheck
+
+- name: enable all locales
+  file: src=/usr/share/i18n/SUPPORTED dest=/var/lib/locales/supported.d/all state=link
+
+- name: generate all locales
+  command: /usr/sbin/locale-gen

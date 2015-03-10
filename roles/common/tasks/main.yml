@@ -1,11 +1,10 @@
 - name: enable ssh keys
   authorized_key: user=localadmin key="{{ lookup('file', '/home/cic/devgab/.ssh/id_rsa.pub') }}"
 
-- name: enable sudo with no password for sudoers
-  lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+- apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
-- name: add devgab to admin group
-  user: name=devgab groups=adm,sudo append=yes
+- name: install proxy client
+  apt: pkg=squid-deb-proxy-client state=latest update_cache=no
 
 - {include: hosts.yml, tags: hosts}
 - {include: nis.yml, tags: nis}
@@ -15,3 +14,10 @@
 - {include: packages.yml, tags: software}
 - {include: manual-deb.yml, tags: software}
 - {include: file-config.yml, tags: files}
+
+- name: enable sudo with no password for sudoers
+  lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+
+- name: add devgab to sudo group
+  lineinfile: dest=/etc/group state=present regexp=^sudo line=sudo:x:27:localadmin,devgab
+

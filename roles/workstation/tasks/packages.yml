@@ -1,4 +1,4 @@
-- apt: upgrade=dist update_cache=yes cache_valid_time=3600
+- apt: upgrade=dist update_cache=yes
 
 - name: install workstation packages
   apt:  pkg={{ item }} state=present update_cache=no
@@ -68,6 +68,8 @@
     - libvirt-bin
     - virtinst
     - virt-viewer
+    - virt-manager
+    - qemu-system
     - numlockx
     - nedit
     - xserver-xorg-dev-lts-utopic 
@@ -79,7 +81,10 @@
     - libgl1-mesa-dev-lts-utopic 
     - libgbm-dev-lts-utopic 
     - libegl1-mesa-dev-lts-utopic
+    - linux-lowlatency-lts-utopic
+    - linux-lts-utopic-tools-common
     - mesa-utils
     - freeglut3
     - freeglut3-dev
     - libgnome2-common
+    - gnumeric

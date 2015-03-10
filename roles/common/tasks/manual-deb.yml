@@ -1,8 +1,12 @@
 - get_url: url=https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware_1.141_all.deb dest=/tmp/
 - get_url: url=https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware-nonfree_1.16_all.deb dest=/tmp/
+- get_url: url=http://mirrors.kernel.org/ubuntu/pool/main/libm/libmng/libmng1_1.0.10-3_amd64.deb dest=/tmp/
 
 - name: install firmware
   apt: deb={{ item }}
   with_items:
     - /tmp/linux-firmware_1.141_all.deb
     - /tmp/linux-firmware-nonfree_1.16_all.deb
+
+- name: install old libmng
+  apt: deb=/tmp/libmng1_1.0.10-3_amd64.deb

@@ -4,6 +4,9 @@
 - name: configure adblock chrome
   copy: src=files/cjpalhdlnbpafiamejdnhcphjbkeiagm.json dest=/usr/share/google-chrome/extensions/
 
+- name: configure https anywhere chrome
+  copy: src=files/gcbommkclmclpchllfjekcdonpmejbdp.json dest=/usr/share/google-chrome/extensions/
+
 - name: fix powerkey
   lineinfile: dest=/etc/systemd/logind.conf line=HandlePowerKey=ignore
 

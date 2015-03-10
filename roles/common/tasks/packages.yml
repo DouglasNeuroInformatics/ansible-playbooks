@@ -96,6 +96,8 @@
     - debconf-utils
     - logcheck
     - syslog-summary
+    - pam-kwallet
+    - apparmor-profiles
 #libraries
     - ubuntu-restricted-addons
     - ubuntu-restricted-extras
@@ -125,7 +127,22 @@
     - libxmu6
     - libxmu-dev
     - libxmu-headers
-    - libsqlite3-dev 
+    - libsqlite3-dev
+    - libjpeg62
+    - liblcms1
+    - libperl4-corelibs-perl
+    - tcl8.4
+    - tcl8.5
+    - tk8.4
+    - tk8.5
+    - libgdchart-gd2-xpm
+    - libgiftiio0
+    - libnewmat10ldbl
+    - libnifti2
+    - libqt4-qt3support
+    - libqwt5-qt4
+    - libvtk5.8-qt4
+
 
 - name: install github and jekyll suppor
   gem: name={{ item }} state=latest

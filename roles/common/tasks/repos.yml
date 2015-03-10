@@ -18,6 +18,8 @@
     - ppa:tsvetko.tsvetkov/cinnamon
     - deb http://archive.canonical.com/ precise partner
     - deb http://archive.canonical.com/ubuntu/ trusty partner
+    - ppa:w-rouesnel/openssh-hpn
+    - ppa:freyja-dev/unity-tweak-tool-daily
     
 - name: apt keys
   apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present

@@ -1,8 +1,7 @@
 [workstations]
 cicws[01:09] ansible_ssh_user=localadmin
-cicws[23:27] ansible_ssh_user=localadmin
+cicws[23:30] ansible_ssh_user=localadmin
 
-cicws[29:30] ansible_ssh_user=localadmin
 
 cicws16 ansible_ssh_user=localadmin
 

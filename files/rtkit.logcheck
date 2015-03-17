@@ -1,0 +1,5 @@
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ rtkit-daemon\[[0-9]+\]: Supervising [0-9]+ threads of [0-9]+ processes of [0-9]+ users\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ rtkit-daemon\[[0-9]+\]: The canary thread is apparently starving\. Taking action\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ rtkit-daemon\[[0-9]+\]: Demoting known real-time threads\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ rtkit-daemon\[[0-9]+\]: Demoted [0-9]+ threads\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ rtkit-daemon\[[0-9]+\]: Successfully demoted thread [0-9]+ of process [0-9]+ \([^\)]+\)\.$

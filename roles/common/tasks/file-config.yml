@@ -77,6 +77,9 @@
 - name: ignore colord logcheck
   copy: src=files/colord.logcheck dest=/etc/logcheck/ignore.d.workstation/colord
 
+- name: ignore rtkit logcheck
+  copy: src=files/rtkit.logcheck dest=/etc/logcheck/ignore.d.workstation/rtkit
+
 - name: fix ownership of ntp logcheck file
   file: path=/etc/logcheck/ignore.d.workstation/ntpd state=touch group=logcheck
 
@@ -91,6 +94,9 @@
 
 - name: fix ownership of colord logcheck
   file: path=/etc/logcheck/ignore.d.workstation/colord state=touch group=logcheck
+
+- name: fix ownership of rtkit logcheck
+  file: path=/etc/logcheck/ignore.d.workstation/rtkit state=touch group=logcheck
 
 - name: enable all locales
   file: src=/usr/share/i18n/SUPPORTED dest=/var/lib/locales/supported.d/all state=link

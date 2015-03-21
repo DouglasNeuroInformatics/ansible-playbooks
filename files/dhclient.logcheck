@@ -1,0 +1,27 @@
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: Internet (Software|Systems) Consortium DHCP Client [.[:alnum:]-]+$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: Copyright [-0-9]+ Internet Systems Consortium\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: All rights reserved\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: For info, please visit http(://www\.isc\.org/(products/DHCP|sw/dhcp/)|s://www\.isc\.org/software/dhcp/)$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: There is already a pid file /var/run/dhclient\.[[:alnum:]]+\.pid with pid [[:digit:]]+$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: killed old client process, removed PID file$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?:$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: Listening on [^[:space:].]+$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: Sending on[[:space:]]+[^[:space:]]+$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: DHCPDISCOVER on [[:alnum:].-]+ to [.0-9]{7,15} port 67 interval [0-9]+$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: DHCP(NAK|ACK|OFFER) (of [.0-9]{7,15} )?from [.0-9]{7,15}$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: DHCP(REQUEST|RELEASE) (of [.0-9]{7,15} )?on [[:alnum:].-]+ to [.0-9]{7,15} port 67$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: bound(:| to [.0-9]{7,15} --) renewal in [0-9]+ seconds\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: [[:lower:]]+[0-9]: unknown hardware address type [0-9]+$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: Trying recorded lease [.0-9]{7,15}$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: No working leases in persistent database( - sleeping)?\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: send_packet: Network is unreachable$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: send_packet: please consult README file regarding broadcast address\.$
+# dhcp-client 2.0
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: Copyright (199[5-9],? ){5}(The )?Internet Software Consortium\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: Please contribute if you find this software useful\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: For info, please visit http://www.isc.org/dhcp-contrib.html$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: No DHCPOFFERS received\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: Sleeping\.$
+# 3.0
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient: parse_option_buffer: option [-[:alnum:]]+ \([[:digit:]]+\) larger than buffer\.$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?(\[[[:digit:]]+\])?: DHCP(REQUEST|RELEASE) (of [.0-9]{7,15} )?on [[:alnum:].]+ to [.0-9]{7,15} por t 67( \(xid=0x[0-9a-f]+\))?$

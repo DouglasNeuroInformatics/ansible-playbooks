@@ -80,23 +80,14 @@
 - name: ignore rtkit logcheck
   copy: src=files/rtkit.logcheck dest=/etc/logcheck/ignore.d.workstation/rtkit
 
-- name: fix ownership of ntp logcheck file
-  file: path=/etc/logcheck/ignore.d.workstation/ntpd state=touch group=logcheck
+- name: ignore dhclient logcheck
+  copy: src=files/dhclient.logcheck dest=/etc/logcheck/ignore.d.workstation/dhclient
 
-- name: fix ownership of ssmtp logcheck file
-  file: path=/etc/logcheck/ignore.d.workstation/ssmtp state=touch group=logcheck
+- name: ignore avahi
+  copy: src=files/avahi.logcheck dest=/etc/logcheck/ignore.d.workstation/avahi
 
-- name: fix ownership of ansible logcheck file
-  file: path=/etc/logcheck/ignore.d.workstation/ansible state=touch group=logcheck
-
-- name: fix ownership of systemd logcheck
-  file: path=/etc/logcheck/ignore.d.workstation/systemd state=touch group=logcheck
-
-- name: fix ownership of colord logcheck
-  file: path=/etc/logcheck/ignore.d.workstation/colord state=touch group=logcheck
-
-- name: fix ownership of rtkit logcheck
-  file: path=/etc/logcheck/ignore.d.workstation/rtkit state=touch group=logcheck
+- name: fix logcheck ownerships
+  file: path=/etc/logcheck/ignore.d.workstation state=directory recurse=yes group=logcheck
 
 - name: enable all locales
   file: src=/usr/share/i18n/SUPPORTED dest=/var/lib/locales/supported.d/all state=link

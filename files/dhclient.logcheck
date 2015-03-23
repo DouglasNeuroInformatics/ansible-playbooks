@@ -24,4 +24,4 @@
 ^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?: Sleeping\.$
 # 3.0
 ^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient: parse_option_buffer: option [-[:alnum:]]+ \([[:digit:]]+\) larger than buffer\.$
-^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?(\[[[:digit:]]+\])?: DHCP(REQUEST|RELEASE) (of [.0-9]{7,15} )?on [[:alnum:].]+ to [.0-9]{7,15} por t 67( \(xid=0x[0-9a-f]+\))?$
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dhclient(-2.2.x)?(\[[[:digit:]]+\])?: DHCP(REQUEST|RELEASE) (of [.0-9]{7,15} )?on [[:alnum:].]+ to [.0-9]{7,15} port 67( \(xid=0x[0-9a-f]+\))?$

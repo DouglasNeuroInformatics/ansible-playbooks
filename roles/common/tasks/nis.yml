@@ -26,8 +26,8 @@
 - name: set nsswitch
   copy: src=files/nsswitch.conf dest=/etc/nsswitch.conf
 
-- name: automatic nss restart
-  service: name={{ item }} state=restarted
-  with_items:
-    - rpcbind
-    - ypbind
+#- name: automatic nss restart
+#  service: name={{ item }} state=restarted
+#  with_items:
+#    - rpcbind
+#    - ypbind

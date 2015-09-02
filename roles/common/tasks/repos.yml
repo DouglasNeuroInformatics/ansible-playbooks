@@ -20,7 +20,18 @@
     - deb http://archive.canonical.com/ubuntu/ trusty partner
     - ppa:w-rouesnel/openssh-hpn
     - ppa:freyja-dev/unity-tweak-tool-daily
-    
+    - ppa:brightbox/ruby-ng
+    - ppa:ubuntu-wine/ppa
+    - ppa:kirillshkrogalev/ffmpeg-next
+    - ppa:obsproject/obs-studio
+    - ppa:mamarley/nvidia
+    - deb http://download.virtualbox.org/virtualbox/debian trusty contrib
+
+#- name: repos disabled
+#  apt_repository: repo='{{item}}' state=absent update_cache=no
+#  with_items:
+#    - ppa:xorg-edgers/ppa
+
 - name: apt keys
   apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
   with_items:
@@ -31,7 +42,9 @@
 
 - apt_key: url=https://www.hipchat.com/keys/hipchat-linux.key state=present
 
+- apt_key: url=https://www.virtualbox.org/download/oracle_vbox.asc state=present
+
 - name: restrict xorg-edgers
   copy: src=files/xorg-edgers-pin dest=/etc/apt/preferences.d/xorg-edgers-pin
 
-- apt: update_cache=yes
+#- apt: update_cache=yes

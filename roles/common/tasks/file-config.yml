@@ -54,10 +54,10 @@
     - restart cups-browsed
 
 - name: setup ssmtp
-  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^root= line=root=root@cicus01
+  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^root= line=root=root@cicus03
 
 - name: setup mailhub
-  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^mailhub= line=mailhub=cicus01
+  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^mailhub= line=mailhub=cicus03
 
 - name: configure logcheck
   copy: src=files/logcheck.conf dest=/etc/logcheck/
@@ -86,6 +86,9 @@
 - name: ignore avahi
   copy: src=files/avahi.logcheck dest=/etc/logcheck/ignore.d.workstation/avahi
 
+- name: ignore dbus
+  copy: src=files/dbus.logcheck dest=/etc/logcheck/ignore.d.workstation/dbus
+
 - name: fix logcheck ownerships
   file: path=/etc/logcheck/ignore.d.workstation state=directory recurse=yes group=logcheck
 
@@ -94,3 +97,18 @@
 
 - name: generate all locales
   command: /usr/sbin/locale-gen
+
+- name: Set some kernel parameters
+  lineinfile:
+    dest: /etc/sysctl.conf
+    line: "{{ item }}"
+  with_items:
+    - net.ipv6.conf.all.disable_ipv6 = 1
+    - net.ipv6.conf.default.disable_ipv6 = 1
+    - net.ipv6.conf.lo.disable_ipv6 = 1
+
+- name: Set sshd_config
+  copy: src=files/sshd_config dest=/etc/ssh
+
+- name: Set ssh_config
+  copy: src=files/ssh_config dest=/etc/ssh

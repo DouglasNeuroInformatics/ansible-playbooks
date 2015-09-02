@@ -1,10 +1,16 @@
+- name: configure proxy
+  copy: src=files/99squid-deb-proxy dest=/etc/apt/apt.conf.d
+
 - apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
-- name: install proxy client
-  apt: pkg=squid-deb-proxy-client state=latest update_cache=no
+- name: remove proxy client
+  apt: pkg=squid-deb-proxy-client state=absent purge=yes update_cache=no
 
 - name: accept oracle license
   debconf: name='oracle-java7-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+
+- name: accept mscorefonts
+  debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
 
 - name: install common packages
   apt:  pkg={{ item }} state=latest update_cache=no
@@ -24,7 +30,7 @@
     - lvm2
     - exfat-utils
     - graphicsmagick-imagemagick-compat
-    - ubuntu-zfs
+#    - ubuntu-zfs
     - irssi
     - openssh-server
     - ansible
@@ -33,7 +39,6 @@
     - parallel
     - cvs
     - subversion
-    - ruby
     - ruby-dev
     - make
     - gcc
@@ -88,6 +93,7 @@
     - dosfstools
     - dmraid
     - dmsetup
+    - cachefilesd
     - kpartx
     - freeipmi
     - automake
@@ -97,7 +103,8 @@
     - logcheck
     - syslog-summary
     - pam-kwallet
-    - apparmor-profiles
+    - python-argcomplete
+    - python-optcomplete
 #libraries
     - ubuntu-restricted-addons
     - ubuntu-restricted-extras
@@ -142,16 +149,92 @@
     - libqt4-qt3support
     - libqwt5-qt4
     - libvtk5.8-qt4
+    - libgetopt-tabular-perl
+    - libroot-math-matrix-dev
+    - libgetopt-argvfile-perl
+#torch deps
+    - build-essential
+    - gcc
+    - cmake
+    - curl
+    - libreadline-dev
+    - git-core
+    - libqt4-core
+    - libjpeg-dev
+    - libpng-dev
+    - ncurses-dev
+    - libzmq3-dev
+    - gfortran
+    - unzip
+    - gnuplot
+    - gnuplot-x11
+    - libsdl2-dev
+    - libgraphicsmagick1-dev
+    - nodejs
+    - npm
+    - libfftw3-dev
+    - g++
+    - libqt4-gui
+    - libqt4-dev
+    - sox
+    - libsox-dev
+    - libsox-fmt-all
+    - libopenblas-base
+    - libopenblas-dev
+#opencv
+    - libopencv-dev
+    - python-opencv
+    - libopencv-dev 
+    - libgtk2.0-dev
+    - pkg-config
+    - python-dev 
+    - python-numpy 
+    - libdc1394-22 
+    - libdc1394-22-dev
+    - libjpeg-dev
+    - libpng12-dev
+    - libtiff4-dev
+    - libjasper-dev
+    - libavcodec-dev
+    - libavformat-dev
+    - libswscale-dev
+    - libxine-dev
+    - libgstreamer0.10-dev
+    - libgstreamer-plugins-base0.10-dev
+    - libv4l-dev
+    - libtbb-dev
+    - libqt4-dev
+    - libfaac-dev
+    - libmp3lame-dev
+    - libopencore-amrnb-dev
+    - libopencore-amrwb-dev
+    - libtheora-dev
+    - libvorbis-dev
+    - libxvidcore-dev
+    - x264
+    - v4l-utils 
+    - unzip
+    - libssl0.9.8
+    - libvtk5-dev
+    - python-vtk
+    - cpanminus
 
-
-- name: install github and jekyll suppor
-  gem: name={{ item }} state=latest
+- name: remove problematic software
+  apt:  pkg={{ item }} state=absent update_cache=no
   with_items:
-    - jekyll
-    - github-pages
+    - apparmor
+    - apparmor-profiles
+
+#- name: install github and jekyll suppor
+#  gem: name={{ item }} state=latest
+#  with_items:
+#    - jekyll
+#    - github-pages
 
 #- name: install pip software
 #  pip: name={{ item }} state=latest
 #  with_items:
 #    - reprozip
 #    - reprounzip
+
+- cpanm: name="Math::Matrix"

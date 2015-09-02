@@ -12,3 +12,6 @@
 
 - name: disable apport
   lineinfile: dest=/etc/default/apport regexp=^enabled= line=enabled=0
+
+- name: configure cuda
+  copy: src=files/cuda.sh dest=/etc/profile.d

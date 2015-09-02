@@ -1,6 +1,6 @@
 - {include: manual-deb.yml, tags: software}
 - {include: packages.yml, tags: software}
-- {include: file-config.yml, tags: config} 
+- {include: file-config.yml, tags: files} 
 
 - name: enable pam_group.so for lightdm logins
   lineinfile: dest=/etc/pam.d/lightdm insertafter=EOF line="auth optional        pam_group.so"

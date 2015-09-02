@@ -9,3 +9,6 @@
 
 - name: config /etc/bash.bashrc
   copy: src=files/bash.bashrc dest=/etc
+
+- name: configure bash_completion
+  copy: src=files/modules.bash_completion dest=/etc/bash_completion.d/modules

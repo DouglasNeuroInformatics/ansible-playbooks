@@ -19,7 +19,7 @@ YPCHANGEOK=chsh
 
 # NIS master server.  If this is configured on a slave server then ypinit
 # will be run each time NIS is started.
-NISMASTER=cicus01
+NISMASTER=cicus03
 
 # Additional options to be given to ypserv when it is started.
 YPSERVARGS=

@@ -1,29 +1,24 @@
-- get_url: url=http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_6.5-14_amd64.deb dest=/tmp/
+- get_url: url=http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_7.0-28_amd64.deb dest=/tmp/
 
 - get_url: url=https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb dest=/tmp/
 
-- get_url: url=https://github.com/jgm/pandoc/releases/download/1.13.2/pandoc-1.13.2-1-amd64.deb dest=/tmp/
+- get_url: url=https://github.com/jgm/pandoc/releases/download/1.15.0.6/pandoc-1.15.0.6-1-amd64.deb dest=/tmp/
 
 - get_url: url=https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb dest=/tmp/
 
-- get_url: url=http://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest dest=/tmp/mendeley.deb force=yes
+- get_url: url=https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest dest=/tmp/mendeley.deb force=yes
 
 #- name: download lowlatency kernel
-#  command: /usr/bin/wget -e robots=off -r --no-parent -nH --cut-dirs=5 -A '*.deb' -R '*i386*','*generic*' -P /tmp/kernel http://kernel.ubuntu.com/~kernel-ppa/mainline/v{{ kernelver }}-utopic/ creates=/tmp/kernel
+#  command: /usr/bin/wget -e robots=off -r --no-parent -nH --cut-dirs=5 -A '*.deb' -R '*i386*','*generic*' -P /tmp/kernel-{{ kernelver }} http://kernel.ubuntu.com/~kernel-ppa/mainline/v{{ kernelver }}-vivid/ creates=/tmp/kernel-{{ kernelver }}
 
 - name: install debs
   apt: deb={{ item }}
   with_items:
-    - /tmp/cuda-repo-ubuntu1404_6.5-14_amd64.deb
+    - /tmp/cuda-repo-ubuntu1404_7.0-28_amd64.deb
     - /tmp/google-chrome-stable_current_amd64.deb
-    - /tmp/pandoc-1.13.2-1-amd64.deb
+    - /tmp/pandoc-1.15.0.6-1-amd64.deb
     - /tmp/google-talkplugin_current_amd64.deb
     - /tmp/mendeley.deb
 
-#- name: list kernel debs
-#  action: command ls -1 /tmp/kernel
-#  register: kernelfiles
-
 #- name: install lowlatency kernel
-#  apt: deb={{ item }}
-#  with_items: ${kernelfiles.stdout_lines}
+#  shell: dpkg -i /tmp/kernel-{{ kernelver }}/*{{ kernelver }}*.deb

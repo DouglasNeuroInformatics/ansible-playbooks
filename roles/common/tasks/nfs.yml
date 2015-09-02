@@ -4,17 +4,29 @@
 - name: autofs installed
   apt: pkg=autofs state=latest
 
+- name: cachefilesd installed
+  apt: pkg=cachefilesd state=latest
+
+- name: config cachefilesd
+  copy: src=files/cachefilesd dest=/etc/default/
+
 - name: create /opt/quarantine
   file: path=/opt/quarantine state=directory
 
+- name: create /opt/sge/default
+  file: path=/opt/sge/default state=directory
+
 - name: quarantine fstab
-  mount: src="cicss01:/quarantine" name=/opt/quarantine fstype=nfs4  opts="vers=4,rw,nodev,hard,intr,hard,intr,sloppy,async,_netdev"  state=mounted
-  
+  mount: src="cicss03:/data/quarantine" name=/opt/quarantine fstype=nfs4  opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,_netdev,auto" state=mounted
+
 - name: create place for homdirs
   file: path=/home/cic state=directory
 
 - name: mount homedirs
-  mount: src="cicus01:/users" name=/home/cic fstype=nfs opts="rw,nodev,hard,intr,hard,intr,sloppy,async,_netdev" state=mounted
+  mount: src="cicus03:/tank/users" name=/home/cic fstype=nfs4 opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,_netdev,auto" state=mounted
+
+- name: mount sge settings
+  mount: src="cicus03:/opt/sge/default" name=/opt/sge/default fstype=nfs4 opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,_netdev,auto" state=mounted
 
 - name : setup auto.master
   copy: src=files/auto.master dest=/etc/auto.master

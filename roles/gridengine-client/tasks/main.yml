@@ -1,31 +1,32 @@
-- debconf: name=gridengine-common question='shared/gridengineconfig' value=true vtype='boolean'
-- debconf: name=gridengine-common question='shared/gridenginemaster' value='cicus01' vtype='string'
+#- debconf: name=gridengine-common question='shared/gridengineconfig' value=true vtype='boolean'
+#- debconf: name=gridengine-common question='shared/gridenginemaster' value='cicus01' vtype='string'
 
-- name: Install GridEngine packages
-  apt: pkg="{{item}}" state=latest
+- name: Remove GridEngine packages
+  apt: pkg="{{item}}" state=absent purge=yes
   with_items:
     - gridengine-client
     - gridengine-exec
     - gridengine-qmon
+    - gridengine-common
   
-- name: ensure execd daemon is running
-  service: name=gridengine-exec state=restarted
+#- name: ensure execd daemon is running
+#  service: name=gridengine-exec state=restarted
 
 #- name: set complex_values limit
 #  shell: "qconf -rattr exechost complex_values slots={{ ansible_processor_cores }},num_proc={{ ansible_processor_vcpus }},h_vmem={{ ansible_swaptotal_mb + ansible_memtotal_mb }} {{ansible_fqdn}}"
 
-- name: ensure execd daemon is running
-  service: name=gridengine-exec state=running
+#- name: ensure execd daemon is running
+#  service: name=gridengine-exec state=running
 
-- name: add machine as submission host
-  shell: "qconf -as {{ansible_fqdn}}"
-  changed_when: False
-  ignore_errors: yes
+#- name: add machine as submission host
+#  shell: "qconf -as {{ansible_fqdn}}"
+#  changed_when: False
+#  ignore_errors: yes
 
-- name: add machine as administration host
-  shell: "qconf -ah {{ansible_fqdn}}"
-  changed_when: False
-  ignore_errors: yes
+#- name: add machine as administration host
+#  shell: "qconf -ah {{ansible_fqdn}}"
+#  changed_when: False
+#  ignore_errors: yes
 
 #- name: upload configuration file for host
 #  template: src=newhost.qconf.j2 dest="/tmp/{{ansible_fqdn}}.conf"

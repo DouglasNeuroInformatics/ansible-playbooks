@@ -1,0 +1,10 @@
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dbus.*: \[system\] Activating service name='org.freedesktop.PolicyKit1' \(using servicehelper\)
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dbus.*: \[system\] Successfully activated service 'org.freedesktop.PolicyKit1'
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dbus.*: \[system\] Activating service name='org.freedesktop.ConsoleKit' \(using servicehelper\)
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dbus.*: \[system\] Successfully activated service 'org.freedesktop.ConsoleKit'
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dbus.*: \[system\] Activating service name='org.freedesktop.hostname1' \(using servicehelper\)
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dbus.*: \[system\] Activating service name='org.freedesktop.login1' \(using servicehelper\)
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dbus.*: \[system\] Activating service name='org.freedesktop.systemd1' \(using servicehelper\)
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dbus.*: \[system\] Activating service name='org.freedesktop.UDisks2' \(using servicehelper\)
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dbus.*: \[system\] Successfully activated service 'org.freedesktop.hostname1'
+^\w{3} [ :0-9]{11} [._[:alnum:]-]+ dbus.*: \[system\] Successfully activated service 'org.freedesktop.login1'

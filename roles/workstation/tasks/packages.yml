@@ -1,5 +1,11 @@
 - apt: upgrade=dist update_cache=yes
 
+#- name: fix cuda/nvidia
+#  apt: pkg=nvidia-346 state=present update_cache=no
+
+#- name: remove nvidia-modprobe
+#  apt: pkg=nvidia-modprobe state=absent update_cache=no
+
 - name: install workstation packages
   apt:  pkg={{ item }} state=present update_cache=no
   with_items:
@@ -32,6 +38,7 @@
     - gimp-help-en
     - icc-profiles-free
     - cuda
+    - nvidia-346
     - acroread-bin:i386
     - libldap-2.4-2:i386
     - libgnome-speech7:i386
@@ -72,19 +79,26 @@
     - qemu-system
     - numlockx
     - nedit
-    - xserver-xorg-dev-lts-utopic 
-    - mesa-common-dev-lts-utopic 
-    - libxatracker-dev-lts-utopic 
-    - libopenvg1-mesa-dev-lts-utopic 
-    - libgles2-mesa-dev-lts-utopic 
-    - libgles1-mesa-dev-lts-utopic 
-    - libgl1-mesa-dev-lts-utopic 
-    - libgbm-dev-lts-utopic 
-    - libegl1-mesa-dev-lts-utopic
-    - linux-lowlatency-lts-utopic
-    - linux-lts-utopic-tools-common
+#    - xserver-xorg-dev-lts-utopic 
+#    - mesa-common-dev-lts-utopic 
+#    - libxatracker-dev-lts-utopic 
+#    - libopenvg1-mesa-dev-lts-utopic 
+#    - libgles2-mesa-dev-lts-utopic 
+#    - libgles1-mesa-dev-lts-utopic 
+#    - libgl1-mesa-dev-lts-utopic 
+#    - libgbm-dev-lts-utopic 
+#    - libegl1-mesa-dev-lts-utopic
+#    - linux-lowlatency-lts-utopic
+#    - linux-lts-utopic-tools-common
     - mesa-utils
     - freeglut3
     - freeglut3-dev
     - libgnome2-common
     - gnumeric
+    - aeskulap
+    - meshlab
+    - ffmpeg
+    - obs-studio
+    - wine1.7
+    - wine-gecko2.36
+    - libp11-kit-gnome-keyring:i386

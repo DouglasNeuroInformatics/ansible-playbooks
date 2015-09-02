@@ -1,8 +1,6 @@
 - hosts: workstations
   sudo: yes
   tasks:
-   - name: install proxy client
-     apt: pkg=squid-deb-proxy-client state=latest
    - name: update apt-get cache
      apt: update_cache=yes
    - name: dist-upgrade

@@ -1,6 +1,6 @@
 #{{ ansible_managed }}
-127.0.0.1 localhost
-127.0.1.1 {{ ansible_hostname}}.douglas.rtss.qc.ca {{ ansible_hostname }}
+127.0.0.1 localhost localhost.localdomain
+#127.0.1.1 {{ ansible_hostname }}.douglas.rtss.qc.ca {{ ansible_hostname }}
 
 # The following lines are desirable for IPv6 capable hosts
 ::1     localhost ip6-localhost ip6-loopback
@@ -10,16 +10,24 @@ ff02::2 ip6-allrouters
 #Storage Servers
 172.16.67.217 cicss01.douglas.rtss.qc.ca cicss01
 172.16.67.218 cicss02.douglas.rtss.qc.ca cicss02
+172.100.100.202 cicss03.douglas.rtss.qc.ca cicss03
+172.100.100.203 cicss04.douglas.rtss.qc.ca cicss04
 #Storage Servers IPMI
 172.16.69.52 ipmi-ss01 ipmi-cicss01
 172.16.69.53 ipmi-ss02 ipmi-cicss02
+172.100.120.202 cicss03-mgmt.douglas.rtss.qc.ca ipmi-ss03 cicss03-mgmt
+172.100.120.203 cicss04-mgmt.douglas.rtss.qc.ca ipmi-ss04 cicss04-mgmt
 
 #Login/User Servers
 172.16.67.215 cicus01.douglas.rtss.qc.ca cicus01
 172.16.67.216 cicus02.douglas.rtss.qc.ca cicus02
+172.100.100.200 cicus03.douglas.rtss.qc.ca cicus03
+172.100.100.201 cicus04.douglas.rtss.qc.ca cicus04
 #Login/User Servers IPMI
 172.16.69.50 ipmi-us01 ipmi-cicus01
 172.16.69.51 ipmi-us02 ipmi-cicus02
+172.100.120.200 cicus03-mgmt.douglasrtss.qc.ca cicus03-mgmt ipmi-us03
+172.100.120.201 cicus04-mgmt.douglasrtss.qc.ca cicus04-mgmt ipmi-us04
 
 #Backup Servers
 172.16.67.219 cicbs.douglas.rtss.qc.ca cicbs01
@@ -62,6 +70,8 @@ ff02::2 ip6-allrouters
 172.16.133.228  cicws28.douglas.rtss.qc.ca cicws28 ws28 mc06
 172.16.133.229  cicws29.douglas.rtss.qc.ca cicws29 ws29 mc07
 172.16.133.230  cicws30.douglas.rtss.qc.ca cicws30 ws30 mc08
+172.16.133.231  cicws31.douglas.rtss.qc.ca cicws31 ws31 mc09
+172.16.133.232  cicws32.douglas.rtss.qc.ca cicws32 ws32 mc10
 
 #Old Workstations
 172.16.133.201 cicws01.douglas.rtss.qc.ca cicws01 ws01

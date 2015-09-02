@@ -1,0 +1,4 @@
+ Acquire { 
+ Retries "0"; 
+ HTTP { Proxy "http://cicus03:8000"; };
+ };

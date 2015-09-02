@@ -1,8 +1,12 @@
-- name: install gridengine packages
+- name: install lesstif
+  apt: deb=/data/scratch/soge/lesstif2_0.95.2-1_amd64.deb
+
+- name: install sge-common
+  apt: deb=/data/scratch/soge/sge-common_8.1.8_all_fixed.deb
+
+- name: install SOGE
   apt: deb={{ item }}
   with_items:
-    - /data/scratch/soge/lesstif2_0.95.2-1_amd64.deb
-    - /data/scratch/soge/sge-common_8.1.8_all_fixed.deb
     - /data/scratch/soge/sge_8.1.8_amd64.deb
     - /data/scratch/soge/sge-doc_8.1.8_all.deb
 

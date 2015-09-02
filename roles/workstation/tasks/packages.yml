@@ -1,13 +1,7 @@
-- apt: upgrade=dist update_cache=yes
-
-#- name: fix cuda/nvidia
-#  apt: pkg=nvidia-346 state=present update_cache=no
-
-#- name: remove nvidia-modprobe
-#  apt: pkg=nvidia-modprobe state=absent update_cache=no
+- apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
 - name: install workstation packages
-  apt:  pkg={{ item }} state=present update_cache=no
+  apt:  pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
   with_items:
     - gle-graphics
     - classicmenu-indicator
@@ -69,7 +63,6 @@
     - wfrench
     - language-pack-fr
     - gnuplot-qt
-    - xauth
     - xterm
     - qemu-kvm
     - libvirt-bin
@@ -79,17 +72,6 @@
     - qemu-system
     - numlockx
     - nedit
-#    - xserver-xorg-dev-lts-utopic 
-#    - mesa-common-dev-lts-utopic 
-#    - libxatracker-dev-lts-utopic 
-#    - libopenvg1-mesa-dev-lts-utopic 
-#    - libgles2-mesa-dev-lts-utopic 
-#    - libgles1-mesa-dev-lts-utopic 
-#    - libgl1-mesa-dev-lts-utopic 
-#    - libgbm-dev-lts-utopic 
-#    - libegl1-mesa-dev-lts-utopic
-#    - linux-lowlatency-lts-utopic
-#    - linux-lts-utopic-tools-common
     - mesa-utils
     - freeglut3
     - freeglut3-dev

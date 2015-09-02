@@ -1,5 +1,5 @@
 - name: repos enabled
-  apt_repository: repo='{{item}}' state=present update_cache=no
+  apt_repository: repo='{{item}}' state=present update_cache=yes cache_valid_time=3600
   with_items:
     - deb http://downloads.hipchat.com/linux/apt stable main
     - ppa:inkscape.dev/stable

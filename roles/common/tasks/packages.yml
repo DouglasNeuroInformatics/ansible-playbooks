@@ -3,9 +3,6 @@
 
 - apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
-- name: remove proxy client
-  apt: pkg=squid-deb-proxy-client state=absent purge=yes update_cache=no
-
 - name: accept oracle license
   debconf: name='oracle-java7-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
 
@@ -30,7 +27,6 @@
     - lvm2
     - exfat-utils
     - graphicsmagick-imagemagick-compat
-#    - ubuntu-zfs
     - irssi
     - openssh-server
     - ansible
@@ -224,17 +220,5 @@
   with_items:
     - apparmor
     - apparmor-profiles
-
-#- name: install github and jekyll suppor
-#  gem: name={{ item }} state=latest
-#  with_items:
-#    - jekyll
-#    - github-pages
-
-#- name: install pip software
-#  pip: name={{ item }} state=latest
-#  with_items:
-#    - reprozip
-#    - reprounzip
 
 - cpanm: name="Math::Matrix"

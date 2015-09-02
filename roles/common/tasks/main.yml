@@ -1,13 +1,6 @@
 - name: enable ssh keys
   authorized_key: user=localadmin key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
-#- apt: update_cache=yes
-
-#- name: remove squid-deb-proxy-client
-#  apt: pkg=squid-deb-proxy-client state=absent update_cache=no purge=yes
-
-#- apt: upgrade=dist update_cache=yes cache_valid_time=3600
-
 - {include: hosts.yml, tags: hosts}
 - {include: nis.yml, tags: nis}
 - {include: nfs.yml, tags: nfs}

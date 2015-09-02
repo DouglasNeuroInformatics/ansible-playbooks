@@ -68,6 +68,7 @@ if [ -x /usr/lib/command-not-found -o -x /usr/share/command-not-found/command-no
 fi
 . /etc/profile.d/modules.sh
 . /etc/profile.d/zzquarantine.sh
+. /etc/profile.d/zzgridengine.sh
 
 if [ -f /etc/profile.d/cuda.sh ]; then
     . /etc/profile.d/cuda.sh

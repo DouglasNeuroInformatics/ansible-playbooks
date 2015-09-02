@@ -1,0 +1,2 @@
+- name: Install SGE execd
+  command: /opt/sge/inst_sge -x -auto util/install_modules/inst_template.conf creates=/etc/init.d/sgeexecd.p6444

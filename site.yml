@@ -7,3 +7,4 @@
     - common
     - workstation
     - gridengine-client
+    - gridengine-execd

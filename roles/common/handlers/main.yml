@@ -21,3 +21,6 @@
 
 - name: restart ntpd
   service: name=openntpd state=restarted
+
+- name: restart ssh
+  service: name=ssh state=restarted

@@ -109,6 +109,10 @@
 
 - name: Set sshd_config
   copy: src=files/sshd_config dest=/etc/ssh
+  notify:
+    - restart ssh
 
 - name: Set ssh_config
   copy: src=files/ssh_config dest=/etc/ssh
+  notify:
+    - restart ssh

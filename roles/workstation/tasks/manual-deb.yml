@@ -8,9 +8,6 @@
 
 - get_url: url=https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest dest=/tmp/mendeley.deb force=yes
 
-#- name: download lowlatency kernel
-#  command: /usr/bin/wget -e robots=off -r --no-parent -nH --cut-dirs=5 -A '*.deb' -R '*i386*','*generic*' -P /tmp/kernel-{{ kernelver }} http://kernel.ubuntu.com/~kernel-ppa/mainline/v{{ kernelver }}-vivid/ creates=/tmp/kernel-{{ kernelver }}
-
 - name: install debs
   apt: deb={{ item }}
   with_items:
@@ -20,5 +17,3 @@
     - /tmp/google-talkplugin_current_amd64.deb
     - /tmp/mendeley.deb
 
-#- name: install lowlatency kernel
-#  shell: dpkg -i /tmp/kernel-{{ kernelver }}/*{{ kernelver }}*.deb

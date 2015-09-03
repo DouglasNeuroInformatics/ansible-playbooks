@@ -1,19 +1,19 @@
-- get_url: url=http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_7.0-28_amd64.deb dest=/tmp/
+- get_url: url=http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_7.0-28_amd64.deb dest=/tmp/cuda-repo-ubuntu1404_7.0-28_amd64.deb
 
-- get_url: url=https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb dest=/tmp/
+#- get_url: url=https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb dest=/tmp/
 
-- get_url: url=https://github.com/jgm/pandoc/releases/download/1.15.0.6/pandoc-1.15.0.6-1-amd64.deb dest=/tmp/
+- get_url: url=https://github.com/jgm/pandoc/releases/download/1.15.0.6/pandoc-1.15.0.6-1-amd64.deb dest=/tmp/pandoc-1.15.0.6-1-amd64.deb
 
-- get_url: url=https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb dest=/tmp/
+#- get_url: url=https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb dest=/tmp/
 
-- get_url: url=https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest dest=/tmp/mendeley.deb force=yes
+#- get_url: url=https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest dest=/tmp/mendeley.deb force=yes
 
 - name: install debs
   apt: deb={{ item }}
   with_items:
     - /tmp/cuda-repo-ubuntu1404_7.0-28_amd64.deb
-    - /tmp/google-chrome-stable_current_amd64.deb
+    #- /tmp/google-chrome-stable_current_amd64.deb
     - /tmp/pandoc-1.15.0.6-1-amd64.deb
-    - /tmp/google-talkplugin_current_amd64.deb
-    - /tmp/mendeley.deb
+    #- /tmp/google-talkplugin_current_amd64.deb
+    #- /tmp/mendeley.deb
 

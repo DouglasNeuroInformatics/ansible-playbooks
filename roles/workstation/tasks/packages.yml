@@ -62,7 +62,6 @@
     - thunderbird-locale-fr
     - wfrench
     - language-pack-fr
-    - gnuplot-qt
     - xterm
     - qemu-kvm
     - libvirt-bin
@@ -84,3 +83,6 @@
     - wine1.7
     - wine-gecko2.36
     - libp11-kit-gnome-keyring:i386
+    - google-talkplugin
+    - google-chrome-stable
+    - mendeleydesktop

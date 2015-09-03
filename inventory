@@ -10,7 +10,7 @@ cicws18 ansible_ssh_user=localadmin
 cicws19 ansible_ssh_user=localadmin
 
 [computenodes]
-ciccs[01:10] ansible_ssh_user=devgab
+ciccs[01:10] ansible_ssh_user=localadmin
 
 [fileservers]
 cicss[01:02] ansible_ssh_user=devgab

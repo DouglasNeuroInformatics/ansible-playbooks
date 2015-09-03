@@ -6,6 +6,9 @@
 - name: accept oracle license
   debconf: name='oracle-java7-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
 
+- name: accept oracle license
+  debconf: name='oracle-java9-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+
 - name: accept mscorefonts
   debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
 
@@ -47,6 +50,8 @@
     - libnss-myhostname
     - nmap
     - oracle-java7-installer
+    - oracle-java9-installer
+    - oracle-java9-unlimited-jce-policy
     - lrzip
     - htop
     - iotop
@@ -154,7 +159,7 @@
     - cmake
     - curl
     - libreadline-dev
-    - git-core
+    - git
     - libqt4-core
     - libjpeg-dev
     - libpng-dev
@@ -162,8 +167,7 @@
     - libzmq3-dev
     - gfortran
     - unzip
-    - gnuplot
-    - gnuplot-x11
+    - gnuplot-qt
     - libsdl2-dev
     - libgraphicsmagick1-dev
     - nodejs

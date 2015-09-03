@@ -27,6 +27,12 @@
     - deb http://download.virtualbox.org/virtualbox/debian trusty contrib
     - ppa:graphics-drivers/ppa
 
+#- name: google repo
+#  apt_repository: repo="deb http://dl.google.com/linux/chrome/deb/ stable main" state=present filename=google-chrome.list
+
+#- name: mendeley repo
+#  apt_repository: repo="deb http://desktop-download.mendeley.com/download/apt stable main" state=present filename=mendeleydesktop.list
+
 - name: apt keys
   apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
   with_items:
@@ -38,3 +44,5 @@
 - apt_key: url=https://www.hipchat.com/keys/hipchat-linux.key state=present
 
 - apt_key: url=https://www.virtualbox.org/download/oracle_vbox.asc state=present
+
+- apt: update_cache=yes

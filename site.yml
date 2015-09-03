@@ -8,3 +8,10 @@
     - workstation
     - gridengine-client
     - gridengine-execd
+
+- hosts: computenodes
+  sudo: yes
+  roles:
+    - common
+    - gridengine-client
+    - gridengine-execd

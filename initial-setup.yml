@@ -1,4 +1,4 @@
-- hosts: workstations
+- hosts: computenodes
   sudo: yes
   tasks:
    - name: enable ssh keys

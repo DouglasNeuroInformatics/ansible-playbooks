@@ -29,7 +29,7 @@
     - unattended-upgrades
     - lvm2
     - exfat-utils
-    - graphicsmagick-imagemagick-compat
+    - imagemagick
     - irssi
     - openssh-server
     - ansible
@@ -67,7 +67,7 @@
     - mpack
     - arj
     - cabextract
-    - gdebi
+    - gdebi-core
     - dkms
     - python-numpy
     - python-scipy

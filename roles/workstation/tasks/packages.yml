@@ -23,7 +23,6 @@
     - vlc-plugin-notify
     - imagej
     - gparted
-    - mricron
     - freshplayerplugin
     - pidgin
     - atom
@@ -31,8 +30,8 @@
     - xfig
     - gimp-help-en
     - icc-profiles-free
-    - cuda
-    - nvidia-346
+#    - cuda
+#    - nvidia-355
     - acroread-bin:i386
     - libldap-2.4-2:i386
     - libgnome-speech7:i386
@@ -86,3 +85,6 @@
     - google-talkplugin
     - google-chrome-stable
     - mendeleydesktop
+    - nautilus-open-terminal
+    - gv
+    - libreoffice-java-common 

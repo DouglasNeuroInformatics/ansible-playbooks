@@ -49,9 +49,9 @@
     - intel-microcode
     - libnss-myhostname
     - nmap
-    - oracle-java7-installer
     - oracle-java9-installer
     - oracle-java9-unlimited-jce-policy
+    - oracle-java9-set-default
     - lrzip
     - htop
     - iotop
@@ -223,6 +223,9 @@
     - libdb5.1
     - libjemalloc1
     - tcsh
+    - python-nipy
+    - python-dipy
+    - ifenslave
 
 - name: remove problematic software
   apt:  pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600

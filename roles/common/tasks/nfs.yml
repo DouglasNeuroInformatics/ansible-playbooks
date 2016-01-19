@@ -17,16 +17,16 @@
   file: path=/opt/sge/default state=directory
 
 - name: quarantine fstab
-  mount: src="cicss03:/data/quarantine" name=/opt/quarantine fstype=nfs4  opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,_netdev,auto" state=mounted
+  mount: src="cicss03:/data/quarantine" name=/opt/quarantine fstype=nfs4  opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,noatime,nodiratime,noauto" state=mounted
 
 - name: create place for homdirs
   file: path=/home/cic state=directory
 
 - name: mount homedirs
-  mount: src="cicus03:/tank/users" name=/home/cic fstype=nfs4 opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,_netdev,auto" state=mounted
+  mount: src="cicus03:/tank/users" name=/home/cic fstype=nfs4 opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,noatime,nodiratime,noauto" state=mounted
 
 - name: mount sge settings
-  mount: src="cicus03:/opt/sge/default" name=/opt/sge/default fstype=nfs4 opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,_netdev,auto" state=mounted
+  mount: src="cicus03:/opt/sge/default" name=/opt/sge/default fstype=nfs4 opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,noauto" state=mounted
 
 - name : setup auto.master
   copy: src=files/auto.master dest=/etc/auto.master
@@ -48,3 +48,6 @@
 
 - name: configure nfs-common
   copy: src=files/nfs-common dest=/etc/default/nfs-common
+
+- name: fix nfs on boot
+  copy: src=files/rc.local dest=/etc/rc.local

@@ -10,24 +10,26 @@ ff02::2 ip6-allrouters
 #Storage Servers
 172.16.67.217 cicss01.douglas.rtss.qc.ca cicss01
 172.16.67.218 cicss02.douglas.rtss.qc.ca cicss02
-172.100.100.202 cicss03.douglas.rtss.qc.ca cicss03
-172.100.100.203 cicss04.douglas.rtss.qc.ca cicss04
+172.16.67.232 cicss03.douglas.rtss.qc.ca cicss03
+172.16.67.233 cicss04.douglas.rtss.qc.ca cicss04
+
 #Storage Servers IPMI
 172.16.69.52 ipmi-ss01 ipmi-cicss01
 172.16.69.53 ipmi-ss02 ipmi-cicss02
-172.100.120.202 cicss03-mgmt.douglas.rtss.qc.ca ipmi-ss03 cicss03-mgmt
-172.100.120.203 cicss04-mgmt.douglas.rtss.qc.ca ipmi-ss04 cicss04-mgmt
+172.16.69.67 cicss03-mgmt.douglas.rtss.qc.ca ipmi-ss03 cicss03-mgmt
+172.16.69.68 cicss04-mgmt.douglas.rtss.qc.ca ipmi-ss04 cicss04-mgmt
 
 #Login/User Servers
 172.16.67.215 cicus01.douglas.rtss.qc.ca cicus01
 172.16.67.216 cicus02.douglas.rtss.qc.ca cicus02
-172.100.100.200 cicus03.douglas.rtss.qc.ca cicus03
-172.100.100.201 cicus04.douglas.rtss.qc.ca cicus04
+172.16.67.230 cicus03.douglas.rtss.qc.ca cicus03
+172.16.67.231 cicus04.douglas.rtss.qc.ca cicus04
+
 #Login/User Servers IPMI
 172.16.69.50 ipmi-us01 ipmi-cicus01
 172.16.69.51 ipmi-us02 ipmi-cicus02
-172.100.120.200 cicus03-mgmt.douglasrtss.qc.ca cicus03-mgmt ipmi-us03
-172.100.120.201 cicus04-mgmt.douglasrtss.qc.ca cicus04-mgmt ipmi-us04
+172.16.69.65 cicus03-mgmt.douglasrtss.qc.ca cicus03-mgmt ipmi-us03
+172.16.69.66 cicus04-mgmt.douglasrtss.qc.ca cicus04-mgmt ipmi-us04
 
 #Backup Servers
 172.16.67.219 cicbs.douglas.rtss.qc.ca cicbs01
@@ -72,6 +74,8 @@ ff02::2 ip6-allrouters
 172.16.133.230  cicws30.douglas.rtss.qc.ca cicws30 ws30 mc08
 172.16.133.231  cicws31.douglas.rtss.qc.ca cicws31 ws31 mc09
 172.16.133.232  cicws32.douglas.rtss.qc.ca cicws32 ws32 mc10
+172.16.133.233  cicws33.douglas.rtss.qc.ca cicws33 ws33 mc11
+172.16.133.234  cicws34.douglas.rtss.qc.ca cicws34 ws33 mc12 cichm01
 
 #Old Workstations
 172.16.133.201 cicws01.douglas.rtss.qc.ca cicws01 ws01
@@ -109,3 +113,6 @@ ff02::2 ip6-allrouters
 172.16.133.59  cic2104 # CIC printer in room 2104
 
 172.16.67.99 ch06doug00006.douglas.rtss.qc.ca # mailhub
+
+#High Mem
+172.16.133.102 cichm01 cichm01.douglas.rtss.qc.ca

@@ -1,13 +1,23 @@
-- hosts: workstations
+- hosts: 
+  - workstations
+  - computenodes
   sudo: yes
   tasks:
    - name: update apt-get cache
      apt: update_cache=yes
+   - name: cleanup apt
+     command: apt-get -y --purge autoremove
    - name: dist-upgrade
      apt: upgrade=dist
+   - name: cleanup apt
+     command: apt-get -y --purge autoremove
    - name: update drivedb
      command: update-smart-drivedb
    - name: update-pciids
      command: update-pciids
    - name: update-usbids
      command: update-usbids
+   - name: update-initram-fs
+     command: update-initramfs -k all -c
+   - name: update-grub
+     command: update-grub

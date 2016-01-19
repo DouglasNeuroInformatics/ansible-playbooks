@@ -1,11 +1,11 @@
-- get_url: url=https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware_1.147_all.deb dest=/tmp/linux-firmware_1.147_all.deb
+- get_url: url=https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware_1.148_all.deb dest=/tmp/linux-firmware_1.148_all.deb
 - get_url: url=https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware-nonfree_1.16_all.deb dest=/tmp/linux-firmware-nonfree_1.16_all.deb
 - get_url: url=http://mirrors.kernel.org/ubuntu/pool/main/libm/libmng/libmng1_1.0.10-3_amd64.deb dest=/tmp/libmng1_1.0.10-3_amd64.deb
 
 - name: install firmware
   apt: deb={{ item }}
   with_items:
-    - /tmp/linux-firmware_1.147_all.deb
+    - /tmp/linux-firmware_1.148_all.deb
     - /tmp/linux-firmware-nonfree_1.16_all.deb
 
 - name: install old libmng

@@ -1,14 +1,25 @@
 - name: install lesstif
-  apt: deb=/data/scratch/soge/lesstif2_0.95.2-1_amd64.deb
+  apt: deb=/opt/sge/default/debs/lesstif2_0.95.2-1_amd64.deb
 
 - name: install sge-common
-  apt: deb=/data/scratch/soge/sge-common_8.1.8_all_fixed.deb
+  apt: deb=/opt/sge/default/debs/sge-common_8.1.8_all_fixed.deb
 
 - name: install SOGE
   apt: deb={{ item }}
   with_items:
-    - /data/scratch/soge/sge_8.1.8_amd64.deb
-    - /data/scratch/soge/sge-doc_8.1.8_all.deb
+    - /opt/sge/default/debs/sge_8.1.8_amd64.deb
+    - /opt/sge/default/debs/sge-doc_8.1.8_all.deb
 
 - name: enable gridengine commands
   lineinfile: dest=/etc/profile.d/zzgridengine.sh line="source /opt/sge/default/common/settings.sh" state=present create=yes
+
+- name: delete soge user
+  user: name=sgeadmin state=absent remove=no
+  ignore_errors: yes
+
+- name: delete soge group
+  group: name=sgeadmin state=absent
+  ignore_errors: yes
+
+- name: fix ownerships
+  file: path=/opt/sge state=directory recurse=yes owner=10000 group=10000

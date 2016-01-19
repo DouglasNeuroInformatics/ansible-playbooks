@@ -1,0 +1,5 @@
+- name: download geneic kernel
+  command: /usr/bin/wget -e robots=off -c -r --no-parent -nH --cut-dirs=5 -A '*amd64.deb','*all.deb' -R '*lowlatency*' -P /tmp/kernel-{{ kernelver }} http://kernel.ubuntu.com/~kernel-ppa/mainline/v{{ kernelver }}-wily/ creates=/tmp/kernel-{{ kernelver }}
+
+- name: install generic kernel
+  shell: dpkg -i /tmp/kernel-{{ kernelver }}/*{{ kernelver }}*.deb

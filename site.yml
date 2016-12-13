@@ -1,8 +1,8 @@
 ---
 - hosts: workstations
   vars:
-    kernelver: 4.1.12
-  sudo: yes
+    kernelver: 4.1.27
+  become: yes
   roles:
     - common
     - workstation
@@ -11,8 +11,8 @@
 
 - hosts: computenodes
   vars:
-    kernelver: 4.1.12
-  sudo: yes
+    kernelver: 4.1.19
+  become: yes
   roles:
     - common
     - execnode

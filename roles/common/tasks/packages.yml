@@ -4,9 +4,6 @@
 - apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
 - name: accept oracle license
-  debconf: name='oracle-java7-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
-
-- name: accept oracle license
   debconf: name='oracle-java9-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
 
 - name: accept mscorefonts
@@ -97,12 +94,13 @@
     - cachefilesd
     - kpartx
     - freeipmi
+    - ipmitool
     - automake
     - autoconf
     - libtool
     - debconf-utils
-    - logcheck
-    - syslog-summary
+#    - logcheck
+#    - syslog-summary
     - pam-kwallet
     - python-argcomplete
     - python-optcomplete
@@ -149,14 +147,12 @@
     - libnifti2
     - libqt4-qt3support
     - libqwt5-qt4
-    - libvtk5.8-qt4
     - libgetopt-tabular-perl
     - libroot-math-matrix-dev
     - libgetopt-argvfile-perl
 #torch deps
     - build-essential
     - gcc
-    - cmake
     - curl
     - libreadline-dev
     - git
@@ -215,8 +211,8 @@
     - v4l-utils 
     - unzip
     - libssl0.9.8
-    - libvtk5-dev
-    - python-vtk
+#    - libvtk6-dev
+#    - python-vtk6
     - cpanminus
 #soge deps
     - db5.1-util
@@ -226,6 +222,33 @@
     - python-nipy
     - python-dipy
     - ifenslave
+#octave deps
+    - libblas-dev
+    - liblapack-dev 
+    - libpcre3-dev
+    - libarpack2-dev
+    - libcurl4-gnutls-dev
+    - libfftw3-dev
+    - transfig
+    - libfltk1.3-dev
+    - libfontconfig1-dev
+    - libfreetype6-dev
+    - libgl2ps-dev
+    - libglpk-dev
+    - libreadline-dev
+    - libgraphicsmagick++-dev
+    - libhdf5-serial-dev
+    - libsndfile1-dev
+    - libqhull-dev
+    - libqrupdate-dev
+    - libqscintilla2-dev 
+    - libqtwebkit4 
+    - libsuitesparse-dev
+    - libxft-dev
+    - zlib1g-dev
+    - libosmesa6-dev
+    - watchdog
+    - smartmontools
 
 - name: remove problematic software
   apt:  pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600

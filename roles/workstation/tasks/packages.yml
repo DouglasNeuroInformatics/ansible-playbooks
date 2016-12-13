@@ -8,6 +8,7 @@
     - unity-tweak-tool
     - x2goserver
     - x2goclient
+    - hipchat4
     - hipchat
     - skype
     - speedcrunch
@@ -30,8 +31,7 @@
     - xfig
     - gimp-help-en
     - icc-profiles-free
-#    - cuda
-#    - nvidia-355
+    - nvidia-367
     - acroread-bin:i386
     - libldap-2.4-2:i386
     - libgnome-speech7:i386
@@ -62,12 +62,6 @@
     - wfrench
     - language-pack-fr
     - xterm
-    - qemu-kvm
-    - libvirt-bin
-    - virtinst
-    - virt-viewer
-    - virt-manager
-    - qemu-system
     - numlockx
     - nedit
     - mesa-utils
@@ -88,3 +82,6 @@
     - nautilus-open-terminal
     - gv
     - libreoffice-java-common 
+    - python3-pyqt5
+    - lxde-core
+    - feh

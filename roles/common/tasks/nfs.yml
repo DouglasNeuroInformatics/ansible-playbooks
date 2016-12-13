@@ -10,28 +10,19 @@
 - name: config cachefilesd
   copy: src=files/cachefilesd dest=/etc/default/
 
-- name: create /opt/quarantine
-  file: path=/opt/quarantine state=directory
-
-- name: create /opt/sge/default
-  file: path=/opt/sge/default state=directory
-
-- name: quarantine fstab
-  mount: src="cicss03:/data/quarantine" name=/opt/quarantine fstype=nfs4  opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,noatime,nodiratime,noauto" state=mounted
-
 - name: create place for homdirs
   file: path=/home/cic state=directory
 
 - name: mount homedirs
   mount: src="cicus03:/tank/users" name=/home/cic fstype=nfs4 opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,noatime,nodiratime,noauto" state=mounted
 
-- name: mount sge settings
-  mount: src="cicus03:/opt/sge/default" name=/opt/sge/default fstype=nfs4 opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,noauto" state=mounted
+- name: quarantine fstab
+  mount: src="cicss03:/data/quarantine" name=/opt/quarantine fstype=nfs4  opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,noatime,nodiratime,noauto" state=mounted
 
 - name : setup auto.master
   copy: src=files/auto.master dest=/etc/auto.master
   notify: restart autofs
-  
+
 - name: create /data
   file: path=/data state=directory
 
@@ -51,3 +42,9 @@
 
 - name: fix nfs on boot
   copy: src=files/rc.local dest=/etc/rc.local
+
+- name: fix nfs on boot again
+  copy: src=files/mount_netdev.sh dest=/etc/init.d/mount_netdev.sh mode="u=rwx,g=rx,o=rx"
+
+- name: enable service nfs fix service
+  command: /bin/ln -s /etc/init.d/mount_netdev.sh /etc/rcS.d/S99mount_netdev.sh creates=/etc/rcS.d/S99mount_netdev.sh

@@ -13,11 +13,14 @@
 - name: fix powerkey
   lineinfile: dest=/etc/systemd/logind.conf line=HandlePowerKey=ignore
 
+- name: disable suspend
+  copy: src=files/com.ubuntu.disable-suspend.pkla dest=/etc/polkit-1/localauthority/50-local.d/com.ubuntu.disable-suspend.pkla
+
 - name: disable apport
   lineinfile: dest=/etc/default/apport regexp=^enabled= line=enabled=0
 
-- name: configure cuda
-  copy: src=files/cuda.sh dest=/etc/profile.d
+#- name: configure cuda
+#  copy: src=files/cuda.sh dest=/etc/profile.d
   
 - name: config apcupsd.conf
   copy: src=files/apcupsd.conf dest=/etc/apcupsd/apcupsd.conf
@@ -39,11 +42,17 @@
   notify:
     - restart cups
 
-#- name: install cups-browsed.conf
-#  copy: src=files/cups-browsed.conf dest=/etc/cups
-#  notify:
-#    - restart cups
-#    - restart cups-browsed
+- name: install cups-browsed.conf
+  copy: src=files/cups-browsed.conf dest=/etc/cups
+  notify:
+    - restart cups
+    - restart cups-browsed
+
+- name: install cupsd.conf
+  copy: src=files/cupsd.conf dest=/etc/cups
+  notify:
+    - restart cups
+    - restart cups-browsed
 
 - name: disable cups-browsed
   service: name=cups-browsed enabled=no state=stopped

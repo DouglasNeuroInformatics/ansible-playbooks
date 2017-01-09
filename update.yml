@@ -1,14 +1,20 @@
 - hosts: 
   - workstations
   - computenodes
-  sudo: yes
+  become: yes
   tasks:
    - name: update apt-get cache
-     apt: update_cache=yes
+     apt: update_cache=yes cache_valid_time=3600
    - name: cleanup apt
      command: apt-get -y --purge autoremove
+   - name: cleanup kernels
+     command: apt-get -y purge linux.*3.19.*
+     ignore_errors: yes
+   - name: cleanup kernels 2
+     command: apt-get -y purge linux.*4.1.*
+     ignore_errors: yes
    - name: dist-upgrade
-     apt: upgrade=dist
+     apt: upgrade=dist  cache_valid_time=3600
    - name: cleanup apt
      command: apt-get -y --purge autoremove
    - name: update drivedb
@@ -21,3 +27,5 @@
      command: update-initramfs -k all -c
    - name: update-grub
      command: update-grub
+   - name: purge configs
+     shell: "dpkg -l | grep '^rc' | awk '{print $2}' | xargs dpkg --purge"

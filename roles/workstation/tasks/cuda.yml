@@ -1,0 +1,12 @@
+- name: install cuda packages
+  apt:  pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+  - cuda-toolkit-7-5
+  - cuda-nvrtc-7-5
+  - cuda-cusolver-7-5
+  - cuda-cublas-7-5
+  - cuda-cufft-7-5
+  - cuda-curand-7-5
+  - cuda-cusparse-7-5
+  - cuda-npp-7-5
+  - cuda-cudart-7-5

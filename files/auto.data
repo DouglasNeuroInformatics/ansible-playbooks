@@ -1,2 +1,2 @@
-laborajah2 -fstype=nfs,rw,nodev,intr,hard,sloppy,fsc,async laborajah2:/exports/localdata
-* -fstype=nfs4,v4.1,rw,nodev,hard,intr,sloppy,async,fsc cicss03:/data/&
+laborajah2 -fstype=nfs,rw,nodev,intr,hard,sloppy,async,noatime,nodiratime laborajah2:/exports/localdata
+* -fstype=nfs4,v4.1,rw,nodev,hard,intr,sloppy,async,noatime,nodiratime cicss03:/data/&

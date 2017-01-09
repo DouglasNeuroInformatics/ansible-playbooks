@@ -1,36 +1,35 @@
 - name: repos enabled
-  apt_repository: repo='{{item}}' state=present
+  apt_repository: repo='{{item}}' state=present update_cache=no
   with_items:
-    - deb http://downloads.hipchat.com/linux/apt stable main
+    - deb https://atlassian.artifactoryonline.com/atlassian/hipchat-apt-client trusty main
     - ppa:inkscape.dev/stable
     - ppa:ansible/ansible
     - ppa:libreoffice/ppa
-    - ppa:nilarimogard/webupd8 
+    - ppa:nilarimogard/webupd8
     - ppa:webupd8team/java
     - ppa:x2go/stable
     - ppa:otto-kesselgulasch/gimp
     - ppa:blahota/texstudio
     - ppa:videolan/stable-daily
     - ppa:webupd8team/atom
-    - ppa:ubuntu-x-swat/x-updates
-    - ppa:zfs-native/stable
-    - ppa:tsvetko.tsvetkov/cinnamon
     - deb http://archive.canonical.com/ precise partner
     - deb http://archive.canonical.com/ubuntu/ trusty partner
-    - ppa:w-rouesnel/openssh-hpn
+    - ppa:yoda-jazz-kc/hpn-ssh
     - ppa:freyja-dev/unity-tweak-tool-daily
-    - ppa:brightbox/ruby-ng
     - ppa:ubuntu-wine/ppa
     - ppa:kirillshkrogalev/ffmpeg-next
     - ppa:obsproject/obs-studio
     - deb http://download.virtualbox.org/virtualbox/debian trusty contrib
     - ppa:graphics-drivers/ppa
+    - ppa:george-edison55/cmake-3.x
+    - ppa:git-core/ppa
+    - ppa:jonathonf/backports
 
-#- name: google repo
-#  apt_repository: repo="deb http://dl.google.com/linux/chrome/deb/ stable main" state=present filename=google-chrome.list
+- name: chrome repo
+  apt_repository: repo='deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no
 
-#- name: mendeley repo
-#  apt_repository: repo="deb http://desktop-download.mendeley.com/download/apt stable main" state=present filename=mendeleydesktop.list
+- name: mendeley repo
+  apt_repository: repo='deb http://desktop-download.mendeley.com/download/apt preview main' state=present filename=mendeleydesktop update_cache=no
 
 - name: apt keys
   apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
@@ -41,8 +40,12 @@
     - 2649A5A9
     - AAD4AA21729B5780
 
-#- apt_key: url=http://www.hipchat.com/keys/hipchat-linux.key state=present
+- apt_key: url=https://atlassian.artifactoryonline.com/atlassian/api/gpg/key/public state=present
 
-- apt_key: url=http://www.virtualbox.org/download/oracle_vbox.asc state=present
+- apt_key: url=https://www.virtualbox.org/download/oracle_vbox.asc state=present
+
+- apt_key: url=https://www.virtualbox.org/download/oracle_vbox_2016.asc state=present
+
+- apt_key: url=https://dl-ssl.google.com/linux/linux_signing_key.pub state=present
 
 - apt: update_cache=yes

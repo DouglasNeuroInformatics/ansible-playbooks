@@ -1,14 +1,29 @@
+- name: create /opt/quarantine
+  file: path=/opt/quarantine state=directory
+
+- name: create /opt/sge/default
+  file: path=/opt/sge/default state=directory
+
+- name: mount sge settings
+  mount: src="cicus03:/opt/sge/default" name=/opt/sge/default fstype=nfs4 opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,noauto" state=mounted
+
+- name: copy debs
+  command: cp -r /opt/sge/default/debs /tmp
+
+- name: unmount sge settings
+  mount: src="cicus03:/opt/sge/default" name=/opt/sge/default fstype=nfs4 opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,noauto" state=unmounted
+
 - name: install lesstif
-  apt: deb=/opt/sge/default/debs/lesstif2_0.95.2-1_amd64.deb
+  apt: deb=/tmp/debs/lesstif2_0.95.2-1_amd64.deb
 
 - name: install sge-common
-  apt: deb=/opt/sge/default/debs/sge-common_8.1.8_all_fixed.deb
+  apt: deb=/tmp/debs/sge-common_8.1.8_all_fixed.deb
 
 - name: install SOGE
   apt: deb={{ item }}
   with_items:
-    - /opt/sge/default/debs/sge_8.1.8_amd64.deb
-    - /opt/sge/default/debs/sge-doc_8.1.8_all.deb
+    - /tmp/debs/sge_8.1.8_amd64.deb
+    - /tmp/debs/sge-doc_8.1.8_all.deb
 
 - name: enable gridengine commands
   lineinfile: dest=/etc/profile.d/zzgridengine.sh line="source /opt/sge/default/common/settings.sh" state=present create=yes
@@ -23,3 +38,6 @@
 
 - name: fix ownerships
   file: path=/opt/sge state=directory recurse=yes owner=10000 group=10000
+
+- name: mount sge settings
+  mount: src="cicus03:/opt/sge/default" name=/opt/sge/default fstype=nfs4 opts="v4.1,rw,nodev,hard,intr,sloppy,async,fsc,noauto" state=mounted

@@ -11,10 +11,4 @@
 #
 # By default this script does nothing.
 
-#Fix for ubuntu's lack of _netdev for mounting
-mount /opt/quarantine
-mount /home/cic
-mount /opt/sge/default
-/etc/init.d/sgeexecd.p6444 restart
-
 exit 0

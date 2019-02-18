@@ -3,9 +3,6 @@
 
 - apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
-- name: accept oracle license
-  debconf: name='oracle-java9-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
-
 - name: accept mscorefonts
   debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
 
@@ -35,7 +32,6 @@
     - parallel
     - cvs
     - subversion
-    - ruby-dev
     - make
     - gcc
     - nodejs
@@ -46,13 +42,10 @@
     - intel-microcode
     - libnss-myhostname
     - nmap
-    - oracle-java9-installer
-    - oracle-java9-unlimited-jce-policy
-    - oracle-java9-set-default
+    - openjdk-7-jdk
     - lrzip
     - htop
     - iotop
-    - p7zip-rar
     - p7zip-full
     - unace
     - unrar
@@ -91,7 +84,6 @@
     - dosfstools
     - dmraid
     - dmsetup
-    - cachefilesd
     - kpartx
     - freeipmi
     - ipmitool
@@ -99,8 +91,6 @@
     - autoconf
     - libtool
     - debconf-utils
-#    - logcheck
-#    - syslog-summary
     - pam-kwallet
     - python-argcomplete
     - python-optcomplete
@@ -166,53 +156,15 @@
     - gnuplot-qt
     - libsdl2-dev
     - libgraphicsmagick1-dev
-    - nodejs
-    - npm
     - libfftw3-dev
     - g++
     - libqt4-gui
     - libqt4-dev
-    - sox
-    - libsox-dev
     - libsox-fmt-all
     - libopenblas-base
     - libopenblas-dev
-#opencv
-    - libopencv-dev
-    - python-opencv
-    - libopencv-dev 
-    - libgtk2.0-dev
-    - pkg-config
-    - python-dev 
-    - python-numpy 
-    - libdc1394-22 
-    - libdc1394-22-dev
-    - libjpeg-dev
-    - libpng12-dev
-    - libtiff4-dev
-    - libjasper-dev
-    - libavcodec-dev
-    - libavformat-dev
-    - libswscale-dev
-    - libxine-dev
-    - libgstreamer0.10-dev
-    - libgstreamer-plugins-base0.10-dev
-    - libv4l-dev
-    - libtbb-dev
-    - libqt4-dev
-    - libfaac-dev
-    - libmp3lame-dev
-    - libopencore-amrnb-dev
-    - libopencore-amrwb-dev
-    - libtheora-dev
-    - libvorbis-dev
-    - libxvidcore-dev
-    - x264
-    - v4l-utils 
     - unzip
     - libssl0.9.8
-#    - libvtk6-dev
-#    - python-vtk6
     - cpanminus
 #soge deps
     - db5.1-util
@@ -222,33 +174,11 @@
     - python-nipy
     - python-dipy
     - ifenslave
-#octave deps
-    - libblas-dev
-    - liblapack-dev 
-    - libpcre3-dev
-    - libarpack2-dev
-    - libcurl4-gnutls-dev
-    - libfftw3-dev
-    - transfig
-    - libfltk1.3-dev
-    - libfontconfig1-dev
-    - libfreetype6-dev
-    - libgl2ps-dev
-    - libglpk-dev
-    - libreadline-dev
-    - libgraphicsmagick++-dev
-    - libhdf5-serial-dev
-    - libsndfile1-dev
-    - libqhull-dev
-    - libqrupdate-dev
-    - libqscintilla2-dev 
-    - libqtwebkit4 
-    - libsuitesparse-dev
-    - libxft-dev
     - zlib1g-dev
     - libosmesa6-dev
     - watchdog
     - smartmontools
+    - source-highlight
 
 - name: remove problematic software
   apt:  pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600

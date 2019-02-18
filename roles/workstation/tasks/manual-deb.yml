@@ -1,17 +1,11 @@
 #- get_url: url=https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb dest=/tmp/
-- get_url: url=https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb dest=/tmp/
+#- get_url: url=https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb dest=/tmp/
 #- get_url: url=https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest dest=/tmp/mendeley.deb force=yes
 
 - name: install debs
   apt: deb={{ item }}
   with_items:
-#    - /tmp/google-chrome-stable_current_amd64.deb
-    - /tmp/google-talkplugin_current_amd64.deb
-#    - /tmp/mendeley.deb
+    - https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb
+    - https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
   ignore_errors: yes
-
-#- name: download generic kernel
-#  command: /usr/bin/wget -e robots=off -c -r --no-parent -nH --cut-dirs=5 -A '*amd64.deb','*all.deb' -R '*generic*' -P /tmp/kernel-{{ kernelver }} http://kernel.ubuntu.com/~kernel-ppa/mainline/v{{ kernelver }}-wily/ creates=/tmp/kernel-{{ kernelver }}
-
-#- name: install generic kernel
-#  shell: dpkg -i /tmp/kernel-{{ kernelver }}/*{{ kernelver }}*.deb

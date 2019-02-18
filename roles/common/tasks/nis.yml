@@ -1,9 +1,9 @@
 - name: set defaultdomain
   copy: src=files/defaultdomain dest=/etc/defaultdomain
   notify:
-    - restart rpcbind 
+    - restart rpcbind
     - restart ypbind
-  
+
 - name: set ypservers
   copy: src=files/yp.conf dest=/etc/yp.conf
   notify: 
@@ -19,7 +19,7 @@
   notify:
     - restart rpcbind
     - restart ypbind
-  
+
 - name: set nis default
   copy: src=files/nis dest=/etc/default/nis
 

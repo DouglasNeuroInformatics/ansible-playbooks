@@ -482,7 +482,7 @@
 
 *% Paper Feeders
 *OpenUI *Option19/Paper Feeders: PickOne
-*DefaultOption19: One
+*DefaultOption19: Two
 *Option19 False/Not Installed: ""
 *Option19 One/Cassettes 3, 4: ""
 *Option19 Two/Cassettes 5, 6, 7: ""
@@ -2688,7 +2688,7 @@
 *% Color Model
 *OpenUI *ColorModel/Color Mode: PickOne
 *OrderDependency: 10 AnySetup *ColorModel
-*DefaultColorModel: Gray
+*DefaultColorModel: CMYK
 *ColorModel CMYK/Full color: "<< /ProcessColorModel /DeviceCMYK >> setpagedevice"
 *ColorModel Gray/Black && White: "<< /ProcessColorModel /DeviceGray >> setpagedevice"
 *?ColorModel: "
@@ -2728,7 +2728,7 @@
 *% Grays with Black Toner 
 *OpenUI *GRAYBLKTONER/Print Grays with Black Toner: PickOne
 *OrderDependency: 11 AnySetup *GRAYBLKTONER
-*DefaultGRAYBLKTONER: False
+*DefaultGRAYBLKTONER:  False
 *GRAYBLKTONER False/Off: "<< /PrintGraysWithBlackToner false >> setpagedevice"
 *GRAYBLKTONER True/On: "<< /PrintGraysWithBlackToner true >> setpagedevice"
 *End
@@ -2746,7 +2746,7 @@
 *% CIE 
 *OpenUI *CIE/CIE Optimization: PickOne
 *OrderDependency: 11 AnySetup *CIE
-*DefaultCIE: PrnDef
+*DefaultCIE:  PrnDef
 *CIE PrnDef/Printer settings: ""
 *CIE False/Disabled: "<< /RejectionCIEcolor false >> setuserparams"
 *CIE True/Enabled: "<< /RejectionCIEcolor true >> setuserparams"
@@ -2974,7 +2974,7 @@
 *% Input Slot Definitions
 *OpenUI *InputSlot: PickOne
 *OrderDependency: 30 AnySetup *InputSlot
-*DefaultInputSlot: PF730C
+*DefaultInputSlot: PF730A
 *InputSlot PF730A/Cassette 1: "<< /ManualFeed false >> setpagedevice statusdict begin 0 setpapertray end"
 *InputSlot PF730B/Cassette 2: "<< /ManualFeed false >> setpagedevice statusdict begin 1 setpapertray end"
 *InputSlot PF730C/Cassette 3: "<< /ManualFeed false >> setpagedevice statusdict begin 4 setpapertray end"
@@ -2990,7 +2990,7 @@
 *% MediaType Definitions
 *OpenUI *MediaType/Media type: PickOne
 *OrderDependency: 95 AnySetup *MediaType
-*DefaultMediaType: Auto
+*DefaultMediaType: PrnDef
 *MediaType PrnDef/Unspecified: "<</ManualFeed false /MediaType (None) /DeferredMediaSelection true >> setpagedevice"
 *MediaType Auto/Auto media selection: ""
 *MediaType Plain/Plain: "<</ManualFeed false /MediaType (Plain) /DeferredMediaSelection true >> setpagedevice"
@@ -3495,7 +3495,7 @@ userdict /180rotdetail true put
 *% Duplex Definitions
 *OpenUI *Duplex/Duplexing: PickOne
 *OrderDependency: 50 AnySetup *Duplex
-*DefaultDuplex: None
+*DefaultDuplex: DuplexNoTumble
 *Duplex None/None: "statusdict begin false setduplexmode false settumble end"
 *Duplex DuplexTumble/Short Edge: "statusdict begin true setduplexmode true settumble end"
 *Duplex DuplexNoTumble/Long Edge: "statusdict begin true setduplexmode false settumble end"

@@ -1,17 +1,13 @@
 ---
 - hosts: workstations
-  vars:
-    kernelver: 4.1.27
   become: yes
   roles:
     - common
     - workstation
-    #- gridengine-client
-    #- gridengine-execd
+    - gridengine-client
+    - gridengine-execd
 
 - hosts: computenodes
-  vars:
-    kernelver: 4.1.19
   become: yes
   roles:
     - common

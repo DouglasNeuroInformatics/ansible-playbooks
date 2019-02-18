@@ -1,12 +1,16 @@
-- get_url: url=https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware_1.156_all.deb dest=/tmp/linux-firmware_1.156_all.deb
-- get_url: url=https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware-nonfree_1.16_all.deb dest=/tmp/linux-firmware-nonfree_1.16_all.deb
-- get_url: url=http://mirrors.kernel.org/ubuntu/pool/main/libm/libmng/libmng1_1.0.10-3_amd64.deb dest=/tmp/libmng1_1.0.10-3_amd64.deb
+#- get_url: url=https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware_1.176_all.deb dest=/tmp/linux-firmware_1.176_all.deb
+#- get_url: url=https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware-nonfree_1.16_all.deb dest=/tmp/linux-firmware-nonfree_1.16_all.deb
+#- get_url: url=http://mirrors.kernel.org/ubuntu/pool/main/libm/libmng/libmng1_1.0.10-3_amd64.deb dest=/tmp/libmng1_1.0.10-3_amd64.deb
+#- get_url: url=http://security.ubuntu.com/ubuntu/pool/main/l/linux-base/linux-base_4.5ubuntu1~16.04.1_all.deb dest=/tmp/linuxbase.deb
+#- get_url: url=http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4.3_amd64.deb dest=/tmp/libssl1.1.deb
 
-- name: install firmware
+- name: install manual debs
   apt: deb={{ item }}
   with_items:
-    - /tmp/linux-firmware_1.156_all.deb
-    - /tmp/linux-firmware-nonfree_1.16_all.deb
+    - https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware_1.176_all.deb
+    - http://mirrors.kernel.org/ubuntu/pool/main/libm/libmng/libmng1_1.0.10-3_amd64.deb
+    - http://security.ubuntu.com/ubuntu/pool/main/l/linux-base/linux-base_4.5ubuntu1~16.04.1_all.deb
+    - http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4.3_amd64.deb
 
-- name: install old libmng
-  apt: deb=/tmp/libmng1_1.0.10-3_amd64.deb
+#- name: install old libmng
+#  apt: deb=/tmp/libmng1_1.0.10-3_amd64.deb

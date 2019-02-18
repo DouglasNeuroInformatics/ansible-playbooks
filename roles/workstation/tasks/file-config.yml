@@ -4,24 +4,15 @@
 - name: configure lightdm login
   copy: src=files/99-logins.conf dest=/etc/lightdm/lightdm.conf.d/
 
-- name: configure adblock chrome
-  copy: src=files/cjpalhdlnbpafiamejdnhcphjbkeiagm.json dest=/usr/share/google-chrome/extensions/
-
-- name: configure https anywhere chrome
-  copy: src=files/gcbommkclmclpchllfjekcdonpmejbdp.json dest=/usr/share/google-chrome/extensions/
-
 - name: fix powerkey
   lineinfile: dest=/etc/systemd/logind.conf line=HandlePowerKey=ignore
 
-- name: disable suspend
-  copy: src=files/com.ubuntu.disable-suspend.pkla dest=/etc/polkit-1/localauthority/50-local.d/com.ubuntu.disable-suspend.pkla
+- name: disable suspend/reboot/shutdown
+  copy: src=files/restrict-login-powermgmt.pkla dest=/etc/polkit-1/localauthority/50-local.d/restrict-login-powermgmt.pkla
 
 - name: disable apport
   lineinfile: dest=/etc/default/apport regexp=^enabled= line=enabled=0
 
-#- name: configure cuda
-#  copy: src=files/cuda.sh dest=/etc/profile.d
-  
 - name: config apcupsd.conf
   copy: src=files/apcupsd.conf dest=/etc/apcupsd/apcupsd.conf
   notify:
@@ -36,23 +27,33 @@
   copy: src={{ item }} dest=/etc/cups/ppd
   with_items:
     - files/Kyocera-Mita-TASKalfa-4551ci-KPDL.ppd
+  tags:
+    - cups
 
 - name: install printer.conf
   copy: src=files/printers.conf dest=/etc/cups
   notify:
     - restart cups
+  tags:
+    - cups
 
 - name: install cups-browsed.conf
   copy: src=files/cups-browsed.conf dest=/etc/cups
   notify:
     - restart cups
     - restart cups-browsed
+  tags:
+    - cups
 
 - name: install cupsd.conf
   copy: src=files/cupsd.conf dest=/etc/cups
   notify:
     - restart cups
     - restart cups-browsed
+  tags:
+    - cups
 
 - name: disable cups-browsed
   service: name=cups-browsed enabled=no state=stopped
+  tags:
+    - cups

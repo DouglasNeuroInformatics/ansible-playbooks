@@ -9,9 +9,8 @@ do
         sleep 1
 done
 
-#mount -a -O _netdev
 mount /opt/sge/default
 mount /opt/quarantine
-mount /home/cic
+
 /etc/init.d/sgeexecd.p6444 restart
 exit 0

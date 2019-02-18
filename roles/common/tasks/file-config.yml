@@ -29,39 +29,6 @@
 - name: setup mailhub
   lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^mailhub= line=mailhub=cicus03
 
-#- name: configure logcheck
-#  copy: src=files/logcheck.conf dest=/etc/logcheck/
-
-#- name: ignore ntpd in logcheck
-#  copy: src=files/ntpd.logcheck dest=/etc/logcheck/ignore.d.workstation/ntpd
-
-#- name: ignore ssmtp logcheck
-#  copy: src=files/ssmtp.logcheck dest=/etc/logcheck/ignore.d.workstation/ssmtp
-
-#- name: ignore ansible logcheck
-#  copy: src=files/ansible.logcheck dest=/etc/logcheck/ignore.d.workstation/ansible
-
-#- name: ignore systemd logcheck
-#  copy: src=files/systemd.logcheck dest=/etc/logcheck/ignore.d.workstation/systemd
-
-#- name: ignore colord logcheck
-#  copy: src=files/colord.logcheck dest=/etc/logcheck/ignore.d.workstation/colord
-
-#- name: ignore rtkit logcheck
-#  copy: src=files/rtkit.logcheck dest=/etc/logcheck/ignore.d.workstation/rtkit
-
-#- name: ignore dhclient logcheck
-#  copy: src=files/dhclient.logcheck dest=/etc/logcheck/ignore.d.workstation/dhclient
-
-#- name: ignore avahi
-#  copy: src=files/avahi.logcheck dest=/etc/logcheck/ignore.d.workstation/avahi
-
-#- name: ignore dbus
-#  copy: src=files/dbus.logcheck dest=/etc/logcheck/ignore.d.workstation/dbus
-
-#- name: fix logcheck ownerships
-#  file: path=/etc/logcheck/ignore.d.workstation state=directory recurse=yes group=logcheck
-
 - name: enable all locales
   file: src=/usr/share/i18n/SUPPORTED dest=/var/lib/locales/supported.d/all state=link
 
@@ -86,9 +53,6 @@
   copy: src=files/ssh_config dest=/etc/ssh
   notify:
     - restart ssh
-
-#- name: enable sensors
-#  shell: 'yes "" | sensors-detect'
 
 - name: ipmi module ipmi_devintf
   lineinfile: dest=/etc/modules line=ipmi_devintf

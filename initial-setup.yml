@@ -1,7 +1,7 @@
 - hosts:
   - computenodes
   - workstations
-  sudo: yes
+  become: yes
   tasks:
    - name: enable ssh keys
      authorized_key: user=localadmin key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"

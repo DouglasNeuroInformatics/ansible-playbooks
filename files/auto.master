@@ -27,3 +27,4 @@
 #+auto.master
 /data /etc/auto.data --timeout=1200 --ghost
 /backup /etc/auto.backup --timeout=1200 --ghost
+/home/cic /etc/auto.home --timeout=1200 --ghost

@@ -1,0 +1,16 @@
+for n in {01..39}; do qconf -ah cicws$n; qconf -as cicws$n; done
+
+
+
+for host in `qconf -sel`; do sge.conf.sh mconf mailer /usr/bin/mail $host& done
+for host in `qconf -sel | grep cicws`; do sge.conf.sh mconf load_sensor /opt/sge/default/memusage.sh $host& done
+
+for host in `qconf -sel | grep cicws`; do qconf -mattr queue seq_no 100 all.q@$host& done
+for host in `qconf -sel | grep ciccs`; do qconf -mattr queue seq_no 1 all.q@$host& done
+
+for n in {23..36}; do qconf -rattr exechost complex_values h_vmem=15G cicws$n& done
+for n in 37; do qconf -rattr exechost complex_values h_vmem=7G cicws$n& done
+for n in 38 39; do qconf -rattr exechost complex_values h_vmem=30G cicws$n& done
+for n in {01..22}; do qconf -rattr exechost complex_values h_vmem=11G cicws$n& done
+
+for n in {01..10}; do qconf -rattr exechost complex_values h_vmem=46G ciccs$n& done

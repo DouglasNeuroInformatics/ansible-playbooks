@@ -27,3 +27,6 @@
 
 - name: restart watchdog
   service: name=watchdog state=restarted
+
+- name: regen grub
+  shell: update-grub

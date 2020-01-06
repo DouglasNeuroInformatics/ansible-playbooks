@@ -185,5 +185,6 @@
   with_items:
     - apparmor
     - apparmor-profiles
+    - snapd
 
 - cpanm: name="Math::Matrix"

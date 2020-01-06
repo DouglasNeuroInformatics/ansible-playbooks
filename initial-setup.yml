@@ -9,5 +9,3 @@
      lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
    - name: add devgab to sudo group
      lineinfile: dest=/etc/group state=present regexp=^sudo line=sudo:x:27:localadmin,devgab
-   - name: configure proxy
-     copy: src=files/99squid-deb-proxy dest=/etc/apt/apt.conf.d

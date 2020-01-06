@@ -1,6 +1,3 @@
-- name: configure proxy
-  copy: src=files/99squid-deb-proxy dest=/etc/apt/apt.conf.d
-
 - apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
 - name: accept mscorefonts

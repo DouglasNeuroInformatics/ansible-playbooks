@@ -12,5 +12,5 @@
   roles:
     - common
     - execnode
-   # - gridengine-client
-   # - gridengine-execd
+    - gridengine-client
+    - gridengine-execd

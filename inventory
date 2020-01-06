@@ -1,14 +1,15 @@
 [workstations]
-cicws[01:13] ansible_ssh_user=localadmin
-cicws[15:19] ansible_ssh_user=localadmin
-cicws23 ansible_ssh_user=localadmin
-cicws[25:33] ansible_ssh_user=localadmin
-cicws[35:38] ansible_ssh_user=localadmin
+cicws[01:13] ansible_ssh_user=localadmin ansible_become=true
+cicws[15:19] ansible_ssh_user=localadmin ansible_become=true
+cicws23 ansible_ssh_user=localadmin ansible_become=true
+#cicws24 ansible_ssh_user=localadmin ansible_become=true
+cicws[25:33] ansible_ssh_user=localadmin ansible_become=true
+cicws[35:39] ansible_ssh_user=localadmin ansible_become=true
 
 #cichm01 ansible_ssh_user=localadmin
 
 [computenodes]
-ciccs[01:10] ansible_ssh_user=localadmin
+ciccs[01:10] ansible_ssh_user=localadmin ansible_become=true
 
 #[fileservers]
 #cicss[01:02] ansible_ssh_user=devgab

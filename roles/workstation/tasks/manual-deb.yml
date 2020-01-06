@@ -1,11 +1,10 @@
-#- get_url: url=https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb dest=/tmp/
-#- get_url: url=https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb dest=/tmp/
-#- get_url: url=https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest dest=/tmp/mendeley.deb force=yes
-
 - name: install debs
   apt: deb={{ item }}
   with_items:
     - https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
     - https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb
-    - https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
+    - /data/scratch/admin/kyodialog_6.0-0_amd64.deb
   ignore_errors: yes
+
+- name: update nvidia
+  shell: /data/scratch/admin/nvidia-versions/update-nvidia.sh

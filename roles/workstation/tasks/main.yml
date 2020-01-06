@@ -1,6 +1,5 @@
 - {include: manual-deb.yml, tags: software}
 - {include: packages.yml, tags: software}
-#- {include: cuda.yml, tags: cuda}
 - {include: file-config.yml, tags: files}
 
 - name: enable pam_group.so for lightdm logins

@@ -1,5 +1,5 @@
 - name: quarantine package
-  apt: pkg=lmod state=latest
+  apt: pkg=environment-modules state=latest
 
 - name: configure quarnantine in /etc/bash.bashrc
   copy: src=files/bash.bashrc dest=/etc/bash.bashrc

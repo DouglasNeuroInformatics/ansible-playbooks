@@ -1,48 +1,43 @@
 - apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
+- name: Install HWE
+  shell: apt-get install --install-recommends linux-generic-hwe-18.04
+
+
 - name: accept mscorefonts
   debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
 
-- name: install common packages
-  apt:  pkg={{ item }} state=latest update_cache=yes cache_valid_time=3600
-  with_items:
-    - python-pip
-    - pv
-    - openntpd
+- name: Install Common APT Packages
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: latest
+  vars:
+    packages:
+    - ssmtp
+    - htop
+    - iotop
     - xauth
-    - lm-sensors
-    - thermald
+    - landscape-common
     - tmux
     - screen
     - apcupsd
-    - landscape-common
-    - ssmtp
-    - unattended-upgrades
-    - lvm2
-    - exfat-utils
     - imagemagick
-    - irssi
+    - exfat-utils
+    - ntfs-3g
+    - dosfstools
+    - xfsprogs
+    - reiserfsprogs
+    - reiser4progs
+    - dmraid
+    - dmsetup
+    - kpartx
+    - cryptsetup
     - openssh-server
-    - ansible
-    - environment-modules
-    - quota
     - parallel
-    - cvs
-    - subversion
-    - make
-    - gcc
-    - nodejs
-    - build-essential
-    - gfortran
-    - git
-    - aptitude
-    - intel-microcode
-    - libnss-myhostname
+    - quota
     - nmap
-    - openjdk-7-jdk
     - lrzip
-    - htop
-    - iotop
     - p7zip-full
     - unace
     - unrar
@@ -56,132 +51,104 @@
     - cabextract
     - gdebi-core
     - dkms
-    - python-numpy
-    - python-scipy
-    - python-matplotlib
-    - ipython
-    - ipython-notebook
-    - python-pandas
-    - python-sympy
-    - python-nose
-    - python-scitools
-    - vim
-    - exuberant-ctags
-    - vim-doc
-    - vim-scripts
-    - fonts-inconsolata
-    - octave
-    - pspp
-    - emacs
-    - git
-    - xfsprogs
-    - reiserfsprogs
-    - reiser4progs
-    - ntfs-3g
-    - dosfstools
-    - dmraid
-    - dmsetup
-    - kpartx
-    - freeipmi
-    - ipmitool
-    - automake
-    - autoconf
-    - libtool
-    - debconf-utils
-    - pam-kwallet
-    - python-argcomplete
-    - python-optcomplete
-#libraries
     - ubuntu-restricted-addons
     - ubuntu-restricted-extras
+    - ansible
+    - apparmor-profiles-extra
+    - apparmor-profiles
+    - smartmontools
+    - squashfs-tools
+    - singularity-container
+    - links2
+    - aptitude
+    - tree
+    - unattended-upgrades
+    - nvme-cli
+#Development software
+    - vim
+    - emacs
+    - build-essential
+    - source-highlight
     - cmake
     - cmake-curses-gui
-    - protobuf-c-compiler
-    - protobuf-compiler
-    - python-protobuf
-    - netcdf-bin
-    - libnetcdf-dev
-    - libnetcdfc7
-    - libnetcdff5
-    - libnetcdfc++4
-    - libhdf4-0
-    - libhdf4-dev
-    - libhdf5-7
-    - libhdf5-dev
-    - lib32gcc1
-    - libblas-dev
-    - liblapack-dev
-    - libnetpbm10-dev
-    - libpcre++0
+    - gcc
+    - gfortran
+    - openjdk-8-jdk
+    - git
+    - make
+    - cpanminus
+#Science software
+    - environment-modules
+    - octave
+#Docker
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+#minc-toolkit-v2 build deps
+    - bc
     - bison
     - flex
+    - libx11-dev
+    - x11proto-core-dev
     - libxi6
     - libxi-dev
     - libxmu6
     - libxmu-dev
     - libxmu-headers
-    - libsqlite3-dev
-    - libjpeg62
-    - liblcms1
-    - libperl4-corelibs-perl
-    - tcl8.4
-    - tcl8.5
-    - tk8.4
-    - tk8.5
-    - libgdchart-gd2-xpm
-    - libgiftiio0
-    - libnewmat10ldbl
-    - libnifti2
-    - libqt4-qt3support
-    - libqwt5-qt4
-    - libgetopt-tabular-perl
-    - libroot-math-matrix-dev
-    - libgetopt-argvfile-perl
-#torch deps
-    - build-essential
-    - gcc
-    - curl
-    - libreadline-dev
-    - git
-    - libqt4-core
+    - libgl1-mesa-dev
+    - libglu1-mesa-dev
     - libjpeg-dev
-    - libpng-dev
-    - ncurses-dev
-    - libzmq3-dev
-    - gfortran
-    - unzip
-    - gnuplot-qt
-    - libsdl2-dev
-    - libgraphicsmagick1-dev
-    - libfftw3-dev
-    - g++
-    - libqt4-gui
-    - libqt4-dev
-    - libsox-fmt-all
-    - libopenblas-base
-    - libopenblas-dev
-    - unzip
-    - libssl0.9.8
-    - cpanminus
-#soge deps
-    - db5.1-util
-    - libdb5.1
-    - libjemalloc1
-    - tcsh
-    - python-nipy
-    - python-dipy
-    - ifenslave
+    - libssl-dev
     - zlib1g-dev
-    - libosmesa6-dev
-    - watchdog
-    - smartmontools
-    - source-highlight
+    - automake
+#mrtrix3 dependencies
+    - python
+    - python-numpy
+    - libeigen3-dev
+    - zlib1g-dev
+    - libqt4-opengl-dev
+    - libgl1-mesa-dev
+    - libfftw3-dev
+    - libtiff5-dev
+#afni dependencies
+    - tcsh
+    - xfonts-base
+    - python-qt4
+    - gsl-bin
+    - netpbm
+    - libjpeg62
+    - xvfb
+    - libglu1-mesa-dev
+    - libglw1-mesa
+    - libxm4
+    - libcurl4-openssl-dev
+    - libxml2-dev
+    - libssl-dev
+    - libgfortran3
+
+#Fix the lmod package
+#https://bugs.launchpad.net/ubuntu/+source/lua-posix/+bug/1752082
+- name: fix lua symlink
+  file:
+    src: /usr/lib/x86_64-linux-gnu/lua/5.2/posix_c.so
+    dest: /usr/lib/x86_64-linux-gnu/lua/5.2/posix.so
+    state: link
+
+- name: Install missing libpng package for rstudio and itksnap
+  apt:
+    deb: http://security.ubuntu.com/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb
+
+#Fix afni being built against a different version of gsl
+#https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html
+- name: fix libgsl
+  file:
+    src: /usr/lib/x86_64-linux-gnu/libgsl.so.23
+    dest: /usr/lib/x86_64-linux-gnu/libgsl.so.19
+    state: link
 
 - name: remove problematic software
   apt:  pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600
   with_items:
-    - apparmor
-    - apparmor-profiles
     - snapd
 
 - cpanm: name="Math::Matrix"

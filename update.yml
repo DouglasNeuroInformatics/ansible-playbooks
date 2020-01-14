@@ -6,15 +6,17 @@
    - name: update apt-get cache
      apt: update_cache=yes cache_valid_time=3600
      ignore_errors: yes
+   - name: safe-upgrade
+     apt: upgrade=safe  cache_valid_time=3600 autoclean=yes autoremove=yes
    - name: dist-upgrade
      apt: upgrade=dist  cache_valid_time=3600 autoclean=yes autoremove=yes
-#   - name: safe-upgrade
-#     apt: upgrade=safe  cache_valid_time=3600 autoclean=yes autoremove=yes
    - name: update drivedb
      get_url:
       url: https://www.smartmontools.org/export/4894/branches/RELEASE_6_2_DRIVEDB/smartmontools/drivedb.h
       dest: /var/lib/smartmontools/drivedb/drivedb.h
       validate_certs: False
+   - name: update drivedb
+     command: wget https://www.smartmontools.org/export/5028/branches/RELEASE_6_5_DRIVEDB/smartmontools/drivedb.h -O /var/lib/smartmontools/drivedb/drivedb.h
    - name: update-pciids
      command: update-pciids
    - name: update-usbids

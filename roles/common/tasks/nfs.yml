@@ -4,9 +4,6 @@
 - name: autofs installed
   apt: pkg=autofs state=latest
 
-- name: cachefilesd installed
-  apt: pkg=cachefilesd state=absent
-
 - name: create place for homdirs
   file: path=/home/cic state=directory
 
@@ -38,11 +35,3 @@
 
 - name: configure nfs-common
   copy: src=files/nfs-common dest=/etc/default/nfs-common
-
-- name: cleanup hard mount nfs
-  file:
-    state: absent
-    path: {{ item }}
-  with_items:
-    - /etc/init.d/mount_netdev.sh
-    - /etc/rcS.d/S99mount_netdev.sh

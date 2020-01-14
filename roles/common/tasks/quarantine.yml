@@ -1,14 +1,11 @@
 - name: quarantine package
-  apt: pkg=environment-modules state=latest
+  apt: pkg=lmod state=latest
+
+- name: configure quarnantine in /etc/bash.bashrc
+  copy: src=files/bash.bashrc dest=/etc/bash.bashrc
 
 - name: copy quarantine profile
-  copy: src=files/zzquarantine.sh dest=/etc/profile.d
+  copy: src=files/profile-quarantine.sh dest=/etc/profile.d
 
 - name: Create scratch
   file: path=/scratch state=directory mode=u=rwx,g=rwx,o=rwx
-
-- name: config /etc/bash.bashrc
-  copy: src=files/bash.bashrc dest=/etc
-
-#- name: configure bash_completion
-#  copy: src=files/modules.bash_completion dest=/etc/bash_completion.d/modules

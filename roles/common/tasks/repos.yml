@@ -1,34 +1,15 @@
-- name: repos enabled
-  apt_repository: repo='{{item}}' state=present update_cache=no
+- name: apt keys from URL
+  apt_key: url='{{item}}' state=present
   with_items:
-    - ppa:inkscape.dev/stable
-    - ppa:ansible/ansible
-    - ppa:libreoffice/ppa
-    - ppa:nilarimogard/webupd8
-    - ppa:webupd8team/java
-    - ppa:x2go/stable
-    - ppa:otto-kesselgulasch/gimp
-    - ppa:videolan/stable-daily
-    - deb http://archive.canonical.com/ precise partner
-    - deb http://archive.canonical.com/ubuntu/ trusty partner
-    - ppa:yoda-jazz-kc/hpn-ssh
-    - ppa:freyja-dev/unity-tweak-tool-daily
-    - ppa:ubuntu-wine/ppa
-    - ppa:obsproject/obs-studio
-    - ppa:graphics-drivers/ppa
-    - ppa:george-edison55/cmake-3.x
-    - ppa:git-core/ppa
-    - ppa:jonathonf/backports
-    - ppa:octave/stable
-    - ppa:ubuntu-toolchain-r/test
+    - https://www.virtualbox.org/download/oracle_vbox.asc
+    - https://www.virtualbox.org/download/oracle_vbox_2016.asc
+    - https://dl-ssl.google.com/linux/linux_signing_key.pub
+    - https://download.docker.com/linux/ubuntu/gpg
+    - https://dl.winehq.org/wine-builds/Release.key
+    - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+    - https://dl.xanmod.org/gpg.key
 
-- name: chrome repo
-  apt_repository: repo='deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no
-
-- name: mendeley repo
-  apt_repository: repo='deb https://desktop-download.mendeley.com/download/apt stable main' state=present filename=mendeleydesktop update_cache=no
-
-- name: apt keys
+- name: apt keys from keyserver
   apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
   with_items:
     - 6F036044
@@ -36,11 +17,27 @@
     - 98AB5139
     - 2649A5A9
     - AAD4AA21729B5780
+    - 76F1A20FF987672F
+    - A5D32F012649A5A9
 
-- apt_key: url=https://www.virtualbox.org/download/oracle_vbox.asc state=present
+- name: repos enabled
+  apt_repository: repo='{{item}}' state=present update_cache=no
+  with_items:
+    - ppa:inkscape.dev/stable
+    - ppa:otto-kesselgulasch/gimp
+    - ppa:ansible/ansible
+    - ppa:libreoffice/ppa
+    - ppa:x2go/stable
+    - ppa:graphics-drivers/ppa
+    - ppa:git-core/ppa
+    - ppa:jonathonf/backports
+    - deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main
+    - deb http://neuro.debian.net/debian data main contrib non-free
+    - deb http://neuro.debian.net/debian bionic main contrib non-free
+    - deb http://deb.xanmod.org releases main
 
-- apt_key: url=https://www.virtualbox.org/download/oracle_vbox_2016.asc state=present
+- name: chrome repo
+  apt_repository: repo='deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no
 
-- apt_key: url=https://dl-ssl.google.com/linux/linux_signing_key.pub state=present
-
-- apt: update_cache=yes
+- name: docker repo
+  apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable' state=present filename=docker update_cache=no

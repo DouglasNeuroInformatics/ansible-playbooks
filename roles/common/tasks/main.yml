@@ -7,7 +7,7 @@
 - {include: quarantine.yml, tags: quarantine}
 - {include: repos.yml, tags: software}
 - {include: packages.yml, tags: software}
-- {include: manual-deb.yml, tags: software}
+#- {include: manual-deb.yml, tags: software}
 - {include: file-config.yml, tags: files}
 
 - name: enable sudo with no password for sudoers
@@ -16,3 +16,16 @@
 - name: add devgab to sudo group
   lineinfile: dest=/etc/group state=present regexp=^sudo line=sudo:x:27:localadmin,devgab
 
+- name: Set default locale to en_CA.UTF-8
+  debconf:
+    name: locales
+    question: locales/default_environment_locale
+    value: en_CA.UTF-8
+    vtype: select
+
+- name: Reconfigure apparmor
+  debconf:
+    name: apparmor
+    question: apparmor/homedirs
+    value: /home/cic
+    vtype: string

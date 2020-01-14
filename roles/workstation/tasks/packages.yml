@@ -1,75 +1,34 @@
-- apt: upgrade=dist update_cache=yes cache_valid_time=3600
+- name: Install HWE
+  shell: apt-get install --install-recommends linux-generic-hwe-18.04 xserver-xorg-hwe-18.04
 
-- name: install workstation packages
-  apt:  pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
-  with_items:
-    - gle-graphics
-    - classicmenu-indicator
-    - unity-tweak-tool
-    - x2goserver
-    - x2goclient
-    - skype
-    - speedcrunch
-    - inkscape
-    - gimp
-    - gimp-plugin-registry
-    - synaptic
-    - spyder
-    - texlive-full
-    - mupdf
-    - vlc
-    - vlc-plugin-notify
-    - imagej
-    - gparted
-    - freshplayerplugin
-    - pidgin
-    - gedit-plugins
-    - xfig
-    - gimp-help-en
-    - acroread-bin:i386
-    - libldap-2.4-2:i386
-    - libgnome-speech7:i386
-    - librsvg2-common:i386
-    - gvfs:i386
-    - libjasper-runtime:i386
-    - ttf-baekmuk
-    - libcanberra-gtk-module:i386
-    - gtk2-engines-murrine:i386
-    - gimp-help-en-gb
-    - hunspell-en-ca
-    - libreoffice-help-en-gb
-    - libreoffice-l10n-en-gb
-    - mythes-en-au
-    - thunderbird-locale-en-gb
-    - firefox-locale-fr
-    - gimp-help-fr
-    - hunspell-fr
-    - hyphen-fr
-    - language-pack-fr
-    - language-pack-gnome-fr
-    - libreoffice-help-fr
-    - libreoffice-l10n-fr
-    - mythes-fr
-    - thunderbird-locale-fr
-    - wfrench
-    - language-pack-fr
-    - xterm
-    - numlockx
-    - nedit
-    - mesa-utils
-    - freeglut3
-    - freeglut3-dev
-    - libgnome2-common
-    - gnumeric
-    - aeskulap
-    - meshlab
-    - libp11-kit-gnome-keyring:i386
-    - google-talkplugin
-    - google-chrome-stable
-    - mendeleydesktop
-    - nautilus-open-terminal
-    - gv
-    - libreoffice-java-common
-    - python3-pyqt5
-    - lxde-core
-    - feh
+- name: Install workstation apt packages
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: latest
+    cache_valid_time: 3600
+  vars:
+    packages:
+      - gle-graphics
+      - texlive-full
+      - x2goserver
+      - x2goserver-xsession
+      - imagej
+      - partitionmanager
+      - language-pack-en
+      - language-pack-fr
+      - language-pack-de
+      - feh
+      - xfig
+      - meshlab
+      - lxde-core
+      - google-chrome-stable
+      - hunspell-en-ca
+      - hunspell-en-gb
+      - hunspell-en-med
+      - hunspell-fr
+      - libreoffice
+      - libreoffice-style-breeze
+      - inkscape
+      - gimp
+      - vlc

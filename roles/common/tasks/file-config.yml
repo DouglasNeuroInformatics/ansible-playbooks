@@ -1,19 +1,8 @@
-- name: disable apport
-  lineinfile: dest=/etc/default/apport regexp=^enabled= line=enabled=0
-
 - name: enable unattended upgrades
   copy: src=files/50unattended-upgrades dest=/etc/apt/apt.conf.d/
 
 - name: enable periodic upgrades
   copy: src=files/10periodic dest=/etc/apt/apt.conf.d/
-
-- name: config ntpd
-  copy: src=files/ntpd.conf dest=/etc/openntpd/ntpd.conf
-  notify:
-   - restart ntpd
-
-- name: config ntpd defaults
-  copy: src=files/openntpd dest=/etc/default/
 
 - name: config smartmontools
   copy: src=files/smartmontools dest=/etc/default/smartmontools
@@ -35,31 +24,6 @@
 - name: generate all locales
   command: /usr/sbin/locale-gen
 
-- name: Set some kernel parameters
-  lineinfile:
-    dest: /etc/sysctl.conf
-    line: "{{ item }}"
-  with_items:
-    - net.ipv6.conf.all.disable_ipv6 = 1
-    - net.ipv6.conf.default.disable_ipv6 = 1
-    - net.ipv6.conf.lo.disable_ipv6 = 1
-
-- name: Set sshd_config
-  copy: src=files/sshd_config dest=/etc/ssh
-  notify:
-    - restart ssh
-
-- name: Set ssh_config
-  copy: src=files/ssh_config dest=/etc/ssh
-  notify:
-    - restart ssh
-
-- name: ipmi module ipmi_devintf
-  lineinfile: dest=/etc/modules line=ipmi_devintf
-
-- name: ipmi module ipmi_si
-  lineinfile: dest=/etc/modules line=ipmi_si
-
 - name: watchdog enable
   lineinfile: dest=/etc/default/watchdog regexp=^run_watchdog line=run_watchdog=1
   notify:
@@ -76,4 +40,7 @@
     - restart watchdog
 
 - name: make-linux-fast-again
-  lineinfile: dest=/etc/default/grub regexp=^GRUB_CMDLINE_LINUX_DEFAULT line='GRUB_CMDLINE_LINUX_DEFAULT="noibrs noibpb nopti nospectre_v2 nospectre_v1 l1tf=off nospec_store_bypass_disable no_stf_barrier mds=off tsx=on tsx_async_abort=off mitigations=off"'
+  lineinfile: dest=/etc/default/grub regexp=^GRUB_CMDLINE_LINUX_DEFAULT line='GRUB_CMDLINE_LINUX_DEFAULT="quiet splash noibrs noibpb nopti nospectre_v2 nospectre_v1 l1tf=off nospec_store_bypass_disable no_stf_barrier mds=off tsx=on tsx_async_abort=off mitigations=off"'
+
+- name: fix lsb
+  lineinfile: dest=/etc/lsb-release regexp=^DISTRIB_ID line='DISTRIB_ID=Ubuntu'

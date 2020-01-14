@@ -16,7 +16,10 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 fi
 
 # set a fancy prompt (non-color, overwrite the one in /etc/profile)
-PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+# but only if not SUDOing and have SUDO_PS1 set; then assume smart user.
+if ! [ -n "${SUDO_USER}" -a -n "${SUDO_PS1}" ]; then
+  PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
 
 # Commented out, don't overwrite xterm -T "title" -n "icontitle" by default.
 # If this is an xterm set the title to user@host:dir
@@ -29,17 +32,17 @@ PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 #esac
 
 # enable bash completion in interactive shells
-if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
-fi
+#if ! shopt -oq posix; then
+#  if [ -f /usr/share/bash-completion/bash_completion ]; then
+#    . /usr/share/bash-completion/bash_completion
+#  elif [ -f /etc/bash_completion ]; then
+#    . /etc/bash_completion
+#  fi
+#fi
 
 # sudo hint
 if [ ! -e "$HOME/.sudo_as_admin_successful" ] && [ ! -e "$HOME/.hushlogin" ] ; then
-    case " $(groups) " in *\ admin\ *)
+    case " $(groups) " in *\ admin\ *|*\ sudo\ *)
     if [ -x /usr/bin/sudo ]; then
 	cat <<-EOF
 	To run a command as administrator (user "root"), use "sudo <command>".
@@ -67,18 +70,11 @@ if [ -x /usr/lib/command-not-found -o -x /usr/share/command-not-found/command-no
 	}
 fi
 
-if [ -f /etc/profile.d/modules.sh ]; then
-    . /etc/profile.d/modules.sh
-fi
-
-if [ -f /etc/profile.d/zzquarantine.sh ]; then
-    . /etc/profile.d/zzquarantine.sh
-fi 
-
-if [ -f /etc/profile.d/zzgridengine.sh ]; then
-    . /etc/profile.d/zzgridengine.sh
-fi 
-
-if [ -f /etc/profile.d/cuda.sh ]; then
-    . /etc/profile.d/cuda.sh
+if [ -d /etc/profile.d ]; then
+  for i in /etc/profile.d/*.sh; do
+    if [ -r $i ]; then
+      . $i
+    fi
+  done
+  unset i
 fi

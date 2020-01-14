@@ -1,18 +1,3 @@
-- name: config network
-  copy: src=files/interfaces dest=/etc/network/interfaces
-
-- name: configure lightdm login
-  copy: src=files/99-logins.conf dest=/etc/lightdm/lightdm.conf.d/
-
-- name: fix powerkey
-  lineinfile: dest=/etc/systemd/logind.conf line=HandlePowerKey=ignore
-
-- name: disable suspend/reboot/shutdown
-  copy: src=files/restrict-login-powermgmt.pkla dest=/etc/polkit-1/localauthority/50-local.d/restrict-login-powermgmt.pkla
-
-- name: disable apport
-  lineinfile: dest=/etc/default/apport regexp=^enabled= line=enabled=0
-
 - name: config apcupsd.conf
   copy: src=files/apcupsd.conf dest=/etc/apcupsd/apcupsd.conf
   notify:
@@ -26,7 +11,7 @@
 - name: install ppds
   copy: src={{ item }} dest=/etc/cups/ppd
   with_items:
-    - files/Kyocera-Mita-TASKalfa-4551ci-KPDL.ppd
+    - files/Kyocera-Mita-TASKalfa-3253ci-KPDL.ppd
   tags:
     - cups
 
@@ -57,3 +42,21 @@
   service: name=cups-browsed enabled=no state=stopped
   tags:
     - cups
+
+- name: create sddm config dir
+  file:
+    path: /etc/sddm.conf.d
+    state: directory
+
+- name: copy sddm config to enable graphical logins
+  copy: src=files/sddm_local dest=/etc/sddm.conf.d
+
+- name: make plasma default
+  file:
+    src: /usr/share/xsessions/plasma.desktop
+    dest: /usr/share/xsessions/0plasma.desktop
+
+- name: Fix kcheckpass
+  file:
+    path: /usr/lib/x86_64-linux-gnu/libexec/kcheckpass
+    mode: u+s

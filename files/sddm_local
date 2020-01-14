@@ -1,0 +1,8 @@
+[Theme]
+EnableAvatars=false
+DisableAvatarsThreshold=1
+
+[Users]
+RememberLastUser=false
+RememberLastSession=true
+MaximumUid=999999999

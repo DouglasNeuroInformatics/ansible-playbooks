@@ -1,9 +1,11 @@
 #{{ ansible_managed }}
 127.0.0.1 localhost localhost.localdomain
-#127.0.1.1 {{ ansible_hostname }}.douglas.rtss.qc.ca {{ ansible_hostname }}
+127.0.1.1 {{ ansible_hostname }}
 
 # The following lines are desirable for IPv6 capable hosts
-::1     localhost ip6-localhost ip6-loopback
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
@@ -63,62 +65,3 @@ ff02::2 ip6-allrouters
 172.16.69.61 ipmi-cs08 ipmi-ciccs08
 172.16.69.62 ipmi-cs09 ipmi-ciccs09
 172.16.69.63 ipmi-cs10 ipmi-ciccs10
-
-#Mallar Workstations
-#172.16.133.223  cicws23.douglas.rtss.qc.ca cicws23 ws23 mc01
-#172.16.133.224  cicws24.douglas.rtss.qc.ca cicws24 ws24 mc02
-#172.16.133.225  cicws25.douglas.rtss.qc.ca cicws25 ws25 mc03
-#172.16.133.226  cicws26.douglas.rtss.qc.ca cicws26 ws26 mc04
-#172.16.133.227  cicws27.douglas.rtss.qc.ca cicws27 ws27 mc05
-#172.16.133.228  cicws28.douglas.rtss.qc.ca cicws28 ws28 mc06
-#172.16.133.229  cicws29.douglas.rtss.qc.ca cicws29 ws29 mc07
-#172.16.133.230  cicws30.douglas.rtss.qc.ca cicws30 ws30 mc08
-#172.16.133.231  cicws31.douglas.rtss.qc.ca cicws31 ws31 mc09
-#172.16.133.232  cicws32.douglas.rtss.qc.ca cicws32 ws32 mc10
-#172.16.133.233  cicws33.douglas.rtss.qc.ca cicws33 ws33 mc11
-#172.16.133.234  cicws34.douglas.rtss.qc.ca cicws34 ws34 mc12 cichm01
-#172.16.133.235  cicws35.douglas.rtss.qc.ca cicws35 ws35 mc13
-
-#Other
-#172.16.130.236  cicws36.douglas.rtss.qc.ca cicws36 cictaufiq
-#172.16.130.237  cicws37.douglas.rtss.qc.ca cicws37 cictaufiq2
-
-#Old Workstations
-#172.16.133.201 cicws01.douglas.rtss.qc.ca cicws01 ws01
-#172.16.133.202 cicws02.douglas.rtss.qc.ca cicws02 ws02
-#172.16.133.203 cicws03.douglas.rtss.qc.ca cicws03 ws03
-#172.16.133.204 cicws04.douglas.rtss.qc.ca cicws04 ws04
-#172.16.133.205 cicws05.douglas.rtss.qc.ca cicws05 ws05
-#172.16.133.206 cicws06.douglas.rtss.qc.ca cicws06 ws06
-#172.16.133.207 cicws07.douglas.rtss.qc.ca cicws07 ws07
-#172.16.133.208 cicws08.douglas.rtss.qc.ca cicws08 ws08
-#172.16.133.209 cicws09.douglas.rtss.qc.ca cicws09 ws09
-#172.16.133.210 cicws10.douglas.rtss.qc.ca cicws10 ws10
-#172.16.133.211 cicws11.douglas.rtss.qc.ca cicws11 ws11
-#172.16.133.212 cicws12.douglas.rtss.qc.ca cicws12 ws12
-#172.16.133.213 cicws13.douglas.rtss.qc.ca cicws13 ws13
-#172.16.133.214 cicws14.douglas.rtss.qc.ca cicws14 ws14
-#172.16.133.215 cicws15.douglas.rtss.qc.ca cicws15 ws15
-#172.16.133.216 cicws16.douglas.rtss.qc.ca cicws16 ws16
-#172.16.133.217 cicws17.douglas.rtss.qc.ca cicws17 ws17
-#172.16.133.218 cicws18.douglas.rtss.qc.ca cicws18 ws18
-#172.16.133.219 cicws19.douglas.rtss.qc.ca cicws19 ws19
-
-#Other
-#172.16.133.220  laborajah2.douglas.rtss.qc.ca laborajah2
-#172.16.133.221  laborajah.douglas.rtss.qc.ca laborajah
-
-# the following system is a Biospective server in the Animal MRI scanner lab
-#172.16.133.222  cicws22.douglas.rtss.qc.ca cicws22 ws22
-
-#172.16.133.42  cic2209 # CIC printer in room 2209
-#172.16.133.43  aMRI    # CIC printer in room 1208, Animal MRI console room
-#172.16.133.48  NS10058 cicws58 ws58 # Dell Optiplex 7010
-#172.16.133.65  NS10059 cicws59 ws59 # Dell Optiplex 7010
-#172.16.133.66  NS10062 cicws62 ws62 # Dell laptop
-#172.16.133.59  cic2104 # CIC printer in room 2104
-
-172.16.67.99 ch06doug00006.douglas.rtss.qc.ca # mailhub
-
-#High Mem
-#172.16.133.102 cichm01 cichm01.douglas.rtss.qc.ca

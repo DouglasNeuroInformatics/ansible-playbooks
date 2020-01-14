@@ -1,7 +1,0 @@
-- name: install manual debs
-  apt: deb={{ item }}
-  with_items:
-    - https://launchpad.net/ubuntu/+archive/primary/+files/linux-firmware_1.176_all.deb
-    - http://mirrors.kernel.org/ubuntu/pool/main/libm/libmng/libmng1_1.0.10-3_amd64.deb
-    - http://security.ubuntu.com/ubuntu/pool/main/l/linux-base/linux-base_4.5ubuntu1~16.04.1_all.deb
-    - http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4.3_amd64.deb

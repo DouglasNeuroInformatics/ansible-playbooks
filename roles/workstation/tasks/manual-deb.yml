@@ -1,10 +1,5 @@
 - name: install debs
   apt: deb={{ item }}
   with_items:
-    - https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    - https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb
     - /data/scratch/admin/kyodialog_6.0-0_amd64.deb
   ignore_errors: yes
-
-- name: update nvidia
-  shell: /data/scratch/admin/nvidia-versions/update-nvidia.sh

@@ -30,7 +30,7 @@
     - restart watchdog
 
 - name: enable softdog driver
-  lineinfile: dest=/etc/default/watchdog regexp=^watchdog_module line='watchdog_module="softdog"'
+  lineinfile: dest=/etc/default/watchdog regexp=^watchdog_module line='watchdog_module="iTCO_wdt"'
   notify:
     - restart watchdog
 

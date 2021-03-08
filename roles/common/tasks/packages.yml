@@ -129,11 +129,11 @@
 
 #Fix the lmod package
 #https://bugs.launchpad.net/ubuntu/+source/lua-posix/+bug/1752082
-- name: fix lua symlink
-  file:
-    src: /usr/lib/x86_64-linux-gnu/lua/5.2/posix_c.so
-    dest: /usr/lib/x86_64-linux-gnu/lua/5.2/posix.so
-    state: link
+#- name: fix lua symlink
+#  file:
+#    src: /usr/lib/x86_64-linux-gnu/lua/5.2/posix_c.so
+#    dest: /usr/lib/x86_64-linux-gnu/lua/5.2/posix.so
+#    state: link
 
 - name: Install missing libpng package for rstudio and itksnap
   apt:

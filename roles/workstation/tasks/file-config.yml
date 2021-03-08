@@ -55,6 +55,7 @@
   file:
     src: /usr/share/xsessions/plasma.desktop
     dest: /usr/share/xsessions/0plasma.desktop
+    state: link
 
 - name: Fix kcheckpass
   file:

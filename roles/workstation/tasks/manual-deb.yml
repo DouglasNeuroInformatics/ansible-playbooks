@@ -1,5 +1,12 @@
+- name: Download kyocerya driver
+  unarchive:
+    src: https://ca.kyoceradocumentsolutions.com/content/dam/kdc/kdag/downloads/technical/executables/drivers/kyoceradocumentsolutions/ca/en/KyoceraLinuxPackages-20191115.tar.gz
+    dest: /tmp
+    remote_src: yes
+    creates: /usr/share/kyocera7
+
 - name: install debs
   apt: deb={{ item }}
   with_items:
-    - /data/scratch/admin/kyodialog_6.0-0_amd64.deb
+    - /tmp/Ubuntu/Global/kyodialog_amd64/kyodialog_7.0-0_amd64.deb
   ignore_errors: yes

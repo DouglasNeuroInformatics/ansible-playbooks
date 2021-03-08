@@ -1,5 +1,5 @@
 - name: Install HWE
-  shell: apt-get install --install-recommends linux-generic-hwe-18.04 xserver-xorg-hwe-18.04
+  shell: apt-get install --install-recommends linux-generic-hwe-18.04 xserver-xorg-hwe-18.04 -y
 
 - name: Install workstation apt packages
   apt:

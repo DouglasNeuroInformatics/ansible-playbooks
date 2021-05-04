@@ -1,1 +1,1 @@
-* -fstype=nfs4,v4.1,ro,nodev,hard,intr,sloppy,async,noatime,nodiratime cicss04:/data/&
+* -fstype=nfs4,v4.2,ro,nodev,hard,intr,sloppy,async,noatime,nodiratime cicss04:/data/&

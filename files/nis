@@ -25,7 +25,7 @@ NISMASTER=cicus03
 YPSERVARGS=
 
 # Additional options to be given to ypbind when it is started.  
-YPBINDARGS=-no-dbus
+YPBINDARGS=
 
 # Additional options to be given to yppasswdd when it is started.  Note
 # that if -p is set then the YPPWDDIR above should be empty.

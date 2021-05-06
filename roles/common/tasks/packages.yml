@@ -1,8 +1,7 @@
 - apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
 - name: Install HWE
-  shell: apt-get install --install-recommends linux-generic-hwe-18.04
-
+  shell: apt install --install-recommends linux-generic-hwe-20.04 -y
 
 - name: accept mscorefonts
   debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
@@ -14,6 +13,7 @@
     state: latest
   vars:
     packages:
+    - ccache
     - watchdog
     - ssmtp
     - htop
@@ -52,8 +52,8 @@
     - cabextract
     - gdebi-core
     - dkms
-    - ubuntu-restricted-addons
-    - ubuntu-restricted-extras
+    - kubuntu-restricted-addons
+    - kubuntu-restricted-extras
     - ansible
     - apparmor-profiles-extra
     - apparmor-profiles
@@ -74,10 +74,12 @@
     - cmake-curses-gui
     - gcc
     - gfortran
-    - openjdk-8-jdk
+    - default-jdk
     - git
     - make
+    - ninja-build
     - cpanminus
+    - libpng12-dev
 #Science software
     - environment-modules
     - octave
@@ -103,31 +105,45 @@
     - zlib1g-dev
     - automake
 #mrtrix3 dependencies
-    - python
-    - python-numpy
+    - g++
+    - python-is-python3
     - libeigen3-dev
-    - zlib1g-dev
-    - libqt4-opengl-dev
-    - libgl1-mesa-dev
+    - libqt5opengl5-dev
+    - libqt5svg5-dev
     - libfftw3-dev
     - libtiff5-dev
+    - libpng-dev
 #afni dependencies
     - tcsh
     - xfonts-base
-    - python-qt4
+    - python3-matplotlib
     - gsl-bin
     - netpbm
     - libjpeg62
     - xvfb
-    - libglu1-mesa-dev
+    - xterm
+    - curl
     - libglw1-mesa
     - libxm4
     - libcurl4-openssl-dev
     - libxml2-dev
-    - libssl-dev
-    - libgfortran3
+    - libgfortran-8-dev
+    - libgomp1
+    - xfonts-100dpi
 
-#Fix the lmod package
+#- name: Install clang
+#  apt:
+#    name: "{{ packages }}"
+#    update_cache: yes
+#    state: latest
+#  vars:
+#    packages:
+#    - clang-12
+#    - lldb-12
+#    - lld-12
+#    - clangd-12
+
+#Fix the lmod package for 18.04
 #https://bugs.launchpad.net/ubuntu/+source/lua-posix/+bug/1752082
 #- name: fix lua symlink
 #  file:
@@ -135,9 +151,6 @@
 #    dest: /usr/lib/x86_64-linux-gnu/lua/5.2/posix.so
 #    state: link
 
-- name: Install missing libpng package for rstudio and itksnap
-  apt:
-    deb: http://security.ubuntu.com/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb
 
 #Fix afni being built against a different version of gsl
 #https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html
@@ -152,4 +165,5 @@
   with_items:
     - snapd
 
+#Install missing perl package
 - cpanm: name="Math::Matrix"

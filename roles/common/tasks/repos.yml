@@ -9,6 +9,7 @@
     - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
     - https://dl.xanmod.org/gpg.key
     - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+    - https://apt.llvm.org/llvm-snapshot.gpg.key
 
 - name: apt keys from keyserver
   apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
@@ -39,6 +40,7 @@
     - deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /
     - ppa:linuxuprising/libpng12
     - deb https://apt.repos.intel.com/oneapi all main
+    - deb http://apt.llvm.org/hirsute/   llvm-toolchain-hirsute-12 main
 
 - name: chrome repo
   apt_repository: repo='deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=yes

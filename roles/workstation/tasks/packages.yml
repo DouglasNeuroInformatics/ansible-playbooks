@@ -1,6 +1,3 @@
-- name: Install HWE
-  shell: apt-get install --install-recommends linux-generic-hwe-18.04 xserver-xorg-hwe-18.04 -y
-
 - name: Install workstation apt packages
   apt:
     name: "{{ packages }}"
@@ -9,7 +6,6 @@
     cache_valid_time: 3600
   vars:
     packages:
-      - gle-graphics
       - texlive-full
       - x2goserver
       - x2goserver-xsession
@@ -32,3 +28,6 @@
       - inkscape
       - gimp
       - vlc
+
+- name: Auto-detect and install latest nvidia driver
+  command:  ubuntu-drivers install

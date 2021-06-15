@@ -4,12 +4,8 @@
   roles:
     - common
     - workstation
-    #- gridengine-client
-    #- gridengine-execd
 
 - hosts: computenodes
   become: yes
   roles:
     - common
-    #- gridengine-client
-    #- gridengine-execd

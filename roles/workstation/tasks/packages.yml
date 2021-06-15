@@ -17,7 +17,8 @@
       - feh
       - xfig
       - meshlab
-      - lxde-core
+      - lxqt-core
+      - openbox
       - google-chrome-stable
       - hunspell-en-ca
       - hunspell-en-gb

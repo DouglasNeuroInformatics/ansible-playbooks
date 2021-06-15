@@ -7,8 +7,11 @@
 - name: create place for homdirs
   file: path=/home/cic state=directory
 
-- name : setup auto.master
-  copy: src=files/auto.master dest=/etc/auto.master
+- name: create autofs directory
+  file: path=/etc/auto.master.d state=directory
+
+- name : setup cic.autofs
+  copy: src=files/cic.autofs dest=/etc/auto.master.d
   notify: restart autofs
 
 - name: create /data

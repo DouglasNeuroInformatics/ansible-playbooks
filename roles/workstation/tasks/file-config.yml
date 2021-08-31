@@ -12,36 +12,30 @@
   copy: src={{ item }} dest=/etc/cups/ppd
   with_items:
     - files/Kyocera-Mita-TASKalfa-3253ci-KPDL.ppd
-  tags:
-    - cups
+  notify:
+    - restart cups
+    - restart cups-browsed
 
 - name: install printer.conf
   copy: src=files/printers.conf dest=/etc/cups
   notify:
     - restart cups
-  tags:
-    - cups
+    - restart cups-browsed
 
 - name: install cups-browsed.conf
   copy: src=files/cups-browsed.conf dest=/etc/cups
   notify:
     - restart cups
     - restart cups-browsed
-  tags:
-    - cups
 
 - name: install cupsd.conf
   copy: src=files/cupsd.conf dest=/etc/cups
   notify:
     - restart cups
     - restart cups-browsed
-  tags:
-    - cups
 
 - name: disable cups-browsed
   service: name=cups-browsed enabled=no state=stopped
-  tags:
-    - cups
 
 - name: create sddm config dir
   file:
@@ -61,3 +55,6 @@
   file:
     path: /usr/lib/x86_64-linux-gnu/libexec/kcheckpass
     mode: u+s
+
+- name: Flush handlers
+  meta: flush_handlers

@@ -25,3 +25,9 @@
 
 - name: set nsswitch
   copy: src=files/nsswitch.conf dest=/etc/nsswitch.conf
+
+- name: enable ypbind
+  service: name=ypbind enabled=yes state=started
+
+- name: Flush handlers
+  meta: flush_handlers

@@ -4,6 +4,9 @@
 - name: enable periodic upgrades
   copy: src=files/10periodic dest=/etc/apt/apt.conf.d/
 
+- name: prioritize mozilla ppa
+  copy: src=files/mozillateamppa dest=/etc/apt/preferences.d
+
 - name: config smartmontools
   copy: src=files/smartmontools dest=/etc/default/smartmontools
   notify:
@@ -19,12 +22,6 @@
 
 - name: setup mailhub
   lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^mailhub= line=mailhub=cicus03
-
-- name: enable all locales
-  file: src=/usr/share/i18n/SUPPORTED dest=/var/lib/locales/supported.d/all state=link
-
-- name: generate all locales
-  command: /usr/sbin/locale-gen
 
 - name: watchdog enable
   lineinfile: dest=/etc/default/watchdog regexp=^run_watchdog line=run_watchdog=1

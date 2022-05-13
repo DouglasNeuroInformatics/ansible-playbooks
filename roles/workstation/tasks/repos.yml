@@ -1,0 +1,5 @@
+- name: repos enabled
+  apt_repository: repo='{{item}}' state=present update_cache=no
+  with_items:
+    - ppa:kubuntu-ppa/backports
+    - ppa:kubuntu-ppa/ppa

@@ -1,7 +1,7 @@
 - apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
-- name: Install HWE
-  shell: apt install --install-recommends linux-generic-hwe-20.04 -y
+#- name: Install HWE
+#  shell: apt install --install-recommends linux-generic-hwe-20.04 -y
 
 - name: accept mscorefonts
   debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
@@ -13,6 +13,7 @@
     state: latest
   vars:
     packages:
+    - default-jre-headless
     - ccache
     - watchdog
     - ssmtp
@@ -24,7 +25,7 @@
     - screen
     - apcupsd
     - imagemagick
-    - exfat-utils
+    - exfatprogs
     - ntfs-3g
     - dosfstools
     - xfsprogs
@@ -52,19 +53,17 @@
     - cabextract
     - gdebi-core
     - dkms
-    - kubuntu-restricted-addons
-    - kubuntu-restricted-extras
     - ansible
     - apparmor-profiles-extra
     - apparmor-profiles
     - smartmontools
     - squashfs-tools
-    - singularity-container
     - links2
     - aptitude
     - tree
     - unattended-upgrades
     - nvme-cli
+    - ncdu
 #Development software
     - vim
     - emacs
@@ -79,10 +78,7 @@
     - make
     - ninja-build
     - cpanminus
-    - libpng12-dev
-#Science software
-    - environment-modules
-    - octave
+    #- libpng12-dev
 #Docker
     - docker-ce
     - docker-ce-cli
@@ -127,36 +123,40 @@
     - libxm4
     - libcurl4-openssl-dev
     - libxml2-dev
-    - libgfortran-8-dev
+    #- libgfortran-8-dev
     - libgomp1
     - xfonts-100dpi
-
-#- name: Install clang
-#  apt:
-#    name: "{{ packages }}"
-#    update_cache: yes
-#    state: latest
-#  vars:
-#    packages:
-#    - clang-12
-#    - lldb-12
-#    - lld-12
-#    - clangd-12
-
-#Fix the lmod package for 18.04
-#https://bugs.launchpad.net/ubuntu/+source/lua-posix/+bug/1752082
-#- name: fix lua symlink
-#  file:
-#    src: /usr/lib/x86_64-linux-gnu/lua/5.2/posix_c.so
-#    dest: /usr/lib/x86_64-linux-gnu/lua/5.2/posix.so
-#    state: link
+#lmod dependencies
+    - lua5.3
+    - lua-bit32:amd64
+    - lua-posix:amd64
+    - lua-posix-dev
+    - liblua5.3-0:amd64
+    - liblua5.3-dev:amd64
+    - tcl
+    - tcl-dev
+    - tcl8.6
+    - tcl8.6-dev:amd64
+    - libtcl8.6:amd64
+#SLURM dependencies
+    - libcurl4-openssl-dev
+    - zlib1g-dev
+    - libhwloc-dev
+    - hwloc
+    - libreadline-dev
+    - libpam-dev
+    - libnvidia-ml-dev
+    - man2html-base
+    - libmunge-dev
+    - libmunge2
+    - munge
 
 
 #Fix afni being built against a different version of gsl
 #https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html
 - name: fix libgsl
   file:
-    src: /usr/lib/x86_64-linux-gnu/libgsl.so.23
+    src: /usr/lib/x86_64-linux-gnu/libgsl.so.27
     dest: /usr/lib/x86_64-linux-gnu/libgsl.so.19
     state: link
 

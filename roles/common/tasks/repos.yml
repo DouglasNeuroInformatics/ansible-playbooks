@@ -7,7 +7,7 @@
     - https://download.docker.com/linux/ubuntu/gpg
     - https://dl.winehq.org/wine-builds/Release.key
     - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
-    - https://dl.xanmod.org/gpg.key
+#    - https://dl.xanmod.org/gpg.key
     - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
     - https://apt.llvm.org/llvm-snapshot.gpg.key
 
@@ -21,29 +21,32 @@
     - AAD4AA21729B5780
     - 76F1A20FF987672F
     - A5D32F012649A5A9
+    - A4B469963BF863CC
 
 - name: repos enabled
   apt_repository: repo='{{item}}' state=present update_cache=no
   with_items:
     - ppa:inkscape.dev/stable
-    - ppa:ubuntuhandbook1/gimp
+    #- ppa:ubuntuhandbook1/gimp
     - ppa:ansible/ansible
     - ppa:libreoffice/ppa
-    - ppa:x2go/stable
+    #- ppa:x2go/stable
     - ppa:graphics-drivers/ppa
     - ppa:git-core/ppa
 #    - ppa:jonathonf/backports
-    - deb https://dl.winehq.org/wine-builds/ubuntu/ focal main
+    - deb https://dl.winehq.org/wine-builds/ubuntu/ jammy main
     - deb http://neuro.debian.net/debian data main contrib non-free
-    - deb http://neuro.debian.net/debian focal main contrib non-free
-    - deb http://deb.xanmod.org releases main
-    - deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /
-    - ppa:linuxuprising/libpng12
-    - deb https://apt.repos.intel.com/oneapi all main
-    - deb http://apt.llvm.org/hirsute/   llvm-toolchain-hirsute-12 main
+    - deb http://neuro.debian.net/debian jammy main contrib non-free
+#    - deb http://deb.xanmod.org releases main
+#    - deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /
+    #- ppa:linuxuprising/libpng12
+#    - deb https://apt.repos.intel.com/oneapi all main
+    #- deb http://apt.llvm.org/hirsute/   llvm-toolchain-hirsute-12 main
+    #- ppa:flatpak/stable
+    - ppa:mozillateam/ppa
 
 - name: chrome repo
   apt_repository: repo='deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=yes
 
 - name: docker repo
-  apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable' state=present filename=docker update_cache=yes
+  apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable' state=present filename=docker update_cache=yes

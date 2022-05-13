@@ -1,3 +1,5 @@
 dicom /-
-laborajah3 -fstype=nfs4,v4.2,rw,nodev,hard,sloppy,async,noatime,nodiratime,acl laborajah3:/localdata
-*          -fstype=nfs4,v4.2,rw,nodev,hard,sloppy,async,noatime,nodiratime,acl cicss03:/data/&
+quarantine /-
+laborajah3 -fstype=nfs4,nfsvers=4.2,rw,nodev,soft,async,noatime,nodiratime,tcp laborajah3:/localdata
+scratch    -fstype=nfs4,nfsvers=4.2,rw,nodev,soft,async,noatime,nodiratime,tcp cicss03:/data/scratch
+*          -fstype=nfs4,nfsvers=4.2,rw,nodev,soft,async,noatime,nodiratime,tcp cicss05:/data/&

@@ -1,12 +1,16 @@
 - name: Download kyocerya driver
   unarchive:
-    src: https://ca.kyoceradocumentsolutions.com/content/dam/kdc/kdag/downloads/technical/executables/drivers/kyoceradocumentsolutions/ca/en/KyoceraLinuxPackages-20201222.tar.gz
+    src: https://www.kyoceradocumentsolutions.ca/content/download-center-americas/ca/drivers/drivers/KyoceraLinuxPackages_20220203_tar_gz.download.gz
     dest: /tmp
     remote_src: yes
-    creates: /usr/share/kyocera8
+    creates: /usr/share/kyocera9.1
 
 - name: install debs
   apt: deb={{ item }}
   with_items:
-    - /tmp/Ubuntu/Global/kyodialog_amd64/kyodialog_8.0-0_amd64.deb
+    - /tmp/Ubuntu/Global/kyodialog_amd64/kyodialog_9.1-0_amd64.deb
+    #- https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
+    - https://atom.io/download/deb
+    - https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64
+    - https://zoom.us/client/latest/zoom_amd64.deb
   ignore_errors: yes

@@ -1,0 +1,11 @@
+- name: Install Manual Deb Files
+  apt: deb={{ item }}
+  with_items:
+    - https://github.com/sylabs/singularity/releases/download/v3.10.0-rc.2/singularity-ce_3.10.0-rc.2-jammy_amd64.deb
+  ignore_errors: yes
+
+- name: Download docker-compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: u=rwx,g=rx,o=rx

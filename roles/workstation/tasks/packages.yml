@@ -1,5 +1,5 @@
- - name: dist-upgrade
-   apt: upgrade=dist update_cache=yes autoclean=yes autoremove=yes
+- name: dist-upgrade
+  apt: upgrade=dist update_cache=yes autoclean=yes autoremove=yes
 
 - name: Install workstation apt packages
   apt:
@@ -16,7 +16,10 @@
       - partitionmanager
       - language-pack-en
       - language-pack-fr
-      - language-pack-de
+      - language-pack-gnome-en
+      - language-pack-gnome-fr
+      - gimp-help-en
+      - gimp-help-fr
       - feh
       - xfig
       - meshlab

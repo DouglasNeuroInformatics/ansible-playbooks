@@ -1,11 +1,11 @@
-#- name: configure quarnantine in /etc/bash.bashrc
-#  copy: src=files/bash.bashrc dest=/etc/bash.bashrc
+- name: configure quarnantine in /etc/bash.bashrc
+  copy: src=files/bash.bashrc dest=/etc/bash.bashrc
 
-#- name: Enable lmod
-#  ansible.builtin.file:
-#    src: /opt/quarantine/lmod/lmod/init/profile
-#    dest: /etc/profile.d/z00_lmod.sh
-#    state: link
+- name: Enable lmod
+  ansible.builtin.file:
+    src: /opt/quarantine/lmod/lmod/init/profile
+    dest: /etc/profile.d/z00_lmod.sh
+    state: link
 
 - name: Create local scratch
   file: path=/scratch state=directory mode=u=rwx,g=rwx,o=rwx

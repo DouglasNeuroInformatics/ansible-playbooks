@@ -96,6 +96,7 @@
     - libxmu-headers
     - libgl1-mesa-dev
     - libglu1-mesa-dev
+    - libxrandr-dev
     - libjpeg-dev
     - libssl-dev
     - zlib1g-dev
@@ -150,7 +151,8 @@
     - libmunge-dev
     - libmunge2
     - munge
-
+#MRIcroGL dependencies
+    - libqt5pas1
 
 #Fix afni being built against a different version of gsl
 #https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html

@@ -7,9 +7,9 @@
     - https://download.docker.com/linux/ubuntu/gpg
     - https://dl.winehq.org/wine-builds/Release.key
     - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
-#    - https://dl.xanmod.org/gpg.key
-    - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+    - https://dl.xanmod.org/gpg.key
     - https://apt.llvm.org/llvm-snapshot.gpg.key
+    - https://apt.kitware.com/keys/kitware-archive-latest.asc
 
 - name: apt keys from keyserver
   apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
@@ -27,22 +27,15 @@
   apt_repository: repo='{{item}}' state=present update_cache=no
   with_items:
     - ppa:inkscape.dev/stable
-    #- ppa:ubuntuhandbook1/gimp
     - ppa:ansible/ansible
     - ppa:libreoffice/ppa
     #- ppa:x2go/stable
     - ppa:graphics-drivers/ppa
     - ppa:git-core/ppa
-#    - ppa:jonathonf/backports
     - deb https://dl.winehq.org/wine-builds/ubuntu/ jammy main
     - deb http://neuro.debian.net/debian data main contrib non-free
     - deb http://neuro.debian.net/debian jammy main contrib non-free
-#    - deb http://deb.xanmod.org releases main
-#    - deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /
-    #- ppa:linuxuprising/libpng12
-#    - deb https://apt.repos.intel.com/oneapi all main
-    #- deb http://apt.llvm.org/hirsute/   llvm-toolchain-hirsute-12 main
-    #- ppa:flatpak/stable
+    - deb http://deb.xanmod.org releases main
     - ppa:mozillateam/ppa
 
 - name: chrome repo

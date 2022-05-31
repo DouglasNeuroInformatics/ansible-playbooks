@@ -1,0 +1,6 @@
+- name: Setup virtualgl
+  command: /opt/VirtualGL/bin/vglserver_config +glx -config +s +f +t
+  args:
+    creates: /etc/modprobe.d/virtualgl.conf
+  notify:
+    - reboot machine

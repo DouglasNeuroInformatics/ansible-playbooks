@@ -1,5 +1,10 @@
+- name: config apcupsd.conf
+  copy: src=files/mozillateamppa dest=/etc/apt/preferences.d/mozillateamppa
+
 - name: repos enabled
   apt_repository: repo='{{item}}' state=present update_cache=no
   with_items:
     - ppa:kubuntu-ppa/backports
     - ppa:kubuntu-ppa/ppa
+    - ppa:obsproject/obs-studio
+    - ppa:peek-developers/stable

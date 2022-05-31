@@ -1,5 +1,5 @@
 - name: enable ssh keys
-  authorized_key: user=localadmin key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  authorized_key: user=localadmin key="{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
 
 - {include: hosts.yml, tags: hosts}
 - {include: nis.yml, tags: nis}

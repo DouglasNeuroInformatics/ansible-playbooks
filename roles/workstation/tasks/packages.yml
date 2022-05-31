@@ -34,11 +34,19 @@
       - inkscape
       - gimp
       - vlc
+      - krita
+      - kdenlive
+      - kolourpaint
       - flatpak
       - default-jre
       - firefox
       - kubuntu-restricted-addons
       - kubuntu-restricted-extras
+      - obs-studio
+      - speedcrunch
+      - aeskulap
+      - flameshot
+      - peek
 
 - name: remove problematic software
   apt:  pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600

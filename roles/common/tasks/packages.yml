@@ -1,8 +1,5 @@
 - apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
-#- name: Install HWE
-#  shell: apt install --install-recommends linux-generic-hwe-20.04 -y
-
 - name: accept mscorefonts
   debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
 
@@ -64,6 +61,7 @@
     - unattended-upgrades
     - nvme-cli
     - ncdu
+    - dcmtk
 #Development software
     - vim
     - emacs
@@ -78,7 +76,6 @@
     - make
     - ninja-build
     - cpanminus
-    #- libpng12-dev
 #Docker
     - docker-ce
     - docker-ce-cli

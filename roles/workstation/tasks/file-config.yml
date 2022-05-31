@@ -8,25 +8,6 @@
   notify:
     - restart apcupsd
 
-- name: disable cups-browsed
-  service: name=cups-browsed enabled=no state=stopped
-
-
-- name: Install printer
-  command: lpadmin -p Kyocera-Mita-TASKalfa-3253ci-KPDL -E -L "CIC 2nd Floor Lobby" -m kyocera/Kyocera_TASKalfa_3253ci.ppd -v socket://10.116.134.16:9100 -o "Option17=DF7120" -o "Option19=One"
-  args:
-    creates: /etc/cups/ppd/Kyocera-Mita-TASKalfa-3253ci-KPDL.ppd
-
-- name: Set printer defaults
-  command: lpadmin -p Kyocera-Mita-TASKalfa-3253ci-KPDL -o print-color-mode-default=color -o print-color-mode=color
-
-- name: Set default printer
-  command: lpadmin -d Kyocera-Mita-TASKalfa-3253ci-KPDL
-
-#lpadmin -p Kyocera-Mita-TASKalfa-3253ci-KPDL -E -L "CIC 2nd Floor Lobby" -m kyocera/Kyocera_TASKalfa_3253ci.ppd -v socket://10.116.134.16:9100 -o "Option17=DF7120" -o "Option19=One"
-#lpadmin -d Kyocera-Mita-TASKalfa-3253ci-KPDL
-#lpadmin -p Kyocera-Mita-TASKalfa-3253ci-KPDL -o print-color-mode-default=color
-
 - name: create sddm config dir
   file:
     path: /etc/sddm.conf.d

@@ -30,3 +30,6 @@
 
 - name: regen grub
   shell: update-grub
+
+- name: reboot machine
+  reboot:

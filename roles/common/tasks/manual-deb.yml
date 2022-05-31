@@ -1,7 +1,8 @@
 - name: Install Manual Deb Files
   apt: deb={{ item }}
   with_items:
-    - https://github.com/sylabs/singularity/releases/download/v3.10.0-rc.2/singularity-ce_3.10.0-rc.2-jammy_amd64.deb
+    - https://github.com/sylabs/singularity/releases/download/v3.10.0/singularity-ce_3.10.0-jammy_amd64.deb
+    - https://github.com/davidbannon/libqt5pas/releases/download/v1.2.9/libqt5pas1_2.9-0_amd64.deb
   ignore_errors: yes
 
 - name: Download docker-compose

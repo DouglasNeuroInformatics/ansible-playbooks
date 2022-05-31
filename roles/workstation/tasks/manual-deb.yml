@@ -3,14 +3,14 @@
     src: https://www.kyoceradocumentsolutions.ca/content/download-center-americas/ca/drivers/drivers/KyoceraLinuxPackages_20220203_tar_gz.download.gz
     dest: /tmp
     remote_src: yes
-    creates: /usr/share/kyocera9.1
+    creates: /tmp/Ubuntu/Global/kyodialog_amd64/kyodialog_9.1-0_amd64.deb
 
 - name: install debs
   apt: deb={{ item }}
   with_items:
     - /tmp/Ubuntu/Global/kyodialog_amd64/kyodialog_9.1-0_amd64.deb
-    #- https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
     - https://atom.io/download/deb
     - https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64
     - https://zoom.us/client/latest/zoom_amd64.deb
+    - https://sourceforge.net/projects/virtualgl/files/3.0.1/virtualgl_3.0.1_amd64.deb/download
   ignore_errors: yes

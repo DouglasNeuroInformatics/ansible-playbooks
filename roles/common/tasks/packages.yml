@@ -76,6 +76,7 @@
     - make
     - ninja-build
     - cpanminus
+    - webp
 #Docker
     - docker-ce
     - docker-ce-cli

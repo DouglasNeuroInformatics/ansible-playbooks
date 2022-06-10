@@ -6,6 +6,8 @@
    - name: update apt-get cache
      apt: update_cache=yes
      ignore_errors: yes
+   - name: Auto-detect and install latest nvidia driver
+     command: ubuntu-drivers install
    - name: safe-upgrade
      apt: upgrade=safe  cache_valid_time=3600 autoclean=yes autoremove=yes
    - name: dist-upgrade

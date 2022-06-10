@@ -3,7 +3,7 @@
   notify:
     - restart apcupsd
 
-- name: config apcupsd
+- name: config apcupsd startup
   copy: src=files/apcupsd dest=/etc/default/apcupsd
   notify:
     - restart apcupsd

@@ -4,6 +4,9 @@
 - name: enable periodic upgrades
   copy: src=files/10periodic dest=/etc/apt/apt.conf.d/
 
+- name: disable snapd
+  copy: src=files/nosnap dest=/etc/apt/preferences.d
+
 - name: prioritize mozilla ppa
   copy: src=files/mozillateamppa dest=/etc/apt/preferences.d
 

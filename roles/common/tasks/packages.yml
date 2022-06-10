@@ -1,3 +1,8 @@
+- name: remove problematic software
+  apt:  pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600
+  with_items:
+    - snapd
+
 - apt: upgrade=dist update_cache=yes cache_valid_time=3600
 
 - name: accept mscorefonts
@@ -99,6 +104,7 @@
     - libssl-dev
     - zlib1g-dev
     - automake
+    - zenity
 #mrtrix3 dependencies
     - g++
     - python-is-python3
@@ -160,10 +166,6 @@
     dest: /usr/lib/x86_64-linux-gnu/libgsl.so.19
     state: link
 
-- name: remove problematic software
-  apt:  pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600
-  with_items:
-    - snapd
 
 #Install missing perl package
 - cpanm: name="Math::Matrix"

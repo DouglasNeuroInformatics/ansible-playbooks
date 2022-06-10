@@ -1,3 +1,6 @@
+- name: disable snapd completely
+  copy: src=files/nosnap dest=/etc/apt/preferences.d/nosnap
+
 - name: apt keys from URL
   apt_key: url='{{item}}' state=present
   with_items:
@@ -33,13 +36,13 @@
     - ppa:graphics-drivers/ppa
     - ppa:git-core/ppa
     - deb https://dl.winehq.org/wine-builds/ubuntu/ jammy main
-    - deb http://neuro.debian.net/debian data main contrib non-free
-    - deb http://neuro.debian.net/debian jammy main contrib non-free
-    - deb http://deb.xanmod.org releases main
+    - deb https://neuro.debian.net/debian data main contrib non-free
+    - deb https://neuro.debian.net/debian jammy main contrib non-free
+    - deb https://deb.xanmod.org releases main
     - ppa:mozillateam/ppa
 
 - name: chrome repo
-  apt_repository: repo='deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=yes
+  apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=yes
 
 - name: docker repo
   apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable' state=present filename=docker update_cache=yes

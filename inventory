@@ -2,7 +2,8 @@
 ansible_ssh_user=localadmin
 
 [workstations]
-cicws08
+#cicws08
+cicws11
 cicws15
 cicws40
 #cicws41
@@ -10,6 +11,5 @@ cicws42
 cicws43
 cicws44
 cicws45
-cicws11
 
 [computenodes]

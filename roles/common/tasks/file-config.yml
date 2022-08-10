@@ -1,3 +1,6 @@
+- name: define QUARANTINE_PATH
+  copy: src=files/99quarantine_path.sh dest=/etc/profile.d
+
 - name: enable unattended upgrades
   copy: src=files/50unattended-upgrades dest=/etc/apt/apt.conf.d/
 

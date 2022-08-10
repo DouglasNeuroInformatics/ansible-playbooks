@@ -5,7 +5,7 @@
   apt:
     name: "{{ packages }}"
     update_cache: yes
-    state: latest
+    state: present
     cache_valid_time: 3600
   vars:
     packages:
@@ -47,7 +47,13 @@
       - aeskulap
       - flameshot
       - peek
-      - linux-xanmod
+      - linux-xanmod-lts
+      - freecad
+      - openscad
+      - nvidia-cuda-toolkit
+# Globus connect personal
+      - tk
+      - tcllib
 
 - name: remove problematic software
   apt:  pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600

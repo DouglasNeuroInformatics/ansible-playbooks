@@ -8,11 +8,17 @@
 - name: accept mscorefonts
   debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
 
+- name: default libmkl-rt
+  debconf: name='libmkl-rt' question='libmkl-rt/use-as-default-blas-lapack' value='true' vtype='select'
+
+- name: default libmkl-rt-libs
+  debconf: name='libmkl-rt' question='libmkl-rt/exact-so-3-selections' value='libblas.so.3, liblapack.so.3, libblas64.so.3, liblapack64.so.3' vtype='multiselect'
+
 - name: Install Common APT Packages
   apt:
     name: "{{ packages }}"
     update_cache: yes
-    state: latest
+    state: present
   vars:
     packages:
     - default-jre-headless
@@ -67,6 +73,7 @@
     - nvme-cli
     - ncdu
     - dcmtk
+    - rename
 #Development software
     - vim
     - emacs
@@ -143,7 +150,7 @@
     - tcl8.6
     - tcl8.6-dev:amd64
     - libtcl8.6:amd64
-#SLURM dependencies
+# SLURM dependencies
     - libcurl4-openssl-dev
     - zlib1g-dev
     - libhwloc-dev
@@ -155,8 +162,16 @@
     - libmunge-dev
     - libmunge2
     - munge
-#MRIcroGL dependencies
+# MRIcroGL dependencies
     - libqt5pas1
+# bart
+    - libfftw3-dev
+    - liblapacke-dev
+    - libpng-dev
+    - libopenblas-dev
+    - intel-mkl
+# VTK compile
+    - libglew-dev
 
 #Fix afni being built against a different version of gsl
 #https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html

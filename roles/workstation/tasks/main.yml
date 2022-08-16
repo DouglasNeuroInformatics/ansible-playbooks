@@ -3,3 +3,4 @@
 - {include: manual-deb.yml, tags: software}
 - {include: packages.yml, tags: software}
 - {include: printers.yml, tags: software}
+- {include: vmware.yml, tags: vmware}

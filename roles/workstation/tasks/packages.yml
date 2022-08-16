@@ -50,7 +50,6 @@
       - linux-xanmod-lts
       - freecad
       - openscad
-      - nvidia-cuda-toolkit
 # Globus connect personal
       - tk
       - tcllib

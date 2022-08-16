@@ -5,6 +5,11 @@
     - common
     - workstation
 
+- hosts: nvidia
+  become: yes
+  roles:
+    - nvidia
+
 - hosts: computenodes
   become: yes
   roles:

@@ -28,5 +28,8 @@
 #- name: restart watchdog
 #  service: name=watchdog state=restarted
 
+- name: restart timesyncd
+  service: name=systemd-timesyncd state=restarted
+
 - name: regen grub
   shell: update-grub

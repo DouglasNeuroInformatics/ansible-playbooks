@@ -15,7 +15,7 @@
     - https://apt.kitware.com/keys/kitware-archive-latest.asc
 
 - name: apt keys from keyserver
-  apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
+  apt_key: id={{ item }} keyserver="hkp://keyserver.ubuntu.com:80" state=present
   with_items:
     - 6F036044
     - 7FAC5991

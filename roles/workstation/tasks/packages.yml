@@ -9,6 +9,7 @@
     cache_valid_time: 3600
   vars:
     packages:
+      - cachefilesd
       - texlive-full
       - x2goserver
       - x2goclient

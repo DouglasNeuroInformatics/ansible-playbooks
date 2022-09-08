@@ -8,6 +8,7 @@ cicws08
 cicws11
 cicws13
 cicws15
+cicws16
 cicws19
 cicws27
 cicws33
@@ -22,7 +23,9 @@ cicws48
 dnpws01
 dnpws02
 dnpws03
+dnpws04
 dnpws05
+dnpws06
 
 [computenodes]
 
@@ -33,6 +36,7 @@ cicws08
 cicws11
 cicws13
 cicws15
+cicws16
 cicws19
 cicws27
 cicws33
@@ -45,3 +49,4 @@ cicws46
 cicws47
 cicws48
 dnpws05
+dnpws06

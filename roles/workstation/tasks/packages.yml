@@ -51,19 +51,19 @@
       - linux-xanmod-lts
       - freecad
       - openscad
-# Globus connect personal
+      # Globus connect personal
       - tk
       - tcllib
-# VMWARE Connect
+      # VMWARE Connect
       - libudev0
 
 - name: remove problematic software
-  apt:  pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600
+  apt: pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600
   with_items:
     - ktorrent
 
 - name: Auto-detect and install latest nvidia driver
-  command:  ubuntu-drivers install
+  command: ubuntu-drivers install
 
 - name: Enable flatpak repo
   command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo

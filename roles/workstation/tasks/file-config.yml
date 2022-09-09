@@ -30,5 +30,29 @@
 - name: enable cachefilesd on home
   lineinfile: dest=/etc/default/cachefilesd regexp=^RUN line='RUN=yes'
 
+- name: disable release upgrade notifications
+  lineinfile: dest=/etc/update-manager/release-upgrades regexp=^Prompt line='Prompt=never'
+
+- name: disable KDE autostart of update noficiations
+  file:
+    path: /etc/xdg/autostart/org.kde.discover.notifier.desktop
+    state: absent
+
+- name: disable generic autostart of update noficiations
+  file:
+    path: /etc/xdg/autostart/update-notifier.desktop
+    state: absent
+
+- name: disable ubuntu livepatch notification
+  file:
+    path: /etc/xdg/autostart/ubuntu-advantage-notification.desktop
+    state: absent
+
+
+- name: disable updating update-notifier services
+  file:
+    path: /etc/apt/apt.conf.d/99update-notifier
+    state: absent
+
 - name: Flush handlers
   meta: flush_handlers

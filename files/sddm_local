@@ -1,3 +1,7 @@
+[General]
+HaltCommand=/bin/true
+RebootCommand=/bin/true
+
 [Theme]
 EnableAvatars=false
 DisableAvatarsThreshold=1

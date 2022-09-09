@@ -48,11 +48,15 @@
     path: /etc/xdg/autostart/ubuntu-advantage-notification.desktop
     state: absent
 
-
 - name: disable updating update-notifier services
   file:
     path: /etc/apt/apt.conf.d/99update-notifier
     state: absent
+
+- name: disable shutdown, reboot and suspend
+  copy: src=files/20-disallow-shutdown.pkla dest=/etc/polkit-1/localauthority/50-local.d/20-disallow-shutdown.pkla
+  notify:
+    - restart polkit
 
 - name: Flush handlers
   meta: flush_handlers

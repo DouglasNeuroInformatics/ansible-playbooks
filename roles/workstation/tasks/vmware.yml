@@ -15,5 +15,16 @@
   args:
     creates: /usr/lib/libpcoip_client.so
 
+- name: Unpack VMware USB Redirection
+  ansible.builtin.command: tar xzvf /tmp/VMware-Horizon-Client-Linux-2206-8.6.0-20094634/x64/VMware-Horizon-USB-2206-8.6.0-20094634.x64.tar.gz -C /usr --strip-components=1
+  args:
+    creates: /usr/lib/vmware/view/usb/libvmware-view-usbd.so
+
 - name: config vmware horizon client
   copy: src=files/view-mandatory-config dest=/etc/vmware/
+
+- name: config USB vmware redirection service
+  copy: src=files/vmware-usbarbitrator.service dest=/etc/systemd/system/vmware-usbarbitrator.service
+
+- name: enable USB VMware redirection service
+  service: name=vmware-usbarbitrator enabled=yes state=started

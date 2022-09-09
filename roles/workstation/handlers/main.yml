@@ -33,3 +33,6 @@
 
 - name: reboot machine
   reboot:
+
+- name: restart polkit
+  service: name=polkit state=restarted

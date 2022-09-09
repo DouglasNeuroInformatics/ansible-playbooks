@@ -1,22 +1,21 @@
-- name: Download VMware Horizon Installer
-  unarchive:
-    src: https://download3.vmware.com/software/CART23FQ2_LIN_2206_TARBALL/VMware-Horizon-Client-Linux-2206-8.6.0-20094634.tar.gz
-    dest: /tmp
-    remote_src: yes
-    creates: /usr/bin/vmware-view
+#- name: Download VMware Horizon Installer
+#  unarchive:
+#    src: https://download3.vmware.com/software/CART23FQ2_LIN_2206_TARBALL/VMware-Horizon-Client-Linux-2206-8.6.0-20094634.tar.gz
+#    dest: /data/scratch2/.ansible/vmware
+#    remote_src: yes
 
 - name: Unpack VMware Horizon Client
-  ansible.builtin.command: tar xzvf /tmp/VMware-Horizon-Client-Linux-2206-8.6.0-20094634/x64/VMware-Horizon-Client-2206-8.6.0-20094634.x64.tar.gz -C /usr --strip-components=1
+  ansible.builtin.command: tar xzvf /data/scratch2/.ansible/vmware/VMware-Horizon-Client-Linux-2206-8.6.0-20094634/x64/VMware-Horizon-Client-2206-8.6.0-20094634.x64.tar.gz -C /usr --strip-components=1
   args:
     creates: /usr/bin/vmware-view
 
 - name: Unpack VMware Horizon PCoIP
-  ansible.builtin.command: tar xzvf /tmp/VMware-Horizon-Client-Linux-2206-8.6.0-20094634/x64/VMware-Horizon-PCoIP-2206-8.6.0-20094634.x64.tar.gz -C /usr --strip-components=1
+  ansible.builtin.command: tar xzvf /data/scratch2/.ansible/vmware/VMware-Horizon-Client-Linux-2206-8.6.0-20094634/x64/VMware-Horizon-PCoIP-2206-8.6.0-20094634.x64.tar.gz -C /usr --strip-components=1
   args:
     creates: /usr/lib/libpcoip_client.so
 
 - name: Unpack VMware USB Redirection
-  ansible.builtin.command: tar xzvf /tmp/VMware-Horizon-Client-Linux-2206-8.6.0-20094634/x64/VMware-Horizon-USB-2206-8.6.0-20094634.x64.tar.gz -C /usr --strip-components=1
+  ansible.builtin.command: tar xzvf /data/scratch2/.ansible/vmware/VMware-Horizon-Client-Linux-2206-8.6.0-20094634/x64/VMware-Horizon-USB-2206-8.6.0-20094634.x64.tar.gz -C /usr --strip-components=1
   args:
     creates: /usr/lib/vmware/view/usb/libvmware-view-usbd.so
 
@@ -25,6 +24,10 @@
 
 - name: config USB vmware redirection service
   copy: src=files/vmware-usbarbitrator.service dest=/etc/systemd/system/vmware-usbarbitrator.service
+
+- name: systemd reload files
+  ansible.builtin.systemd:
+    daemon_reload: yes
 
 - name: enable USB VMware redirection service
   service: name=vmware-usbarbitrator enabled=yes state=started

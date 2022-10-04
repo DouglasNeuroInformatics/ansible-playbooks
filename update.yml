@@ -27,5 +27,5 @@
    - name: update-grub
      command: update-grub
    - name: purge configs
-     shell: "dpkg -l | grep '^rc' | awk '{print $2}' | xargs dpkg --purge"
-     ignore_errors: yes
+     shell: "dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge"
+     #ignore_errors: yes

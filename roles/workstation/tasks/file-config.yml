@@ -58,5 +58,13 @@
   notify:
     - restart polkit
 
+
+- name: disable sleep and hibernate
+  copy: src=files/nosleep.conf dest=/etc/systemd/sleep.conf.d/
+
+- name: Just force systemd to reread configs (2.4 and above)
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
 - name: Flush handlers
   meta: flush_handlers

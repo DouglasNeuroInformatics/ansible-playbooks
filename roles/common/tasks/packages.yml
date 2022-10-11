@@ -21,6 +21,7 @@
     state: present
   vars:
     packages:
+    - jq
     - zsh
     - mosh
     - fio

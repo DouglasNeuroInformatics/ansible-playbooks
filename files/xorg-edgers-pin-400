@@ -1,7 +1,0 @@
-Package:  *
-Pin: release o=LP-PPA-xorg-edgers
-Pin-Priority: 400
-
-Package:  *nvidia*
-Pin: release o=LP-PPA-xorg-edgers
-Pin-Priority: 500

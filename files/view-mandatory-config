@@ -1,0 +1,3 @@
+view.autoHideToolbar = "FALSE"
+view.defaultBroker = "horizon.comtl.rtss.qc.ca"
+view.sslVerificationMode = "3"

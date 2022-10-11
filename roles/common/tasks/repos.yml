@@ -1,0 +1,51 @@
+- name: disable snapd completely
+  copy: src=files/nosnap dest=/etc/apt/preferences.d/nosnap
+
+- name: apt keys from URL
+  apt_key: url='{{item}}' state=present
+  with_items:
+    - https://www.virtualbox.org/download/oracle_vbox.asc
+    - https://www.virtualbox.org/download/oracle_vbox_2016.asc
+    - https://dl-ssl.google.com/linux/linux_signing_key.pub
+    - https://download.docker.com/linux/ubuntu/gpg
+    - https://dl.winehq.org/wine-builds/Release.key
+    - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
+    - https://dl.xanmod.org/gpg.key
+    - https://apt.llvm.org/llvm-snapshot.gpg.key
+    - https://apt.kitware.com/keys/kitware-archive-latest.asc
+    - https://xpra.org/xpra-2022.gpg
+    - https://xpra.org/xpra-2018.gpg
+
+- name: apt keys from keyserver
+  apt_key: id={{ item }} keyserver="hkp://keyserver.ubuntu.com:80" state=present
+  with_items:
+    - 6F036044
+    - 7FAC5991
+    - 98AB5139
+    - 2649A5A9
+    - AAD4AA21729B5780
+    - 76F1A20FF987672F
+    - A5D32F012649A5A9
+    - A4B469963BF863CC
+
+- name: repos enabled
+  apt_repository: repo='{{item}}' state=present update_cache=no
+  with_items:
+    - ppa:inkscape.dev/stable
+    - ppa:ansible/ansible
+    - ppa:libreoffice/ppa
+    #- ppa:x2go/stable
+    #- ppa:graphics-drivers/ppa
+    - ppa:git-core/ppa
+    - deb https://dl.winehq.org/wine-builds/ubuntu/ jammy main
+    - deb https://neuro.debian.net/debian data main contrib non-free
+    - deb https://neuro.debian.net/debian jammy main contrib non-free
+    - deb https://deb.xanmod.org releases main
+    - ppa:mozillateam/ppa
+    - deb https://xpra.org/ jammy main
+
+- name: chrome repo
+  apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=yes
+
+- name: docker repo
+  apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable' state=present filename=docker update_cache=yes

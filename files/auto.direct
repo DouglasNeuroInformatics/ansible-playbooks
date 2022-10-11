@@ -1,0 +1,5 @@
+/opt/quarantine -fstype=nfs4,nfsvers=4.2,ro,nodev,soft,async,noatime,nodiratime,tcp cicss05:/data/quarantine2
+
+# Swtich to /etc/fstab with systemd?
+# cicss05:/data/quarantine /opt/quarantine nfs v4.2,rw,nodev,intr,sloppy,async,noatime,nodiratime,noauto,acl,tcp,noauto,x-systemd.automount,x-systemd.device-timeout=10 0 0
+# cicus05:/opt/sge/default /opt/sge/default nfs v4.2,rw,nodev,hard,intr,sloppy,async,noauto,noatime,nodiratime,_netdev,tcp,noauto,x-systemd.automount,x-systemd.device-timeout=10 0 0

@@ -1,0 +1,70 @@
+- name: config apcupsd.conf
+  copy: src=files/apcupsd.conf dest=/etc/apcupsd/apcupsd.conf
+  notify:
+    - restart apcupsd
+
+- name: config apcupsd startup
+  copy: src=files/apcupsd dest=/etc/default/apcupsd
+  notify:
+    - restart apcupsd
+
+- name: create sddm config dir
+  file:
+    path: /etc/sddm.conf.d
+    state: directory
+
+- name: copy sddm config to enable graphical logins
+  copy: src=files/sddm_local dest=/etc/sddm.conf.d
+
+- name: make plasma default
+  file:
+    src: /usr/share/xsessions/plasma.desktop
+    dest: /usr/share/xsessions/0plasma.desktop
+    state: link
+
+- name: Fix kcheckpass
+  file:
+    path: /usr/lib/x86_64-linux-gnu/libexec/kcheckpass
+    mode: u+s
+
+- name: enable cachefilesd on home
+  lineinfile: dest=/etc/default/cachefilesd regexp=^RUN line='RUN=yes'
+
+- name: disable release upgrade notifications
+  lineinfile: dest=/etc/update-manager/release-upgrades regexp=^Prompt line='Prompt=never'
+
+- name: disable KDE autostart of update noficiations
+  file:
+    path: /etc/xdg/autostart/org.kde.discover.notifier.desktop
+    state: absent
+
+- name: disable generic autostart of update noficiations
+  file:
+    path: /etc/xdg/autostart/update-notifier.desktop
+    state: absent
+
+- name: disable ubuntu livepatch notification
+  file:
+    path: /etc/xdg/autostart/ubuntu-advantage-notification.desktop
+    state: absent
+
+- name: disable updating update-notifier services
+  file:
+    path: /etc/apt/apt.conf.d/99update-notifier
+    state: absent
+
+- name: disable shutdown, reboot and suspend
+  copy: src=files/20-disallow-shutdown.pkla dest=/etc/polkit-1/localauthority/50-local.d/20-disallow-shutdown.pkla
+  notify:
+    - restart polkit
+
+
+- name: disable sleep and hibernate
+  copy: src=files/nosleep.conf dest=/etc/systemd/sleep.conf.d/
+
+- name: Just force systemd to reread configs (2.4 and above)
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Flush handlers
+  meta: flush_handlers

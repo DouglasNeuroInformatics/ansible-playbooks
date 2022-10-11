@@ -1,0 +1,14 @@
+- name: Install Manual Deb Files
+  apt: deb={{ item }}
+  with_items:
+    - https://github.com/sylabs/singularity/releases/download/v3.10.0/singularity-ce_3.10.0-jammy_amd64.deb
+    - https://github.com/davidbannon/libqt5pas/releases/download/v1.2.9/libqt5pas1_2.9-0_amd64.deb
+    - http://mirrors.kernel.org/ubuntu/pool/main/t/thermald/thermald_2.5.0-1_amd64.deb
+    - https://github.com/zyedidia/micro/releases/download/v2.0.11/micro-2.0.11-amd64.deb
+  ignore_errors: yes
+
+- name: Download docker-compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/v2.10.2/docker-compose-linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: u=rwx,g=rx,o=rx

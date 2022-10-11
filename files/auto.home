@@ -1,1 +1,1 @@
-cic         -rw,quota,intr    cicus01:/users
+* -fstype=nfs4,v4.2,rw,nodev,hard,sloppy,async,noatime,nodiratime,tcp,fsc cicus03:/tank/users/&

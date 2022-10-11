@@ -1,8 +1,28 @@
-- lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+- name: enable ssh keys
+  authorized_key: user=localadmin key="{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+
 - {include: hosts.yml, tags: hosts}
 - {include: nis.yml, tags: nis}
 - {include: nfs.yml, tags: nfs}
 - {include: quarantine.yml, tags: quarantine}
-  
-- name: enable ssh keys
-  authorized_key: user=localadmin key="{{ lookup('file', '/home/ace/.ssh/id_rsa.pub') }}"
+- {include: repos.yml, tags: software}
+- {include: packages.yml, tags: software}
+- {include: manual-deb.yml, tags: software}
+- {include: file-config.yml, tags: files}
+
+- name: enable sudo with no password for sudoers
+  lineinfile: dest=/etc/sudoers state=present regexp='^%cicadministrators ALL\=' line='%cicadministrators ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+
+- name: Set default locale to en_CA.UTF-8
+  debconf:
+    name: locales
+    question: locales/default_environment_locale
+    value: en_CA.UTF-8
+    vtype: select
+
+- name: Reconfigure apparmor
+  debconf:
+    name: apparmor
+    question: apparmor/homedirs
+    value: /home/cic
+    vtype: string

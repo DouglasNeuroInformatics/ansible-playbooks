@@ -1,25 +1,5 @@
-
-mallar -rw,quota cicss01:/exports/mallar     
-prussner2 -rw,quota cicss01:/exports/pruessner2 
-frqs -rw,quota cicss01:/exports/frqs       
-renaud -rw,quota cicss01:/exports/renaud    
-dicom -rw,quota cicss01:/exports/dicom      
-coubla -rw,quota cicss01:/exports/coubla     
-steiger -rw,quota cicss01:/exports/steiger    
-exec -rw,quota cicss01:/exports/exec       
-cic -rw,quota cicss01:/exports/cic        
-prevent_ad -rw,quota cicss01:/exports/prevent_ad 
-jollant -rw,quota cicss01:/exports/jollant    
-near -rw,quota cicss01:/exports/near       
-chamal -rw,quota cicss01:/exports/chamal     
-giros -rw,quota cicss01:/exports/giros      
-rajah2 -rw,quota cicss01:/exports/rajah2     
-mataxe -rw,quota cicss01:/exports/mataxe     
-berlim -rw,quota cicss01:/exports/berlim     
-walker -rw,quota cicss01:/exports/walker     
-rosa -rw,quota cicss01:/exports/rosa       
-rajah -rw,quota cicss01:/exports/rajah      
-pruessner -rw,quota cicss01:/exports/pruessner  
-lepage -rw,quota cicss01:/exports/lepage     
-admin -rw,quota cicss01:/exports/admin
-lalit -rw,quota cicss01:/exports/lalit
+dicom /-
+quarantine /-
+laborajah3 -fstype=nfs4,nfsvers=4.2,rw,nodev,soft,async,noatime,nodiratime,tcp laborajah3:/localdata
+scratch    -fstype=nfs4,nfsvers=4.2,rw,nodev,soft,async,noatime,nodiratime,tcp cicss03:/data/scratch
+*          -fstype=nfs4,nfsvers=4.2,rw,nodev,soft,async,noatime,nodiratime,tcp cicss05:/data/&

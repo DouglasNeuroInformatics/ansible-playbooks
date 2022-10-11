@@ -1,9 +1,9 @@
 - name: set defaultdomain
   copy: src=files/defaultdomain dest=/etc/defaultdomain
   notify:
-    - restart rpcbind 
+    - restart rpcbind
     - restart ypbind
-  
+
 - name: set ypservers
   copy: src=files/yp.conf dest=/etc/yp.conf
   notify: 
@@ -11,13 +11,23 @@
     - restart ypbind
 
 - name: nis installed
-  apt: pkg=nis state=latest
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - nis
+    - rpcbind
+    - nscd
   notify:
     - restart rpcbind
     - restart ypbind
-  
-- name : set nsswitch
+
+- name: set nis default
+  copy: src=files/nis dest=/etc/default/nis
+
+- name: set nsswitch
   copy: src=files/nsswitch.conf dest=/etc/nsswitch.conf
-  notify:
-    - restart rpcbind 
-    - restart ypbind
+
+- name: enable ypbind
+  service: name=ypbind enabled=yes state=started
+
+- name: Flush handlers
+  meta: flush_handlers

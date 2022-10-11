@@ -1,14 +1,11 @@
-- name: quarantine package
-  apt: pkg=environment-modules state=latest
+- name: configure quarnantine in /etc/bash.bashrc
+  copy: src=files/bash.bashrc dest=/etc/bash.bashrc
 
-- name: copy quarantine profile
-  copy: src=files/quarantine.sh dest=/etc/profile.d
+- name: Enable lmod
+  ansible.builtin.file:
+    src: /opt/quarantine/lmod/lmod/init/profile
+    dest: /etc/profile.d/z00_lmod.sh
+    state: link
 
-- name: enable modules for bash
-  lineinfile: dest=/etc/bash.bashrc line="source /etc/profile.d/modules.sh"
-
-- name: enable quarantine
-  lineinfile: dest=/etc/bash.bashrc line="source /etc/profile.d/quarantine.sh"
-
-- name: quarantine fstab
-  mount:  src="cicss01:/quarantine" name=/opt/quarantine fstype=nfs  opts="vers=4,rw,nodev,hard,intr,hard,intr,sloppy,async"  state=mounted
+- name: Create local scratch
+  file: path=/scratch state=directory mode=u=rwx,g=rwx,o=rwx

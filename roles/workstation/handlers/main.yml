@@ -25,11 +25,14 @@
 - name: restart ssh
   service: name=ssh state=restarted
 
-#- name: restart watchdog
-#  service: name=watchdog state=restarted
-
-- name: restart timesyncd
-  service: name=systemd-timesyncd state=restarted
+- name: restart watchdog
+  service: name=watchdog state=restarted
 
 - name: regen grub
   shell: update-grub
+
+- name: reboot machine
+  reboot:
+
+- name: restart polkit
+  service: name=polkit state=restarted

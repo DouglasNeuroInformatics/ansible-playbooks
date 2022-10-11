@@ -1,7 +1,16 @@
 ---
 - hosts: workstations
-  sudo: yes
+  become: yes
   roles:
     - common
     - workstation
-    - sgeclient
+
+- hosts: nvidia
+  become: yes
+  roles:
+    - nvidia
+
+- hosts: computenodes
+  become: yes
+  roles:
+    - common

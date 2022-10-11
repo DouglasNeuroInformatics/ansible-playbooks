@@ -1,0 +1,22 @@
+- name: install virtualgl
+  apt: deb={{ item }}
+  with_items:
+    - https://sourceforge.net/projects/virtualgl/files/3.0.1/virtualgl_3.0.1_amd64.deb/download
+  ignore_errors: yes
+
+- name: Setup virtualgl
+  command: /opt/VirtualGL/bin/vglserver_config +glx -config +s +f +t
+  args:
+    creates: /etc/modprobe.d/virtualgl.conf
+  notify:
+    - reboot machine
+
+- name: Properly install xorg config for virtualgl
+  ansible.builtin.file:
+    src: /etc/X11/xorg.conf.d/99-virtualgl-dri
+    dest: /etc/X11/xorg.conf.d/99-virtualgl-dri.conf
+    state: link
+
+- name: Enable indirect rendering
+  copy: src=files/99-indirect.conf dest=/etc/X11/xorg.conf.d/99-indirect.conf  
+

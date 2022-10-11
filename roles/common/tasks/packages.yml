@@ -1,0 +1,194 @@
+- name: remove problematic software
+  apt:  pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600
+  with_items:
+    - snapd
+
+- apt: upgrade=dist update_cache=yes cache_valid_time=3600
+
+- name: accept mscorefonts
+  debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
+
+- name: default libmkl-rt
+  debconf: name='libmkl-rt' question='libmkl-rt/use-as-default-blas-lapack' value='true' vtype='select'
+
+- name: default libmkl-rt-libs
+  debconf: name='libmkl-rt' question='libmkl-rt/exact-so-3-selections' value='libblas.so.3, liblapack.so.3, libblas64.so.3, liblapack64.so.3' vtype='multiselect'
+
+- name: Install Common APT Packages
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: present
+  vars:
+    packages:
+    - zsh
+    - mosh
+    - fio
+    - default-jre-headless
+    - ccache
+    - watchdog
+    - ssmtp
+    - htop
+    - iotop
+    - xauth
+    - landscape-common
+    - tmux
+    - screen
+    - apcupsd
+    - imagemagick
+    - exfatprogs
+    - ntfs-3g
+    - dosfstools
+    - xfsprogs
+    - reiserfsprogs
+    - reiser4progs
+    - dmraid
+    - dmsetup
+    - kpartx
+    - cryptsetup
+    - openssh-server
+    - parallel
+    - quota
+    - nmap
+    - lrzip
+    - p7zip-full
+    - unace
+    - unrar
+    - zip
+    - unzip
+    - sharutils
+    - rar
+    - uudeview
+    - mpack
+    - arj
+    - cabextract
+    - gdebi-core
+    - dkms
+    - ansible
+    - apparmor-profiles-extra
+    - apparmor-profiles
+    - smartmontools
+    - squashfs-tools
+    - links2
+    - aptitude
+    - tree
+    - unattended-upgrades
+    - nvme-cli
+    - ncdu
+    - dcmtk
+    - rename
+    - libncurses5
+#Development software
+    - vim
+    - emacs
+    - build-essential
+    - source-highlight
+    - cmake
+    - cmake-curses-gui
+    - gcc
+    - gfortran
+    - default-jdk
+    - git
+    - make
+    - ninja-build
+    - cpanminus
+    - webp
+#Docker
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+#minc-toolkit-v2 build deps
+    - bc
+    - bison
+    - flex
+    - libx11-dev
+    - x11proto-core-dev
+    - libxi6
+    - libxi-dev
+    - libxmu6
+    - libxmu-dev
+    - libxmu-headers
+    - libgl1-mesa-dev
+    - libglu1-mesa-dev
+    - libxrandr-dev
+    - libjpeg-dev
+    - libssl-dev
+    - zlib1g-dev
+    - automake
+    - zenity
+#mrtrix3 dependencies
+    - g++
+    - python-is-python3
+    - libeigen3-dev
+    - libqt5opengl5-dev
+    - libqt5svg5-dev
+    - libfftw3-dev
+    - libtiff5-dev
+    - libpng-dev
+#afni dependencies
+    - tcsh
+    - xfonts-base
+    - python3-matplotlib
+    - gsl-bin
+    - netpbm
+    - libjpeg62
+    - xvfb
+    - xterm
+    - curl
+    - libglw1-mesa
+    - libxm4
+    - libcurl4-openssl-dev
+    - libxml2-dev
+    #- libgfortran-8-dev
+    - libgomp1
+    - xfonts-100dpi
+#lmod dependencies
+    - lua5.3
+    - lua-bit32:amd64
+    - lua-posix:amd64
+    - lua-posix-dev
+    - liblua5.3-0:amd64
+    - liblua5.3-dev:amd64
+    - tcl
+    - tcl-dev
+    - tcl8.6
+    - tcl8.6-dev:amd64
+    - libtcl8.6:amd64
+# SLURM dependencies
+    - libcurl4-openssl-dev
+    - zlib1g-dev
+    - libhwloc-dev
+    - hwloc
+    - libreadline-dev
+    - libpam-dev
+    - libnvidia-ml-dev
+    - man2html-base
+    - libmunge-dev
+    - libmunge2
+    - munge
+# MRIcroGL dependencies
+    - libqt5pas1
+# bart
+    - libfftw3-dev
+    - liblapacke-dev
+    - libpng-dev
+    - libopenblas-dev
+    - intel-mkl
+# VTK compile
+    - libglew-dev
+# fancy python
+    - pipx
+# better remote x
+    - xpra
+
+#Fix afni being built against a different version of gsl
+#https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html
+- name: fix libgsl
+  file:
+    src: /usr/lib/x86_64-linux-gnu/libgsl.so.27
+    dest: /usr/lib/x86_64-linux-gnu/libgsl.so.19
+    state: link
+
+
+#Install missing perl package
+- cpanm: name="Math::Matrix"

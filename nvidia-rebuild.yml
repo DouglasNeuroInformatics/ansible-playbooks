@@ -1,0 +1,22 @@
+- hosts: 
+  - nvidia
+  become: yes
+  tasks:
+   - name: Auto-detect and install latest nvidia driver
+     command: ubuntu-drivers install
+   - name: Fix broken ubuntu-drivers installs
+     shell: "apt install -y $(dpkg -l | grep nvidia-driver- | awk '{print $2}' | sed 's/driver/dkms/g')"
+     ignore_errors: yes
+   - name: safe-upgrade
+     apt: upgrade=safe  cache_valid_time=3600 autoclean=yes autoremove=yes
+   - name: dist-upgrade
+     apt: upgrade=dist  cache_valid_time=3600 autoclean=yes autoremove=yes
+   - name: update-pciids
+     command: update-pciids
+   - name: update-initram-fs
+     command: update-initramfs -k all -c
+   - name: update-grub
+     command: update-grub
+   - name: purge configs
+     shell: "dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge"
+     #ignore_errors: yes

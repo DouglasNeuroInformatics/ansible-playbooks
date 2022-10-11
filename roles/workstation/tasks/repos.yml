@@ -1,0 +1,14 @@
+- name: config use mozilla firefox binary
+  copy: src=files/mozillateamppa dest=/etc/apt/preferences.d/mozillateamppa
+
+- name: disable snapd completely
+  copy: src=files/nosnap dest=/etc/apt/preferences.d/
+
+- name: repos enabled
+  apt_repository: repo='{{item}}' state=present update_cache=no
+  with_items:
+    - ppa:kubuntu-ppa/backports
+    - ppa:kubuntu-ppa/ppa
+    - ppa:obsproject/obs-studio
+    - ppa:peek-developers/stable
+    - ppa:yubico/stable

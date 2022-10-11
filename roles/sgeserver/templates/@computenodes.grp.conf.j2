@@ -1,4 +1,0 @@
-group_name @computenodes
-hostlist {% for host in groups['computenodes'] %}
- {{ host }}.douglas.rtss.qc.ca
-{%- endfor %}

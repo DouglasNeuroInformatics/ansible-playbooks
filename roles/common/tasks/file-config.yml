@@ -1,0 +1,59 @@
+- name: define QUARANTINE_PATH
+  copy: src=files/99quarantine_path.sh dest=/etc/profile.d
+
+- name: enable unattended upgrades
+  copy: src=files/50unattended-upgrades dest=/etc/apt/apt.conf.d/
+
+- name: enable periodic upgrades
+  copy: src=files/10periodic dest=/etc/apt/apt.conf.d/
+
+- name: disable snapd
+  copy: src=files/nosnap dest=/etc/apt/preferences.d
+
+- name: prioritize mozilla ppa
+  copy: src=files/mozillateamppa dest=/etc/apt/preferences.d
+
+- name: config smartmontools
+  copy: src=files/smartmontools dest=/etc/default/smartmontools
+  notify:
+    - restart smartmontools
+
+- name: config smartd.conf
+  copy: src=files/smartd.conf dest=/etc/
+  notify:
+    - restart smartmontools
+
+- name: setup ssmtp
+  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^root= line=root=root@cicus03
+
+- name: setup mailhub
+  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^mailhub= line=mailhub=cicus03
+
+- name: watchdog enable
+  lineinfile: dest=/etc/default/watchdog regexp=^run_watchdog line=run_watchdog=1
+  notify:
+    - restart watchdog
+
+- name: fix timesyncd
+  lineinfile: dest=/etc/systemd/timesyncd.conf regexp="^NTP=" line="NTP=ntp.rtss.qc.ca"
+  notify:
+    - restart timesyncd
+
+- name: enable softdog driver
+  lineinfile: dest=/etc/default/watchdog regexp=^watchdog_module line='watchdog_module="iTCO_wdt"'
+#  notify:
+#    - restart watchdog
+
+- name: watchdog config
+  template: src=watchdog.j2 dest=/etc/watchdog.conf
+#  notify:
+#    - restart watchdog
+
+- name: make-linux-fast-again
+  lineinfile: dest=/etc/default/grub regexp=^GRUB_CMDLINE_LINUX_DEFAULT line='GRUB_CMDLINE_LINUX_DEFAULT="quiet splash noibrs noibpb nopti nospectre_v2 nospectre_v1 l1tf=off nospec_store_bypass_disable no_stf_barrier mds=off tsx=on tsx_async_abort=off mitigations=off zswap.enabled=1 zswap.compressor=zstd zswap.zpool=z3fold"'
+  notify:
+    - regen grub
+
+- name: Flush handlers
+  meta: flush_handlers
+

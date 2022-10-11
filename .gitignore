@@ -1,0 +1,4 @@
+*~
+ansible.log
+*retry
+logs/

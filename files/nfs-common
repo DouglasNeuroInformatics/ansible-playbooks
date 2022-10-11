@@ -13,6 +13,6 @@ NEED_STATD=yes
 STATDOPTS=
 
 # Do you want to start the gssd daemon? It is required for Kerberos mounts.
-NEED_GSSD=yes
+NEED_GSSD=no
 
 NEED_IDMAPD=yes

@@ -1,20 +1,68 @@
-[workstations]
-cicws[23:30] ansible_ssh_user=localadmin
+[all:vars]
+ansible_ssh_user=localadmin
 
-[oldworkstations]
-cicws[01:19]
+[workstations]
+cicws01
+cicws02
+cicws03
+cicws04
+cicws06
+cicws08
+cicws09
+cicws11
+cicws13
+cicws15
+cicws16
+cicws17
+cicws19
+cicws25
+cicws27
+cicws30
+#cicws33
+cicws35
+cicws40
+cicws42
+cicws43
+cicws44
+cicws45
+cicws46
+cicws47
+cicws48
+dnpws01
+dnpws02
+dnpws03
+dnpws04
+dnpws05
+dnpws06
 
 [computenodes]
-ciccs[01:10] ansible_ssh_user=devgab
 
-[fileservers]
-cicss[01:02] ansible_ssh_user=devgab
-
-[loginservers]
-cicus[01:02] ansible_ssh_user=devgab
-
-[backupservers]
-cicbs01 ansible_ssh_user=devgab
-
-[gridengine_clients:children]
-workstations
+[nvidia]
+cicws01
+cicws02
+cicws03
+cicws04
+cicws06
+cicws08
+cicws09
+cicws11
+cicws13
+cicws15
+cicws16
+cicws17
+cicws19
+cicws25
+cicws27
+cicws30
+#cicws33
+cicws35
+cicws40
+cicws42
+cicws43
+cicws44
+cicws45
+cicws46
+cicws47
+cicws48
+dnpws05
+dnpws06

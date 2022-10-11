@@ -21,6 +21,9 @@
     state: present
   vars:
     packages:
+    - zsh
+    - mosh
+    - fio
     - default-jre-headless
     - ccache
     - watchdog
@@ -74,6 +77,7 @@
     - ncdu
     - dcmtk
     - rename
+    - libncurses5
 #Development software
     - vim
     - emacs
@@ -172,6 +176,10 @@
     - intel-mkl
 # VTK compile
     - libglew-dev
+# fancy python
+    - pipx
+# better remote x
+    - xpra
 
 #Fix afni being built against a different version of gsl
 #https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html

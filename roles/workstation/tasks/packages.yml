@@ -9,6 +9,11 @@
     cache_valid_time: 3600
   vars:
     packages:
+      - yubikey-manager
+      - yubikey-personalization-gui
+      - libpam-yubico
+      - libpam-u2f
+      - yubioath-desktop
       - cachefilesd
       - texlive-full
       - x2goserver
@@ -56,6 +61,7 @@
       - tcllib
       # VMWARE Connect
       - libudev0
+      - flameshot
 
 - name: remove problematic software
   apt: pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600

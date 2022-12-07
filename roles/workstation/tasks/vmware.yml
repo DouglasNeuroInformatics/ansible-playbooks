@@ -22,6 +22,9 @@
 - name: config vmware horizon client
   copy: src=files/view-mandatory-config dest=/etc/vmware/
 
+- name: vmware daemon config
+  copy: src=files/vmware_config dest=/etc/vmware/config
+
 - name: config USB vmware redirection service
   copy: src=files/vmware-usbarbitrator.service dest=/etc/systemd/system/vmware-usbarbitrator.service
 

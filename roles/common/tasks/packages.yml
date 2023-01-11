@@ -167,7 +167,6 @@
     - hwloc
     - libreadline-dev
     - libpam-dev
-    - libnvidia-ml-dev
     - man2html-base
     - libmunge-dev
     - libmunge2

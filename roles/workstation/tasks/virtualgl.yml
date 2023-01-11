@@ -1,7 +1,7 @@
 - name: install virtualgl
   apt: deb={{ item }}
   with_items:
-    - https://sourceforge.net/projects/virtualgl/files/3.0.1/virtualgl_3.0.1_amd64.deb/download
+    - /data/scratch2/.ansible/virtualgl/virtualgl.deb
   ignore_errors: yes
 
 - name: Setup virtualgl
@@ -16,7 +16,3 @@
     src: /etc/X11/xorg.conf.d/99-virtualgl-dri
     dest: /etc/X11/xorg.conf.d/99-virtualgl-dri.conf
     state: link
-
-- name: Enable indirect rendering
-  copy: src=files/99-indirect.conf dest=/etc/X11/xorg.conf.d/99-indirect.conf  
-

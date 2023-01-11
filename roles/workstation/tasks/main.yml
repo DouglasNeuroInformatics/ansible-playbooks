@@ -4,3 +4,4 @@
 - {include: file-config.yml, tags: files}
 - {include: printers.yml, tags: software}
 - {include: vmware.yml, tags: vmware}
+- {include: virtualgl.yml, tags: virtualgl}

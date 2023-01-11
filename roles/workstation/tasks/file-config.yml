@@ -58,6 +58,10 @@
   notify:
     - restart polkit
 
+- name: disable networkmanager
+  copy: src=files/20-disallow-networkmanager.pkla dest=/etc/polkit-1/localauthority/50-local.d/20-disallow-networkmanager.pkla
+  notify:
+    - restart polkit
 
 - name: disable sleep and hibernate
   copy: src=files/nosleep.conf dest=/etc/systemd/sleep.conf.d/

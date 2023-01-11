@@ -1,0 +1,6 @@
+[Prevent users from modifying all network states and settings]
+Identity=unix-user:*
+Action=org.freedesktop.NetworkManager.*
+ResultAny=no
+ResultInactive=no
+ResultActive=no

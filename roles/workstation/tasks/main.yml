@@ -1,4 +1,4 @@
-- {include: repos.yml, tags: software}
+- {include: repos.yml, tags: repos}
 - {include: manual-deb.yml, tags: software}
 - {include: packages.yml, tags: software}
 - {include: file-config.yml, tags: files}

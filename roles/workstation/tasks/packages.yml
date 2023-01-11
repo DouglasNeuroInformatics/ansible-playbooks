@@ -71,6 +71,9 @@
     - ktorrent
     - cachefilesd
 
+- name: Fix ubuntu-drivers
+  copy: src=files/detect.py dest=/usr/lib/python3/dist-packages/UbuntuDrivers/detect.py
+
 - name: Auto-detect and install latest nvidia driver
   command: ubuntu-drivers install
 

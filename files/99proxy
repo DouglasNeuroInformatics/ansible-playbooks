@@ -1,0 +1,2 @@
+Acquire::http::proxy "http://cicus03:8000";
+Acquire::https::proxy "http://cicus03:8000";

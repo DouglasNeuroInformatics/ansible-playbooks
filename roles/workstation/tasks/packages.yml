@@ -9,12 +9,13 @@
     cache_valid_time: 3600
   vars:
     packages:
+      - brave-browser
+      - gnuplot-qt
       - yubikey-manager
       - yubikey-personalization-gui
       - libpam-yubico
       - libpam-u2f
       - yubioath-desktop
-      - cachefilesd
       - texlive-full
       - x2goserver
       - x2goclient
@@ -30,6 +31,7 @@
       - xfig
       - meshlab
       - lxqt-core
+      - lxde-core
       - google-chrome-stable
       - hunspell-en-ca
       - hunspell-en-gb
@@ -67,9 +69,15 @@
   apt: pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600
   with_items:
     - ktorrent
+    - cachefilesd
 
 - name: Auto-detect and install latest nvidia driver
   command: ubuntu-drivers install
 
 - name: Enable flatpak repo
   command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+- name: default chrome for browser
+  community.general.alternatives:
+    name: x-www-browser
+    path: /usr/bin/google-chrome-stable

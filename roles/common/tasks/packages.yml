@@ -21,6 +21,10 @@
     state: present
   vars:
     packages:
+    - lz4
+    - nfs4-acl-tools
+    - awscli
+    - datalad
     - jq
     - zsh
     - mosh
@@ -117,6 +121,7 @@
     - zlib1g-dev
     - automake
     - zenity
+    - libxxf86vm-dev
 #mrtrix3 dependencies
     - g++
     - python-is-python3
@@ -181,6 +186,9 @@
     - pipx
 # better remote x
     - xpra
+# rootless docker
+    - uidmap
+
 
 #Fix afni being built against a different version of gsl
 #https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html

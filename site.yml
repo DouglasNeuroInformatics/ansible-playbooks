@@ -1,5 +1,6 @@
 ---
 - hosts: workstations
+  strategy: free
   become: yes
   roles:
     - common

@@ -1,5 +1,8 @@
 - name: disable snapd completely
-  copy: src=files/nosnap dest=/etc/apt/preferences.d/nosnap
+  copy: src=files/nosnap dest=/etc/apt/preferences.d/
+
+- name: disable nvidia open drivers
+  copy: src=files/nonvidiaopen dest=/etc/apt/preferences.d/
 
 - name: apt keys from URL
   apt_key: url='{{item}}' state=present

@@ -1,0 +1,4 @@
+# Disable the nvidia*open packages, which are broken but preferentially installed by ubuntu-drivers
+Package: nvidia*open
+Pin: release a=*
+Pin-Priority: -10

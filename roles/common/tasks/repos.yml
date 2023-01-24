@@ -18,6 +18,8 @@
     - https://apt.kitware.com/keys/kitware-archive-latest.asc
     - https://xpra.org/xpra-2022.gpg
     - https://xpra.org/xpra-2018.gpg
+    - https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+    - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
 
 - name: apt keys from keyserver
   apt_key: id={{ item }} keyserver="hkp://keyserver.ubuntu.com:80" state=present
@@ -30,22 +32,23 @@
     - 76F1A20FF987672F
     - A5D32F012649A5A9
     - A4B469963BF863CC
+    - 18ADB31CF18AD6BB
 
 - name: repos enabled
-  apt_repository: repo='{{item}}' state=present update_cache=no
+  apt_repository: repo='{{item}}' state=present update_cache=yes
   with_items:
     - ppa:inkscape.dev/stable
     - ppa:ansible/ansible
     - ppa:libreoffice/ppa
     #- ppa:x2go/stable
-    #- ppa:graphics-drivers/ppa
+    - ppa:graphics-drivers/ppa
     - ppa:git-core/ppa
     - deb https://dl.winehq.org/wine-builds/ubuntu/ jammy main
     - deb https://neuro.debian.net/debian data main contrib non-free
     - deb https://neuro.debian.net/debian jammy main contrib non-free
     - deb https://deb.xanmod.org releases main
     - ppa:mozillateam/ppa
-    - deb https://xpra.org/ jammy main
+    - deb [arch=amd64]  https://xpra.org/ jammy main
 
 - name: chrome repo
   apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=yes

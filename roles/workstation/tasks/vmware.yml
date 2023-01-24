@@ -33,4 +33,4 @@
     daemon_reload: yes
 
 - name: enable USB VMware redirection service
-  service: name=vmware-usbarbitrator enabled=yes state=started
+  service: name=vmware-usbarbitrator enabled=yes state=restarted

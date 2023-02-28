@@ -10,4 +10,6 @@
     cache_valid_time: 3600
   vars:
     packages:
-      - nvidia-cuda-toolkit
+      - libcublas11
+      - libcufftw10
+      - libcufft10

@@ -20,6 +20,8 @@
     - https://xpra.org/xpra-2018.gpg
     - https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
     - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+    - https://raw.githubusercontent.com/retorquere/zotero-deb/master/zotero-archive-keyring.asc
+    - https://download.qgis.org/downloads/qgis-archive-keyring.gpg
 
 - name: apt keys from keyserver
   apt_key: id={{ item }} keyserver="hkp://keyserver.ubuntu.com:80" state=present
@@ -49,6 +51,10 @@
     - deb https://deb.xanmod.org releases main
     - ppa:mozillateam/ppa
     - deb [arch=amd64]  https://xpra.org/ jammy main
+    - ppa:alex-p/solvespace
+    - ppa:freecad-maintainers/freecad-stable
+    - deb https://zotero.retorque.re/file/apt-package-archive ./
+    - deb https://qgis.org/debian jammy
 
 - name: chrome repo
   apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=yes

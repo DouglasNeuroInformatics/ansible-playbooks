@@ -27,9 +27,6 @@
     path: /usr/lib/x86_64-linux-gnu/libexec/kcheckpass
     mode: u+s
 
-- name: enable cachefilesd on home
-  lineinfile: dest=/etc/default/cachefilesd regexp=^RUN line='RUN=yes'
-
 - name: disable release upgrade notifications
   lineinfile: dest=/etc/update-manager/release-upgrades regexp=^Prompt line='Prompt=never'
 

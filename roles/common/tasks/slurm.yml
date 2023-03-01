@@ -1,0 +1,109 @@
+- name: Installing SLURM Dependencies
+  apt:
+    name:
+      - chrpath
+      - hdf5-helpers
+      - hwloc
+      - libcurl4-openssl-dev
+      - libdbus-1-dev
+      - libfreeipmi-dev
+      - libgtk2.0-dev
+      - libhdf5-dev
+      - libhdf5-openmpi-dev
+      - libhttp-parser-dev
+      - libhwloc-dev
+      - libipmimonitoring-dev
+      - libjson-c-dev
+      - libjwt-dev
+      - liblua5.1-0-dev
+      - liblz4-dev
+      - libmunge2
+      - libmunge-dev
+      - libncurses5-dev
+      - libpam0g-dev
+      - libpam-dev
+      - libperl-dev
+      - libreadline-dev
+      - librrd-dev
+      - libyaml-dev
+      - man2html-base
+      - munge
+      - numactl
+      - rng-tools
+      - zlib1g-dev
+    update_cache: yes
+
+
+- name: Check if current version is installed
+  stat:
+    path: "{{ slurm_prefix_path}}/sbin/slurmd"
+  register: slurmd_installed
+
+- name: Get SLURM sources
+  ansible.builtin.unarchive:
+    src: "{{ slurm_tarball_url }}"
+    dest: "/tmp"
+    remote_src: yes
+  when: not slurmd_installed.stat.exists
+  register: slurm_source_unpack
+
+- name: Configuring SLURM source
+  command: "./configure --prefix={{ slurm_prefix_path }} --sysconfdir={{ slurm_conf_dir }} --with-nvml=/opt/quarantine/software/cuda/12.0/install"
+  args:
+    chdir: "{{ slurm_src_dir }}"
+  when: slurm_source_unpack is changed
+  register: slurm_configure
+
+- name: Installing SLURM
+  become: yes
+  shell: make -j {{ ansible_processor_vcpus }} && make install && make -j {{ ansible_processor_vcpus }} contrib && make install-contrib
+  args:
+    chdir: "{{ slurm_src_dir }}"
+  when: slurm_configure is changed
+
+#    - "{{ slurm_src_dir }}/etc/*service"
+#        - "{{ slurm_src_dir }}/etc/slurmctld.service"
+#        - "{{ slurm_src_dir }}/etc/slurmdbd.service"
+#        - "{{ slurm_src_dir }}/etc/slurmd.service"
+#        - "{{ slurm_src_dir }}/etc/slurmrestd.service"
+
+- name: Copy SLURM service files
+  become: yes
+  copy:
+    src: "{{ slurm_src_dir }}/etc/slurmd.service"
+    dest: /etc/systemd/system
+    remote_src: true
+  when: slurm_configure is changed
+
+- name: Fix paths in servicefiles
+  ansible.builtin.replace:
+    path: "{{ slurm_src_dir }}/etc/slurmd.service"
+    regexp: "{{ slurm_version }}"
+    replace: 'current'
+  ignore_errors: true
+
+- name: Link the install to the current
+  ansible.builtin.file:
+    src: /opt/slurm/{{ slurm_version }}
+    dest: /opt/slurm/current
+    state: link
+
+- name: Create SLURM logs directory
+  ansible.builtin.file:
+    path: /opt/slurm/logs
+    state: directory
+
+- name: Install munge key
+  copy: src=files/munge.key dest=/etc/munge/munge.key
+
+- name: restart munge
+  systemd: state=restarted enabled=true name=munge daemon_reload=yes
+
+- name: install slurm default config
+  copy: src=files/default.slurmd dest=/etc/default/slurmd
+
+- name: install slurm path
+  copy: src=files/99slurm_path.sh dest=/etc/profile.d/
+
+- name: enable slurmd
+  systemd: state=restarted enabled=true name=slurmd daemon_reload=yes

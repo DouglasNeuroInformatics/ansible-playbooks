@@ -1,5 +1,7 @@
 ---
 - hosts: workstations
+  vars_files:
+    - vars/slurm.yml
   strategy: free
   become: yes
   roles:

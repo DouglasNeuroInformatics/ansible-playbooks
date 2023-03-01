@@ -1,0 +1,7 @@
+slurm_version: 22.05.6
+slurm_tarball_url: "https://download.schedmd.com/slurm/slurm-{{ slurm_version }}.tar.bz2"
+slurm_src_dir: "/tmp/slurm-{{ slurm_version }}"
+slurm_sbin_path: "/opt/slurm/current/sbin/slurmd"
+slurm_conf_path: "/opt/slurm/etc/slurm.conf"
+slurm_conf_dir: "/opt/slurm/etc"
+slurm_prefix_path: "/opt/slurm/{{ slurm_version }}"

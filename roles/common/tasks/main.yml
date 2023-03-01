@@ -5,10 +5,12 @@
 - {include: nis.yml, tags: nis}
 - {include: nfs.yml, tags: nfs}
 - {include: quarantine.yml, tags: quarantine}
-- {include: repos.yml, tags: software}
+- {include: repos.yml, tags: repos}
 - {include: packages.yml, tags: software}
+- {include: qbatch.yml, tags: [software,qbatch] }
 - {include: manual-deb.yml, tags: software}
 - {include: file-config.yml, tags: files}
+- {include: slurm.yml, tags: slurm}
 
 - name: enable sudo with no password for sudoers
   lineinfile: dest=/etc/sudoers state=present regexp='^%cicadministrators ALL\=' line='%cicadministrators ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
@@ -24,5 +26,5 @@
   debconf:
     name: apparmor
     question: apparmor/homedirs
-    value: /home/cic
+    value: /home/cic/
     vtype: string

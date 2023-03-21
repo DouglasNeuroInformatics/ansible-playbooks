@@ -1,6 +1,7 @@
 - {include: repos.yml, tags: repos}
 - {include: manual-deb.yml, tags: software}
 - {include: packages.yml, tags: software}
+- {include: flatpak.yml, tags: [software, flatpak]}
 - {include: file-config.yml, tags: files}
 - {include: printers.yml, tags: software}
 - {include: vmware.yml, tags: vmware}

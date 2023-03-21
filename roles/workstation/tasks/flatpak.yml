@@ -1,0 +1,77 @@
+---
+- name: flatpak repo
+  apt_repository: repo='ppa:flatpak/stable' state=present update_cache=yes
+
+- name: Install flatpak
+  ansible.builtin.apt:
+    name: flatpak
+    state: latest
+
+- name: Add the flathub flatpak repository remote to the system installation
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+- name: Install multiple packages
+  community.general.flatpak:
+    name:
+      - org.gimp.GIMP
+      - org.inkscape.Inkscape
+      - org.jamovi.jamovi
+      - org.jaspstats.JASP
+      - org.qgis.qgis/x86_64/stable
+      - com.solvespace.SolveSpace
+      - org.freecadweb.FreeCAD
+      - org.zotero.Zotero
+      - org.videolan.VLC
+      - com.zettlr.Zettlr
+      - md.obsidian.Obsidian
+      - org.openscad.OpenSCAD
+      - net.meshlab.MeshLab
+
+- name: Setup permissions on flatpaks properly
+  command: flatpak override --filesystem=host {{ item }}
+  with_items:
+    - "org.gimp.GIMP"
+    - "org.inkscape.Inkscape"
+    - "org.jamovi.jamovi"
+    - "org.jaspstats.JASP"
+    - "org.qgis.qgis"
+    - "com.solvespace.SolveSpace"
+    - "org.freecadweb.FreeCAD"
+    - "org.zotero.Zotero"
+    - "org.videolan.VLC"
+    - "com.zettlr.Zettlr"
+    - "md.obsidian.Obsidian"
+    - "org.openscad.OpenSCAD"
+    - "net.meshlab.MeshLab"
+
+- name: Remove flatpak managed packages
+  ansible.builtin.apt:
+    state: absent
+    autoremove: yes
+    pkg:
+      - vlc
+      - gimp
+      - inkscape
+      - freecad
+      - zotero
+      - solvespace
+      - qgis
+      - zettlr
+      - openscad
+      - meshlab
+
+- name: Install flatpak update service file
+  copy: src=files/flatpak-update.service dest=/etc/systemd/system
+
+- name: Install flatpak update timer
+  copy: src=files/flatpak-update.timer dest=/etc/systemd/system
+
+- name: Just force systemd to reread configs (2.4 and above)
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: enable flatpak update timer
+  systemd: state=started enabled=true name=flatpak-update daemon_reload=yes

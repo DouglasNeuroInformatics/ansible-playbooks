@@ -1,0 +1,12 @@
+[Unit]
+Description=Update Flatpak
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/flatpak update --noninteractive --assumeyes
+ExecStartPost=/usr/bin/flatpak uninstall --unused
+
+[Install]
+WantedBy=multi-user.target

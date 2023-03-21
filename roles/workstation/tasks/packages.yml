@@ -29,7 +29,6 @@
       - gimp-help-fr
       - feh
       - xfig
-      - meshlab
       - lxqt-core
       - lxde-core
       - google-chrome-stable
@@ -39,9 +38,6 @@
       - hunspell-fr
       - libreoffice
       - libreoffice-style-breeze
-      - inkscape
-      - gimp
-      - vlc
       - krita
       - kdenlive
       - kolourpaint
@@ -56,18 +52,12 @@
       - flameshot
       - peek
       - linux-xanmod-lts
-      - freecad
-      - solvespace
-      - openscad
       # Globus connect personal
       - tk
       - tcllib
       # VMWARE Connect
       - libudev0
       - flameshot
-      - zotero
-      - qgis
-      - qgis-plugin-grass
 
 - name: remove problematic software
   apt: pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600

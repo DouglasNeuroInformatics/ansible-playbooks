@@ -4,45 +4,55 @@
 - name: disable nvidia open drivers
   copy: src=files/nonvidiaopen dest=/etc/apt/preferences.d/
 
-- name: apt keys from URL
-  apt_key: url='{{item}}' state=present
-  with_items:
-    - https://www.virtualbox.org/download/oracle_vbox.asc
-    - https://www.virtualbox.org/download/oracle_vbox_2016.asc
-    - https://dl-ssl.google.com/linux/linux_signing_key.pub
-    - https://download.docker.com/linux/ubuntu/gpg
-    - https://dl.winehq.org/wine-builds/Release.key
-    - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
-    - https://dl.xanmod.org/gpg.key
-    - https://apt.llvm.org/llvm-snapshot.gpg.key
-    - https://apt.kitware.com/keys/kitware-archive-latest.asc
-    - https://xpra.org/xpra-2022.gpg
-    - https://xpra.org/xpra-2018.gpg
-    - https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-    - https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-    - https://raw.githubusercontent.com/retorquere/zotero-deb/master/zotero-archive-keyring.asc
-    - https://download.qgis.org/downloads/qgis-archive-keyring.gpg
+- name: downoad apt keys to trusted.gpg.d
+  vars:
+    list_one:
+      - https://www.virtualbox.org/download/oracle_vbox.asc
+      - https://dl-ssl.google.com/linux/linux_signing_key.pub
+      - https://download.docker.com/linux/ubuntu/gpg
+      - https://dl.winehq.org/wine-builds/winehq.key
+      - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
+      - https://dl.xanmod.org/gpg.key
+      - https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+      - https://xpra.org/xpra-2022.gpg
+      - https://apt.llvm.org/llvm-snapshot.gpg.key
+      - https://apt.kitware.com/keys/kitware-archive-latest.asc
+    list_two:
+      - oracle_vbox.asc
+      - google_linux_signing_key.asc
+      - docker.asc
+      - wine.asc
+      - nvidia_cuda.asc
+      - xanmod.asc
+      - brave-browser-archive-keyring.gpg
+      - xpra-2022.gpg
+      - llvm.asc
+      - kitware.asc
+  get_url:
+    url: "{{ item.0 }}"
+    dest: "/etc/apt/trusted.gpg.d/{{ item.1 }}"
+  loop: "{{ list_one | zip(list_two) | list }}"
 
 - name: apt keys from keyserver
-  apt_key: id={{ item }} keyserver="hkp://keyserver.ubuntu.com:80" state=present
+  apt_key:
+    id: "{{ item }}"
+    keyserver: "hkp://keyserver.ubuntu.com:80"
+    state: present
+    keyring: /etc/apt/trusted.gpg.d/{{ item }}.gpg
   with_items:
-    - 6F036044
-    - 7FAC5991
-    - 98AB5139
-    - 2649A5A9
-    - AAD4AA21729B5780
-    - 76F1A20FF987672F
+    - 93C4A3FD7BB9C367
+    - B8B9D41229DFA5F5
+    - A1715D88E1DF1F24
+    - FCAE110B1118213C
+    - 83FBA1751378B444
+    - 9BDB3D89CE49EC21
     - A5D32F012649A5A9
-    - A4B469963BF863CC
-    - 18ADB31CF18AD6BB
 
 - name: repos enabled
   apt_repository: repo='{{item}}' state=present update_cache=yes
   with_items:
-    - ppa:inkscape.dev/stable
     - ppa:ansible/ansible
     - ppa:libreoffice/ppa
-    #- ppa:x2go/stable
     - ppa:graphics-drivers/ppa
     - ppa:git-core/ppa
     - deb https://dl.winehq.org/wine-builds/ubuntu/ jammy main
@@ -50,11 +60,10 @@
     - deb https://neuro.debian.net/debian jammy main contrib non-free
     - deb https://deb.xanmod.org releases main
     - ppa:mozillateam/ppa
-    - deb [arch=amd64]  https://xpra.org/ jammy main
-    - ppa:alex-p/solvespace
-    - ppa:freecad-maintainers/freecad-stable
-    - deb https://zotero.retorque.re/file/apt-package-archive ./
-    - deb https://qgis.org/debian jammy
+    - deb [arch=amd64] https://xpra.org/ jammy main
+    - ppa:flatpak/stable
+    - deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main
+    - deb https://apt.kitware.com/ubuntu/ jammy main
 
 - name: chrome repo
   apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=yes

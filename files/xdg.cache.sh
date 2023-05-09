@@ -14,3 +14,6 @@ if [ -d "${XDG_CACHE_HOME}" ]; then
 else
   mkdir -p "${XDG_CACHE_HOME}"
 fi
+
+export FLATPAK_USER_DIR="/scratch/${USER}/flatpak"
+mkdir -p ${FLATPAK_USER_DIR}

@@ -1,3 +1,6 @@
+- name: config chrome extensions
+  copy: src=files/chrome-extensions.json dest=/etc/opt/chrome/policies/managed/
+
 - name: config apcupsd.conf
   copy: src=files/apcupsd.conf dest=/etc/apcupsd/apcupsd.conf
   notify:

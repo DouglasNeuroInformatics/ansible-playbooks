@@ -1,8 +1,8 @@
 - name: nfs-common installed
-  apt:  pkg=nfs-common state=latest
+  apt:  pkg=nfs-common state=present
 
 - name: autofs installed
-  apt: pkg=autofs state=latest
+  apt: pkg=autofs state=present
 
 - name: create place for homdirs
   file: path=/home/cic state=directory

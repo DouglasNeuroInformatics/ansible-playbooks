@@ -5,7 +5,7 @@
 - name: Install flatpak
   ansible.builtin.apt:
     name: flatpak
-    state: latest
+    state: present
 
 - name: Add the flathub flatpak repository remote to the system installation
   community.general.flatpak_remote:
@@ -29,6 +29,7 @@
       - md.obsidian.Obsidian
       - org.openscad.OpenSCAD
       - net.meshlab.MeshLab
+      - io.github.nroduit.Weasis
 
 - name: Setup permissions on flatpaks properly
   command: flatpak override --filesystem=host {{ item }}
@@ -46,6 +47,7 @@
     - "md.obsidian.Obsidian"
     - "org.openscad.OpenSCAD"
     - "net.meshlab.MeshLab"
+    - "io.github.nroduit.Weasis"
 
 - name: Remove flatpak managed packages
   ansible.builtin.apt:

@@ -57,12 +57,17 @@
   copy: src=files/xdg.cache.sh dest=/etc/profile.d
 
 - name: disable shutdown, reboot and suspend
-  copy: src=files/20-disallow-shutdown.pkla dest=/etc/polkit-1/localauthority/50-local.d/20-disallow-shutdown.pkla
+  copy: src=files/20-disallow-shutdown.pkla dest=/etc/polkit-1/localauthority/50-local.d/
   notify:
     - restart polkit
 
 - name: disable networkmanager
-  copy: src=files/20-disallow-networkmanager.pkla dest=/etc/polkit-1/localauthority/50-local.d/20-disallow-networkmanager.pkla
+  copy: src=files/20-disallow-networkmanager.pkla dest=/etc/polkit-1/localauthority/50-local.d/
+  notify:
+    - restart polkit
+
+- name: fix udisks2 for usb keys
+  copy: src=files/20-udisk-users.pkla dest=/etc/polkit-1/localauthority/50-local.d/
   notify:
     - restart polkit
 

@@ -65,8 +65,8 @@
 - name: Auto-detect and install latest nvidia driver
   command: ubuntu-drivers install
 
-- name: Enable flatpak repo
-  command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+- name: Install kernel
+  ansible.builtin.script: bin/install_kernel.sh
 
 - name: default chrome for browser
   community.general.alternatives:

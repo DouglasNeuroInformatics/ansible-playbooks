@@ -1,9 +1,8 @@
-- name: remove problematic software
-  apt:  pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600
-  with_items:
-    - snapd
+- name: disable ubuntu pro messages
+  command: pro config set apt_news=false
 
-- apt: upgrade=dist update_cache=yes cache_valid_time=3600
+- name: remove snapd software
+  apt:  pkg=snapd state=absent
 
 - name: accept mscorefonts
   debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
@@ -16,11 +15,10 @@
 
 - name: Install Common APT Packages
   apt:
-    name: "{{ packages }}"
     update_cache: yes
+    cache_valid_time: 3600
     state: present
-  vars:
-    packages:
+    pkg:
     - lz4
     - nfs4-acl-tools
     - awscli
@@ -32,6 +30,7 @@
     - default-jre-headless
     - ccache
     - watchdog
+    - mailutils
     - ssmtp
     - htop
     - iotop
@@ -83,6 +82,7 @@
     - dcmtk
     - rename
     - libncurses5
+    - mdadm
 #Development software
     - vim
     - emacs
@@ -98,10 +98,12 @@
     - ninja-build
     - cpanminus
     - webp
-#Docker
+# Docker
     - docker-ce
     - docker-ce-cli
     - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin
 #minc-toolkit-v2 build deps
     - bc
     - bison
@@ -209,3 +211,20 @@
 
 #Install missing perl package
 - cpanm: name="Math::Matrix"
+
+#Pipx packages
+- name: ensure /opt/pipx
+  ansible.builtin.file:
+    path: /opt/pipx
+    state: directory
+    mode: 0755
+
+- name: install pipx packages
+  community.general.pipx:
+    name: "{{ item }}"
+    state: present
+  environment:
+    PIPX_HOME: /opt/pipx
+    PIPX_BIN_DIR: /usr/local/bin
+  with_items:
+    - rsyncy

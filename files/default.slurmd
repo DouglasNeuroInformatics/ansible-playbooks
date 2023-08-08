@@ -8,4 +8,4 @@
 #SLURMCTLD_OPTIONS=""
 
 # Additional options that are passed to the slurmd daemon
-SLURMD_OPTIONS="-Z --conf-server cicus03.douglas.rtss.qc.ca --conf 'Gres=gpu:nvidia Feature=workstation'"
+SLURMD_OPTIONS="-Z --conf-server cicus03.douglas.rtss.qc.ca --conf 'Gres=gpu:geforce Feature=workstation'"

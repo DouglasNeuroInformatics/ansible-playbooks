@@ -1,6 +1,7 @@
 - name: Installing SLURM Dependencies
   apt:
-    name:
+    state: present
+    pkg:
       - chrpath
       - hdf5-helpers
       - hwloc
@@ -21,8 +22,8 @@
       - libmunge-dev
       - libncurses5-dev
       - libpam0g-dev
-      - libpam-dev
       - libperl-dev
+      - libpam-dev
       - libreadline-dev
       - librrd-dev
       - libyaml-dev
@@ -48,7 +49,7 @@
   register: slurm_source_unpack
 
 - name: Configuring SLURM source
-  command: "./configure --prefix={{ slurm_prefix_path }} --sysconfdir={{ slurm_conf_dir }} --with-nvml=/opt/quarantine/software/cuda/12.0/install"
+  command: "./configure --prefix={{ slurm_prefix_path }} --sysconfdir={{ slurm_conf_dir }} --enable-pam --with-nvml=/opt/quarantine/software/cuda/9.1/install"
   args:
     chdir: "{{ slurm_src_dir }}"
   when: slurm_source_unpack is changed
@@ -81,12 +82,14 @@
     regexp: "{{ slurm_version }}"
     replace: 'current'
   ignore_errors: true
+  when: slurm_configure is changed
 
 - name: Link the install to the current
   ansible.builtin.file:
     src: /opt/slurm/{{ slurm_version }}
     dest: /opt/slurm/current
     state: link
+    force: yes
 
 - name: Create SLURM logs directory
   ansible.builtin.file:

@@ -10,9 +10,3 @@
     creates: /etc/modprobe.d/virtualgl.conf
   notify:
     - reboot machine
-
-- name: Properly install xorg config for virtualgl
-  ansible.builtin.file:
-    src: /etc/X11/xorg.conf.d/99-virtualgl-dri
-    dest: /etc/X11/xorg.conf.d/99-virtualgl-dri.conf
-    state: link

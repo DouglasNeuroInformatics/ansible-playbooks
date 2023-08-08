@@ -17,3 +17,5 @@ fi
 
 export FLATPAK_USER_DIR="/scratch/${USER}/flatpak"
 mkdir -p ${FLATPAK_USER_DIR}
+
+export XDG_DATA_DIRS=${FLATPAK_USER_DIR}/exports/share:${XDG_DATA_DIRS}

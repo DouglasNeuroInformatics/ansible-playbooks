@@ -11,8 +11,9 @@
     - restart ypbind
 
 - name: nis installed
-  apt: pkg={{ item }} state=latest
-  with_items:
+  apt:
+    state: present
+    pkg:
     - nis
     - rpcbind
     - nscd

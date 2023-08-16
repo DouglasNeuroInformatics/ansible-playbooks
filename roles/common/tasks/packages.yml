@@ -1,6 +1,3 @@
-- name: disable ubuntu pro messages
-  command: pro config set apt_news=false
-
 - name: remove snapd software
   apt:  pkg=snapd state=absent
 
@@ -33,7 +30,7 @@
     - mailutils
     - ssmtp
     - htop
-    - iotop
+    - iotop-c
     - xauth
     - landscape-common
     - tmux

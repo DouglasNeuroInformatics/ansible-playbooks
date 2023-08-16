@@ -1,3 +1,16 @@
+- name: disable ubuntu pro messages
+  command: pro config set apt_news=false
+
+- name: Remove esm spam
+  ansible.builtin.file:
+    path: /etc/apt/apt.conf.d/20apt-esm-hook.conf
+    state: absent
+
+- name: Remove old keyfile
+  ansible.builtin.file:
+    path: /etc/apt/trusted.gpg
+    state: absent
+
 - name: disable snapd completely
   copy: src=files/nosnap dest=/etc/apt/preferences.d/
 
@@ -14,7 +27,7 @@
       - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
       - https://dl.xanmod.org/gpg.key
       - https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-      - https://xpra.org/xpra-2022.gpg
+      - https://xpra.org/xpra.asc
       - https://apt.llvm.org/llvm-snapshot.gpg.key
       - https://apt.kitware.com/keys/kitware-archive-latest.asc
     list_two:
@@ -25,7 +38,7 @@
       - nvidia_cuda.asc
       - xanmod.asc
       - brave-browser-archive-keyring.gpg
-      - xpra-2022.gpg
+      - xpra.asc
       - llvm.asc
       - kitware.asc
   get_url:
@@ -40,13 +53,22 @@
     state: present
     keyring: /etc/apt/trusted.gpg.d/{{ item }}.gpg
   with_items:
-    - 93C4A3FD7BB9C367
-    - B8B9D41229DFA5F5
-    - A1715D88E1DF1F24
-    - FCAE110B1118213C
+    - 005EAE8119BB5BCA
+    - 2836CB0A8AC93F7A
+    - 43D5C49532CBA1A9
+    - 76F1A20FF987672F
+    - 7EA0A9C3F273FCD8
     - 83FBA1751378B444
+    - 86F7D09EE734E623
+    - 93C4A3FD7BB9C367
+    - 9578539176BAFBC6
     - 9BDB3D89CE49EC21
+    - 9DA4BD18B9A06DE3
+    - A1715D88E1DF1F24
+    - A4BCBD87CEF9E52D
     - A5D32F012649A5A9
+    - EFC71127F425E228
+    - FCAE110B1118213C
 
 - name: repos enabled
   apt_repository: repo='{{item}}' state=present update_cache=yes
@@ -66,7 +88,7 @@
     - deb https://apt.kitware.com/ubuntu/ jammy main
 
 - name: chrome repo
-  apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=yes
+  apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no
 
 - name: docker repo
-  apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable' state=present filename=docker update_cache=yes
+  apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable' state=present filename=docker update_cache=no

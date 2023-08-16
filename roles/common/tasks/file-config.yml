@@ -27,10 +27,13 @@
     - restart smartmontools
 
 - name: setup ssmtp
-  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^root= line=root=root@cicus03
+  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^root= line=root=gdevenyi@gmail.com
 
 - name: setup mailhub
-  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^mailhub= line=mailhub=cicus03
+  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^mailhub= line=mailhub=relaissmtp.rtss.qc.ca
+
+- name: setup domain
+  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^rewriteDomain= line=rewriteDomain=douglas.mcgill.ca
 
 - name: watchdog enable
   lineinfile: dest=/etc/default/watchdog regexp=^run_watchdog line=run_watchdog=1

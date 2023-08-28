@@ -1,16 +1,16 @@
 - name: enable ssh keys
   authorized_key: user=localadmin key="{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
 
-- {include: hosts.yml, tags: hosts}
-- {include: nis.yml, tags: nis}
-- {include: nfs.yml, tags: nfs}
-- {include: quarantine.yml, tags: quarantine}
-- {include: repos.yml, tags: repos}
-- {include: packages.yml, tags: software}
-- {include: qbatch.yml, tags: [software,qbatch] }
-- {include: manual-deb.yml, tags: software}
-- {include: file-config.yml, tags: files}
-- {include: slurm.yml, tags: slurm}
+- {import_tasks: hosts.yml, tags: hosts}
+- {import_tasks: nis.yml, tags: nis}
+- {import_tasks: nfs.yml, tags: nfs}
+- {import_tasks: quarantine.yml, tags: quarantine}
+- {import_tasks: repos.yml, tags: repos}
+- {import_tasks: packages.yml, tags: software}
+- {import_tasks: qbatch.yml, tags: [software,qbatch] }
+- {import_tasks: manual-deb.yml, tags: software}
+- {import_tasks: file-config.yml, tags: files}
+- {import_tasks: slurm.yml, tags: slurm}
 
 - name: enable sudo with no password for sudoers
   lineinfile: dest=/etc/sudoers state=present regexp='^%cicadministrators ALL\=' line='%cicadministrators ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'

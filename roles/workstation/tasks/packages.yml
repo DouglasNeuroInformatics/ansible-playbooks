@@ -69,7 +69,7 @@
   ansible.builtin.script: bin/install_kernel.sh
 
 - name: Hold nvidia and linux packages from upgrade
-  command: 'apt-mark hold "*nvidia* linux*"'
+  command: 'apt-mark hold *nvidia* linux*'
 
 - name: default chrome for browser
   community.general.alternatives:

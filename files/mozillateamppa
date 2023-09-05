@@ -1,3 +1,7 @@
-Package: firefox*
+Package: *
 Pin: release o=LP-PPA-mozillateam
-Pin-Priority: 501
+Pin-Priority: 1001
+
+Package: firefox
+Pin: version 1:1snap1-0ubuntu2
+Pin-Priority: -1

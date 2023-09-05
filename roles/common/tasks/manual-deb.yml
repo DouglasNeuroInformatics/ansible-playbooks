@@ -7,9 +7,3 @@
     - https://github.com/zyedidia/micro/releases/download/v2.0.11/micro-2.0.11-amd64.deb
     - https://github.com/fboender/ansible-cmdb/releases/download/1.31/ansible-cmdb-1.31.deb
   ignore_errors: yes
-
-- name: Download docker-compose
-  get_url:
-    url: https://github.com/docker/compose/releases/download/v2.10.2/docker-compose-linux-x86_64
-    dest: /usr/local/bin/docker-compose
-    mode: u=rwx,g=rx,o=rx

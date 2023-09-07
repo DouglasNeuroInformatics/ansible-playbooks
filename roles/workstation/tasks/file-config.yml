@@ -11,6 +11,12 @@
   notify:
     - restart apcupsd
 
+- name: copy custom apcupsd onbattery script for cicws13
+  copy: src=files/apcupsd_onbattery_cicws13 dest=/etc/apcupsd/onbattery
+  notify:
+    - restart apcupsd
+  when: inventory_hostname == "cicws13"
+
 - name: create sddm config dir
   file:
     path: /etc/sddm.conf.d

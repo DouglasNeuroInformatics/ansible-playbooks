@@ -120,6 +120,7 @@
     - automake
     - zenity
     - libxxf86vm-dev
+    - pipenv
 #mrtrix3 dependencies
     - g++
     - python-is-python3
@@ -195,7 +196,7 @@
     - libcusolver11
     - libcusolvermg11
     - libcusparse11
-    
+
 #Fix afni being built against a different version of gsl
 #https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html
 - name: fix libgsl

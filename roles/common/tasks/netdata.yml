@@ -3,15 +3,15 @@
 - name: Download the installation script
   get_url:
     url: https://my-netdata.io/kickstart.sh
-    dest: ~/kickstart.sh
+    dest: /tmp/kickstart.sh
     mode: +x
 
 - name: Install Netdata
-  command: ~/kickstart.sh --dont-wait
+  command: /tmp/kickstart.sh --dont-wait
 
 - name: Cleanup installation script
   file:
-    path: ~/kickstart.sh
+    path: /tmp/kickstart.sh
     state: absent
 
 - name: Set hostname variable

@@ -26,7 +26,7 @@
     dest: /etc/netdata/netdata.conf
     owner: root
     group: root
-    mode: u=wrx,g=rx,o=r,+x
+    mode: u=rw,g=r,o=r
   notify: Restart Netdata
   become: true
 

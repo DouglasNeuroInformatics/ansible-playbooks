@@ -44,16 +44,12 @@
 - name: Re-claim a node to Netdata Cloud
   block:
 
-  - name: Ensure `uuidgen` is installed
-    stat:
-      path: /usr/bin/uuidgen
-    register: uuidgen_result
-
-  - name: Fail if `uuidgen` is not installed
-    fail:
-      msg: The system needs `uuidgen` installed to enable re-claiming.
-    when: uuidgen_result.stat.exists == false
-
+  - name: Ensure `uuid-runtime` is installed
+    apt:
+      name: uuid-runtime
+      state: present
+    become: true
+    
   - name: Reclaim the node with `-id=`
     shell: netdata-claim.sh -token={{ claim_token }} -rooms={{ claim_rooms }} -url={{ claim_url }} -id=$(uuidgen)
     when: uuidgen_result.stat.exists == true

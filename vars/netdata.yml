@@ -22,6 +22,6 @@ claim_token: !vault |
           336462383065373838333838303365343437
 
 claim_url: "https://app.netdata.cloud"
-dbengine_multihost_disk_space: "50G"
+dbengine_multihost_disk_space: "10G"
 web_mode: "basic"
 reclaim: false

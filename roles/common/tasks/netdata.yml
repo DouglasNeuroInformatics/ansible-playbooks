@@ -8,6 +8,8 @@
 
 - name: Install Netdata
   command: /tmp/kickstart.sh --dont-wait
+  args:
+    creates: /etc/netdata
 
 - name: Cleanup installation script
   file:

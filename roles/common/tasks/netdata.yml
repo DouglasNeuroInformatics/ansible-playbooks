@@ -18,8 +18,8 @@
 
 - name: Set hostname variable
   set_fact:
-    hostname: "{{ inventory_hostname | default('localhost') }}"
-
+    hostname: "{{ ansible_facts['ansible_hostname'] }}"
+      
 # configure netdata
 - template:
     src: ../templates/netdata.conf.j2

@@ -16,10 +16,6 @@
     path: /tmp/kickstart.sh
     state: absent
 
-- name: Set hostname variable
-  set_fact:
-    hostname: "{{ ansible_facts['ansible_hostname'] }}"
-      
 # configure netdata
 - template:
     src: ../templates/netdata.conf.j2

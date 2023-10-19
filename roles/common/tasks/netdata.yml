@@ -24,7 +24,6 @@
     group: root
     mode: u=rw,g=r,o=r
   notify: Restart Netdata
-  become: true
 
 #claim node and add it to netdata cloud
 - name: Claim to Netdata Cloud
@@ -34,24 +33,20 @@
     shell:
       cmd: netdata-claim.sh -token={{ claim_token }} -rooms={{ claim_rooms }} -url={{ claim_url }}
       creates: /var/lib/netdata/cloud.d/claimed_id
-    become: yes
   when: reclaim == false
 
 - name: Re-claim a node to Netdata Cloud
   block:
-
   - name: Ensure `uuid-runtime` is installed
     apt:
       name: uuid-runtime
       state: present
-    become: true
-    
+
   - name: Reclaim the node with `-id=`
     shell: netdata-claim.sh -token={{ claim_token }} -rooms={{ claim_rooms }} -url={{ claim_url }} -id=$(uuidgen)
     when: uuidgen_result.stat.exists == true
     notify: Restart Netdata
-    become: yes
-    when: reclaim == true
+  when: reclaim == true
 
 # copy custom health checks
 - name: Copy apcupdsd_last_collect health check

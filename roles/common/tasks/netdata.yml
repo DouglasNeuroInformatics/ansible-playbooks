@@ -49,6 +49,10 @@
   when: reclaim == true
 
 # copy custom health checks
-- name: Copy apcupdsd_last_collect health check
-  copy: src=files/netdata-apcupsd.conf dest=/etc/netdata/health.d/apcupsd.conf
+- name: Copy custom health check
+  copy: src={{ item.0 }} dest={{ item.1 }}
+  with_together:
+    - [ 'files/netdata-apcupsd.conf', 'files/system_uptime.conf' ]
+    - [ '/etc/netdata/health.d/apcupsd.conf', '/etc/netdata/health.d/' ]
   notify: Restart Netdata
+

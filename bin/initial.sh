@@ -8,7 +8,8 @@ if [ "$#" -ne 1 ]; then
 fi
 set -euo pipefail
 
-ansible-playbook -K -k -v -i inventory initial-setup.yml --limit $1
-ansible-playbook -v -i inventory site.yml --limit $1 --ask-vault-password
-ansible-playbook -v -i inventory update.yml --limit $1
-ansible -b -m reboot all --limit ${1}
+hostname=${1}
+echo ansible-playbook -K -k -v -i inventory initial-setup.yml --limit "${hostname}"
+echo ansible-playbook -v -i inventory site.yml --limit "${hostname}" --ask-vault-password
+echo ansible-playbook -v -i inventory update.yml --limit "${hostname}"
+echo ansible -b -m reboot all --limit "${hostname}"

@@ -70,6 +70,7 @@
     - EFC71127F425E228
     - FCAE110B1118213C
     - B8B9D41229DFA5F5
+    - FC918B335044912E
 
 - name: repos enabled
   apt_repository: repo='{{item}}' state=present update_cache=yes

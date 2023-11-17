@@ -15,6 +15,7 @@
     update_cache: yes
     state: present
     pkg:
+    - neovim
     - btop
     - apt-file
     - lz4

@@ -15,6 +15,7 @@
     update_cache: yes
     state: present
     pkg:
+    - python3-pip
     - neovim
     - btop
     - apt-file
@@ -123,7 +124,6 @@
     - automake
     - zenity
     - libxxf86vm-dev
-    - pipenv
 #mrtrix3 dependencies
     - g++
     - python-is-python3
@@ -228,3 +228,4 @@
     PIPX_BIN_DIR: /usr/local/bin
   with_items:
     - rsyncy
+    - pipenv

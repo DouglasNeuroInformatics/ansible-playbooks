@@ -56,3 +56,6 @@
     - [ '/etc/netdata/health.d/apcupsd.conf', '/etc/netdata/health.d/' ]
   notify: Restart Netdata
 
+- name: Copy base config
+  copy: src=files/health_alarm_notify.conf dest=/etc/netdata/health_alarm_notify.conf
+  notify: Restart Netdata

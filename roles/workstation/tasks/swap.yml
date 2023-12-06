@@ -1,0 +1,37 @@
+#Get the current swap size and avaliable disk space
+  - name: Verify current swap size
+    ansible.builtin.shell:
+      cmd: swapon --show | grep /swapfile | awk '{print $3}' | sed 's/.$//'
+    register: swapSize
+
+  - name: Check for sufficient disk space for a 128G swapfile
+    ansible.builtin.shell:
+      cmd:  if [ $(df / --output=avail | sed 1d) -gt 200000000 ]; then echo "enoughSpace"; fi
+    register: diskSpace
+
+#resize /swapfile file when its current size < 128G and there is at least 200G of disk space
+  - block:
+    - name: Turn off swap
+      ansible.builtin.command:
+        cmd: swapoff /swapfile
+      ignore_errors: true
+
+    #use fallocate because it's siginificantly faster than dd
+    - name: Create a 128GB swap file
+      ansible.builtin.shell:
+        cmd: fallocate -l 128G /swapfile
+
+    - name: Set swap file permissions
+      ansible.builtin.file:
+        path="/swapfile" owner="root" group="root" mode="0600"
+
+    - name: Format the file for swap
+      ansible.builtin.command:
+        cmd: mkswap /swapfile
+
+    - name: Turn on swap
+      ansible.builtin.command:
+        cmd: swapon /swapfile
+
+    when: (swapSize.stdout | int < 128) and (diskSpace.stdout == "enoughSpace")
+

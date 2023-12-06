@@ -6,3 +6,4 @@
 - {import_tasks: printers.yml, tags: software}
 - {import_tasks: vmware.yml, tags: vmware}
 - {import_tasks: virtualgl.yml, tags: virtualgl}
+- {import_tasks: swap.yml, tags: swap}

@@ -86,3 +86,7 @@
 
 - name: Flush handlers
   meta: flush_handlers
+
+- name: redirect xsession error file
+  copy: src=files/89-xsession-errorfile dest=/etc/X11/Xsession.d/
+

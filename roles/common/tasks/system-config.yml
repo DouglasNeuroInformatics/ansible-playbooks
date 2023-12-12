@@ -1,0 +1,4 @@
+- name: Update root user GECOS field for email readability
+  ansible.builtin.user:
+    name: root
+    comment: "root@{{ ansible_facts['nodename'] }}"

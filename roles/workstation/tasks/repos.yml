@@ -13,3 +13,4 @@
     - ppa:peek-developers/stable
     - ppa:yubico/stable
     - deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main
+    - ppa:lubuntu-dev/backports

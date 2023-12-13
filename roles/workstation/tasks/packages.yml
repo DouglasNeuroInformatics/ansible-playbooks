@@ -72,7 +72,7 @@
 - name: Hold nvidia and linux packages from upgrade
   shell: 'apt-mark hold *nvidia* linux* > /dev/null'
 
-- name: default chrome for browser
+- name: default firefox for browser
   community.general.alternatives:
     name: x-www-browser
-    path: /usr/bin/google-chrome-stable
+    path: /usr/bin/firefox

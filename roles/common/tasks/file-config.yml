@@ -57,6 +57,13 @@
   notify:
     - regen grub
 
+- name: improve shutdown/reboot timeout
+  community.general.ini_file:
+    path: /etc/systemd/system.conf
+    section: Manager
+    option: DefaultTimeoutStopSec
+    value: 10s
+
 - name: Flush handlers
   meta: flush_handlers
 

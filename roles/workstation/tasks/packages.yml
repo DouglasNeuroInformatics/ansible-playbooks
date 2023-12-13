@@ -4,6 +4,7 @@
     state: present
     cache_valid_time: 3600
     pkg:
+      - meld
       - brave-browser
       - gnuplot-qt
       - yubikey-manager
@@ -54,6 +55,8 @@
       - flameshot
       - dconf-editor
       - pspp
+      - sassc
+      - autokey-gtk
 
 - name: remove problematic software
   apt: pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600

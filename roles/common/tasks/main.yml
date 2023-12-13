@@ -1,5 +1,9 @@
 - name: enable ssh keys
-  authorized_key: user=localadmin key="{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+  authorized_key: user=localadmin key="{{ lookup('file', 'files/beatom.pub') }}"
+
+- name: enable ssh keys
+  authorized_key: user=localadmin key="{{ lookup('file', 'files/devgab.pub') }}"
+
 
 - {import_tasks: hosts.yml, tags: hosts}
 - {import_tasks: nis.yml, tags: nis}

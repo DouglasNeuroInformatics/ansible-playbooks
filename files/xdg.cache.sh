@@ -15,7 +15,17 @@ else
   mkdir -p "${XDG_CACHE_HOME}"
 fi
 
+# Custom user flatpak dir
 export FLATPAK_USER_DIR="/scratch/${USER}/flatpak"
 mkdir -p ${FLATPAK_USER_DIR}
 
 export XDG_DATA_DIRS=${FLATPAK_USER_DIR}/exports/share:${XDG_DATA_DIRS}
+
+# Conda Caching
+export CONDA_PKGS_DIRS=${XDG_CACHE_HOME}/.condapkg
+mkdir -p  ${CONDA_PKGS_DIRS}
+
+# Singularity and apptainer
+export APPTAINER_CACHEDIR=${XDG_CACHE_HOME}/.apptainer
+export SINGULARITY_CACHEDIR=${XDG_CACHE_HOME}/.singularity
+mkdir -p ${APPTAINER_CACHEDIR} ${SINGULARITY_CACHEDIR}

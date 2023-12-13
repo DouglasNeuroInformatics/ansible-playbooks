@@ -83,6 +83,8 @@
     - rename
     - libncurses5
     - mdadm
+    - libpam-tmpdir
+    - libnss-myhostname
 #Development software
     - vim
     - emacs

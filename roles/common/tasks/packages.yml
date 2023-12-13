@@ -31,7 +31,8 @@
     - ccache
     - watchdog
     - mailutils
-    - ssmtp
+    - msmtp-mta
+    - msmtp
     - htop
     - iotop-c
     - xauth

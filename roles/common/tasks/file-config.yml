@@ -26,14 +26,11 @@
   notify:
     - restart smartmontools
 
-- name: setup ssmtp
-  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^root= line=root=gdevenyi@gmail.com
+- name: configure msmtp
+  copy: src=files/msmtprc dest=/etc/msmtprc
 
-- name: setup mailhub
-  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^mailhub= line=mailhub=relaissmtp.rtss.qc.ca
-
-- name: setup domain
-  lineinfile: dest=/etc/ssmtp/ssmtp.conf regexp=^rewriteDomain= line=rewriteDomain=douglas.mcgill.ca
+- name: configure aliases
+  copy: src=files/aliases dest=/etc/aliases
 
 - name: watchdog enable
   lineinfile: dest=/etc/default/watchdog regexp=^run_watchdog line=run_watchdog=1

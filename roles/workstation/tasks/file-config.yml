@@ -86,3 +86,11 @@
 
 - name: Flush handlers
   meta: flush_handlers
+
+- name: enable sysrq key
+  ansible.builtin.copy:
+    dest: "/etc/sysctl.d/99-reisub.conf"
+    content: |
+      # enable sysrq key to hard reboot: https://forum.endeavouros.com/t/tip-enable-magic-sysrq-key-reisub/7576
+      kernel.sysrq = 1
+  notify: reload sysctl

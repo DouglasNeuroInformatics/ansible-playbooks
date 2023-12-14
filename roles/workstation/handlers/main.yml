@@ -36,3 +36,7 @@
 
 - name: restart polkit
   service: name=polkit state=restarted
+
+- name: load 99-reisub.conf setings into sysctl
+  ansible.builtin.command:
+    cmd: sysctl -p /etc/sysctl.d/99-reisub.conf

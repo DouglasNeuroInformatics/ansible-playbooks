@@ -86,3 +86,9 @@
 
 - name: Flush handlers
   meta: flush_handlers
+
+- name: Redirect ERRFILE path
+  ansible.builtin.lineinfile:
+    path: /etc/X11/Xsession
+    regexp: '^ERRFILE='
+    line: 'ERRFILE=/var/tmp/xdgcache-$USER/.xsession-errors'

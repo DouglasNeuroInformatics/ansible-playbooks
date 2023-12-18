@@ -1,1 +1,1 @@
-* -fstype=nfs4,v4.2,rw,nodev,hard,sloppy,async,noatime,nodiratime,tcp cicus03:/tank/users/&
+* -fstype=nfs4,v4.2,rw,nodev,hard,sloppy,async,noatime,nodiratime,tcp,fsc cicus03:/tank/users/&

@@ -5,14 +5,14 @@
   apt: pkg=autofs state=present
 
 - name: autofs installed
-  apt: pkg=cachefilesd state=present
+  apt: pkg=cachefilesd state=absent
   notify: restart autofs
 
 - name: Enable cachefilesd
   ansible.builtin.lineinfile:
     path: /etc/default/cachefilesd
     regexp: '^RUN='
-    line: RUN=yes
+    line: RUN=no
   notify: restart autofs
 
 - name: create place for homdirs

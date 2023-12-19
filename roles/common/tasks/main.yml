@@ -18,9 +18,6 @@
 - {import_tasks: netdata.yml, tags: netdata}
 - {import_tasks: system-config.yml, tags: system}
 
-- name: enable sudo with no password for sudoers
-  lineinfile: dest=/etc/sudoers state=present regexp='^%cicadministrators ALL\=' line='%cicadministrators ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
-
 - name: Set default locale to en_CA.UTF-8
   debconf:
     name: locales

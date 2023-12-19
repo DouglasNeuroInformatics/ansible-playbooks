@@ -3,9 +3,9 @@
   - workstations
   become: yes
   tasks:
-   - name: enable ssh keys
-     authorized_key: user=localadmin key="{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
-   - name: enable sudo with no password for sudoers
-     lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
-   - name: add devgab to sudo group
-     lineinfile: dest=/etc/group state=present regexp=^sudo line=sudo:x:27:localadmin,devgab
+    - name: enable ssh keys
+      authorized_key: user=localadmin key="{{ lookup('file', 'files/beatom.pub') }}"
+    - name: enable ssh keys
+      authorized_key: user=localadmin key="{{ lookup('file', 'files/devgab.pub') }}"
+    - name: enable sudo with no password for sudoers
+      lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'

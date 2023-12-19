@@ -61,16 +61,9 @@
   apt: pkg={{ item }} state=absent update_cache=yes cache_valid_time=3600
   with_items:
     - ktorrent
-    - cachefilesd
 
-- name: Auto-detect and install latest nvidia driver
-  command: ubuntu-drivers install
-
-- name: Install kernel
+- name: Install kernel and nvidia and hold
   ansible.builtin.script: bin/install_kernel.sh
-
-- name: Hold nvidia and linux packages from upgrade
-  shell: 'apt-mark hold *nvidia* linux* > /dev/null'
 
 - name: default firefox for browser
   community.general.alternatives:

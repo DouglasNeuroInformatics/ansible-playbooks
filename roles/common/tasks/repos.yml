@@ -30,6 +30,7 @@
       - https://xpra.org/xpra.asc
       - https://apt.llvm.org/llvm-snapshot.gpg.key
       - https://apt.kitware.com/keys/kitware-archive-latest.asc
+      - https://pkgs.zabbly.com/key.asc
     list_two:
       - oracle_vbox.asc
       - google_linux_signing_key.asc
@@ -41,6 +42,7 @@
       - xpra.asc
       - llvm.asc
       - kitware.asc
+      - zabbly.asc
   get_url:
     url: "{{ item.0 }}"
     dest: "/etc/apt/trusted.gpg.d/{{ item.1 }}"
@@ -89,6 +91,7 @@
     - ppa:flatpak/stable
     - deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main
     - deb https://apt.kitware.com/ubuntu/ jammy main
+    - deb [arch=amd64] https://pkgs.zabbly.com/kernel/stable jammy main
 
 - name: chrome repo
   apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no

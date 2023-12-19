@@ -14,6 +14,7 @@
     regexp: '^RUN='
     line: RUN=no
   notify: restart autofs
+  ignore_errors: true
 
 - name: create place for homdirs
   file: path=/home/cic state=directory

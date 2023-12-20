@@ -92,3 +92,9 @@
     path: /etc/X11/Xsession
     regexp: '^ERRFILE='
     line: 'ERRFILE=/var/tmp/xdgcache-$USER/.xsession-errors'
+
+- name: add /etc/profile loading to /etc/zsh/zprofile
+  lineinfile:
+    path: /etc/zsh/zprofile
+    line: "emulate sh -c 'source /etc/profile'"
+    create: yes

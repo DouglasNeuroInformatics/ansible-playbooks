@@ -31,4 +31,7 @@ else
   apt install linux-xanmod-${x64_version} -y
 fi
 
+ls /boot/initrd.img-* | cut -d- -f2- | \
+    xargs -n1 /usr/lib/dkms/dkms_autoinstaller start || true
+
 apt-mark hold "*nvidia*" 2>&1 >/dev/null

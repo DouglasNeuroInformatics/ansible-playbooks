@@ -74,6 +74,7 @@
     - B8B9D41229DFA5F5
     - FC918B335044912E
     - C8BEB4C320E36F2F
+    - 7CDE3A860A53F9FD
 
 - name: repos enabled
   apt_repository: repo='{{item}}' state=present update_cache=yes
@@ -92,6 +93,7 @@
     - deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main
     - deb https://apt.kitware.com/ubuntu/ jammy main
     - deb [arch=amd64] https://pkgs.zabbly.com/kernel/stable jammy main
+    - ppa:x2go/stable
 
 - name: chrome repo
   apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no

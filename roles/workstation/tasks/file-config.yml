@@ -93,4 +93,5 @@
     content: |
       # enable sysrq key to hard reboot: https://forum.endeavouros.com/t/tip-enable-magic-sysrq-key-reisub/7576
       kernel.sysrq = 1
-  notify: reload sysctl
+  notify: load 99-reisub.conf setings into sysctl
+

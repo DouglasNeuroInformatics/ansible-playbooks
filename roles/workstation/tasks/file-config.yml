@@ -98,3 +98,12 @@
     path: /etc/zsh/zprofile
     line: "emulate sh -c 'source /etc/profile'"
     create: yes
+
+# enable sysrq key to hard reboot: https://forum.endeavouros.com/t/tip-enable-magic-sysrq-key-reisub/7576
+- name: enable sysrq key
+  ansible.posix.sysctl:
+    name: kernel.sysrq
+    value: '1'
+    state: present
+    reload: yes
+

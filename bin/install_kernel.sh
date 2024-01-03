@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -euo pipefail
-
 # Stolen from xanmod website and modified to generate version to install
 check_abi_awkscript='
 BEGIN {
@@ -14,7 +12,7 @@ BEGIN {
     exit 0
 }'
 
-apt-mark unhold "linux*" "*nvidia*" 2>&1 >/dev/null
+apt-mark unhold "linux*" "*nvidia*" >/dev/null 2>&1
 
 ubuntu-drivers install
 
@@ -23,15 +21,19 @@ x64_version=$(awk "${check_abi_awkscript}" || true)
 
 if [[ ${nvidia_driver} == "nvidia-driver-390" ]]; then
   # We have to special case this because the 390 driver won't work on the latest kernel (yet...)
-  apt install linux-xanmod-lts-${x64_version} -y
+  apt install -y linux-xanmod-lts-${x64_version}
+  apt install -y linux-generic
+  apt-get -y --autoremove purge linux.*hwe.*
+  apt-get -y --autoremove purge linux.*6.5.*
+  apt install -y $(echo ${nvidia_driver} | sed 's/driver/dkms/g')
 elif [[ -n ${nvidia_driver} ]]; then
-  apt install linux-xanmod-${x64_version} -y
+  apt install -y linux-generic-hwe-22.04-edge linux-generic-hwe-22.04 linux-xanmod-${x64_version}
   apt install -y $(echo ${nvidia_driver} | sed 's/driver/dkms/g')
 else
-  apt install linux-xanmod-${x64_version} -y
+  apt install -y linux-generic-hwe-22.04-edge linux-generic-hwe-22.04 linux-xanmod-${x64_version}
 fi
 
 ls /boot/initrd.img-* | cut -d- -f2- | \
     xargs -n1 /usr/lib/dkms/dkms_autoinstaller start || true
 
-apt-mark hold "*nvidia*" 2>&1 >/dev/null
+apt-mark hold "*nvidia*" >/dev/null 2>&1

@@ -29,3 +29,13 @@ mkdir -p  ${CONDA_PKGS_DIRS}
 export APPTAINER_CACHEDIR=${XDG_CACHE_HOME}/.apptainer
 export SINGULARITY_CACHEDIR=${XDG_CACHE_HOME}/.singularity
 mkdir -p ${APPTAINER_CACHEDIR} ${SINGULARITY_CACHEDIR}
+
+# $HOME/.cache
+mkdir -p ${XDG_CACHE_HOME}/.cache
+export HOME_CACHEDIR=${XDG_CACHE_HOME}/.cache
+#if the old $HOME/.cache directory exists and isn't a symlink, then redirect it
+if [ -e $HOME/.cache ] && [ ! -L $HOME/.cache ]
+  then
+     mv $HOME/.cache $HOME/.cache.old
+     ln -s ${XDG_CACHE_HOME}/.cache $HOME/.cache
+fi

@@ -10,24 +10,33 @@
       register: numusers
       changed_when: false
       check_mode: false
+
     - name: update apt-get cache
       apt: update_cache=yes
+
     - name: Install kernel and nvidia and hold packages
       ansible.builtin.script: bin/install_kernel.sh
       when: numusers.stdout_lines | length < 2
+
     - name: safe-upgrade
-      apt: upgrade=safe  cache_valid_time=3600 autoclean=yes autoremove=yes
-    - name: dist-upgrade
-      apt: upgrade=dist  cache_valid_time=3600 autoclean=yes autoremove=yes
+      apt: upgrade=safe cache_valid_time=3600 autoclean=yes autoremove=yes
+
+    - name: fukk-upgrade
+      apt: upgrade=full cache_valid_time=3600 autoclean=yes autoremove=yes
+
     - name: update-pciids
       command: update-pciids
+
     - name: update-initram-fs
       command: update-initramfs -k all -c
+
     - name: update-grub
       command: update-grub
+
     - name: purge configs
       shell: "dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge"
       ignore_errors: yes
+
     - name: Reboot if required
       reboot:
         reboot_timeout: 150

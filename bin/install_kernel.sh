@@ -36,4 +36,4 @@ fi
 ls /boot/initrd.img-* | cut -d- -f2- | \
     xargs -n1 /usr/lib/dkms/dkms_autoinstaller start || true
 
-apt-mark hold "*nvidia*" >/dev/null 2>&1
+apt-mark hold 'linux*' "*nvidia*" >/dev/null 2>&1

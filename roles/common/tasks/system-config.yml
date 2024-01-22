@@ -16,13 +16,5 @@
     line: "%cicadministrators ALL=(ALL) NOPASSWD:ALL"
     validate: 'visudo -cf %s'
 
-- name: Set HISTTIMEFORMAT in global bashrc
-  blockinfile:
-    path: "/etc/bash.bashrc"
-    block: |
-      #append date & time stamps
-      export HISTTIMEFORMAT="%F %T "
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - HISTTIMEFORMAT"
-  notify:
-    - source global_bashrc
-
+- name: append date and timestamp to bash history
+  copy: src=files/bash_history_timestamp.sh dest=/etc/profile.d/

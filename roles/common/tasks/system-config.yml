@@ -15,3 +15,14 @@
     path: /etc/sudoers.d/99-sudoers-config
     line: "%cicadministrators ALL=(ALL) NOPASSWD:ALL"
     validate: 'visudo -cf %s'
+
+- name: Set HISTTIMEFORMAT in global bashrc
+  blockinfile:
+    path: "/etc/bash.bashrc"
+    block: |
+      #append date & time stamps
+      export HISTTIMEFORMAT="%F %T "
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - HISTTIMEFORMAT"
+  notify:
+    - source global_bashrc
+

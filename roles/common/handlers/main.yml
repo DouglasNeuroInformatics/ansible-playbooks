@@ -36,3 +36,8 @@
 
 - name: Restart Netdata
   service: name=netdata state=restarted
+
+- name: source global_bashrc
+  shell:
+    cmd: source /etc/bash.bashrc
+    executable: /bin/bash

@@ -1,0 +1,49 @@
+# get the current swap size and available disk space
+- name: get current swap size
+  ansible.builtin.shell:
+    cmd: swapon --show | grep /swapfile | awk '{print $3}' | sed 's/.$//'
+  register: swapSize
+
+- name: get system RAM in GB
+  set_fact:
+    ram: "{{ ansible_memtotal_mb // 1024 }}" # Convert to GB
+
+- name: get free disk space in GB
+  ansible.builtin.shell:
+    cmd: df -h --block-size=G / | sed 1d | awk '{print $4}' | head -c -2
+  register: diskSpace
+
+- name: set newSwapSize based on diskSpace and RAM
+  set_fact:
+    #if there is lots of disk space (i.e. more than 4*RAM worth) then set /swapfile size to 2*RAM.  Else If there is limited space
+    #(i.e more than 2*RAM), set swapfile = RAM, Finally, if there is less space than that, set swapfile = 2GB
+    newSwapSize: "{{ (ram | int * 2) if (diskSpace.stdout | int) > (ram | int * 4) else (ram | int if (diskSpace.stdout | int) > (ram | int * 2) else 2) }}"
+
+# resize /swapfile when newSwapSize is greater than the current swapSize
+- block:
+    - name: turn off swap
+      ansible.builtin.command:
+        cmd: swapoff /swapfile
+      ignore_errors: true
+
+    # use fallocate because it's significantly faster than dd
+    - name: create a new swap file
+      ansible.builtin.shell:
+        cmd: fallocate -l {{ newSwapSize }}G /swapfile
+
+    - name: set swap file permissions
+      ansible.builtin.file:
+        path: "/swapfile"
+        owner: "root"
+        group: "root"
+        mode: "0600"
+
+    - name: format the file for swap
+      ansible.builtin.command:
+        cmd: mkswap /swapfile
+
+    - name: turn on swap
+      ansible.builtin.command:
+        cmd: swapon /swapfile
+
+  when: (ram | int) > (swapSize.stdout | int)

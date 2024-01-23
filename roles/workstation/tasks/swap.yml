@@ -15,6 +15,8 @@
 
 - name: set newSwapSize based on diskSpace and RAM
   set_fact:
+    #if there is lots of disk space (i.e. more than 4*RAM worth) then set /swapfile size to 2*RAM.  Else If there is limited space
+    #(i.e more than 2*RAM), set swapfile = RAM, Finally, if there is less space than that, set swapfile = 2GB
     newSwapSize: "{{ (ram | int * 2) if (diskSpace.stdout | int) > (ram | int * 4) else (ram | int if (diskSpace.stdout | int) > (ram | int * 2) else 2) }}"
 
 # resize /swapfile when newSwapSize is greater than the current swapSize

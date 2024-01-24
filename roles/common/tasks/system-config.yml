@@ -15,3 +15,7 @@
     path: /etc/sudoers.d/99-sudoers-config
     line: "%cicadministrators ALL=(ALL) NOPASSWD:ALL"
     validate: 'visudo -cf %s'
+
+- name: apply settings to bash history
+  copy: src=files/bash_history_timestamp.sh dest=/etc/profile.d/
+

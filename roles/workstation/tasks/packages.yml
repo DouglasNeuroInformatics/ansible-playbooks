@@ -3,6 +3,7 @@
     update_cache: yes
     state: present
     pkg:
+      - firefox-esr
       - meld
       - brave-browser
       - gnuplot-qt

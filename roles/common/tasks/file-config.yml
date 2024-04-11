@@ -13,6 +13,9 @@
 - name: prioritize mozilla ppa
   copy: src=files/mozillateamppa dest=/etc/apt/preferences.d
 
+- name: enable backports
+  copy: src=files/99-backports dest=/etc/apt/preferences.d
+
 - name: config smartmontools
   copy: src=files/smartmontools dest=/etc/default/smartmontools
   notify:

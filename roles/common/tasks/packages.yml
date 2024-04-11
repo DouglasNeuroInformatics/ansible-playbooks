@@ -15,6 +15,10 @@
     update_cache: yes
     state: present
     pkg:
+    - autoconf-archive
+    - fzf
+    - pandoc
+    - fd-find
     - python3-pip
     - neovim
     - btop
@@ -232,3 +236,5 @@
   with_items:
     - rsyncy
     - pipenv
+    - globus-cli
+    - visidata

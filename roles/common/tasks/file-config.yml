@@ -38,7 +38,7 @@
     - restart watchdog
 
 - name: fix timesyncd
-  lineinfile: dest=/etc/systemd/timesyncd.conf regexp="^NTP=" line="NTP=ntp.rtss.qc.ca"
+  lineinfile: dest=/etc/systemd/timesyncd.conf regexp="^NTP=" line="NTP=ad01.douglas.rtss.qc.ca"
   notify:
     - restart timesyncd
 

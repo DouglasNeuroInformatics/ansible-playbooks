@@ -6,10 +6,12 @@
   strategy: free
   become: yes
   roles:
+    - bodsch.snapd
     - common
     - workstation
 
 - hosts: computenodes
   become: yes
   roles:
+    - bodsch.snapd
     - common

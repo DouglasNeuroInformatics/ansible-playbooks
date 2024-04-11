@@ -11,9 +11,6 @@
     path: /etc/apt/trusted.gpg
     state: absent
 
-- name: disable snapd completely
-  copy: src=files/nosnap dest=/etc/apt/preferences.d/
-
 - name: disable nvidia open drivers
   copy: src=files/nonvidiaopen dest=/etc/apt/preferences.d/
 

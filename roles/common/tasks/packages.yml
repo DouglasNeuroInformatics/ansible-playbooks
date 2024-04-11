@@ -1,6 +1,3 @@
-- name: remove snapd software
-  apt:  pkg=snapd state=absent
-
 - name: accept mscorefonts
   debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
 

@@ -215,23 +215,3 @@
 
 #Install missing perl package
 - cpanm: name="Math::Matrix"
-
-#Pipx packages
-- name: ensure /opt/pipx
-  ansible.builtin.file:
-    path: /opt/pipx
-    state: directory
-    mode: 0755
-
-- name: install pipx packages
-  community.general.pipx:
-    name: "{{ item }}"
-    state: present
-  environment:
-    PIPX_HOME: /opt/pipx
-    PIPX_BIN_DIR: /usr/local/bin
-  with_items:
-    - rsyncy
-    - pipenv
-    - globus-cli
-    - visidata

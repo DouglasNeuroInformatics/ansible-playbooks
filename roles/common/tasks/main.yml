@@ -11,6 +11,7 @@
 - {import_tasks: quarantine.yml, tags: quarantine}
 - {import_tasks: repos.yml, tags: repos}
 - {import_tasks: packages.yml, tags: software}
+- {import_tasks: pipx.yml, tags: [software,pipx]}
 - {import_tasks: qbatch.yml, tags: [software,qbatch] }
 - {import_tasks: manual-deb.yml, tags: [software,manualdeb]}
 - {import_tasks: file-config.yml, tags: files}

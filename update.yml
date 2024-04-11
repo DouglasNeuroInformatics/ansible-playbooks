@@ -33,6 +33,9 @@
     - name: update-grub
       command: update-grub
 
+    - name: update-smart-drive-db
+      command: update-smart-drivedb
+
     - name: purge configs
       shell: "dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge"
       ignore_errors: yes

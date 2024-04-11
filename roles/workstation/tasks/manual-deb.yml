@@ -4,4 +4,5 @@
     - https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64
     - https://zoom.us/client/latest/zoom_amd64.deb
     - https://github.com/usebruno/bruno/releases/download/v1.4.0/bruno_1.4.0_amd64_linux.deb
+    - https://github.com/davidbannon/libqt5pas/releases/download/v1.2.9/libqt5pas1_2.9-0_amd64.deb
   ignore_errors: yes

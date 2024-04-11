@@ -1,8 +1,6 @@
 - name: Install Manual Deb Files
   apt: deb={{ item }}
   with_items:
-    - https://github.com/apptainer/apptainer/releases/download/v1.2.5/apptainer_1.2.5_amd64.deb
-    - https://github.com/davidbannon/libqt5pas/releases/download/v1.2.9/libqt5pas1_2.9-0_amd64.deb
     - http://mirrors.kernel.org/ubuntu/pool/main/t/thermald/thermald_2.5.0-1_amd64.deb
     - https://github.com/zyedidia/micro/releases/download/v2.0.13/micro-2.0.13-amd64.deb
     - https://github.com/fboender/ansible-cmdb/releases/download/1.31/ansible-cmdb-1.31.deb

@@ -5,10 +5,73 @@
 - name: repos enabled
   apt_repository: repo='{{item}}' state=present update_cache=no
   with_items:
+    - deb https://dl.winehq.org/wine-builds/ubuntu/ jammy main
+
+- name: chrome repo
+  apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no
+
+- name: add ppa repos
+  command: apt-add-repository -y -n {{ item }}
+  with_items:
+    - ppa:lubuntu-dev/backports
+    - ppa:obsproject/obs-studio
+    - ppa:mozillateam/ppa
+    - ppa:ubuntuhandbook1/gimp
     - ppa:kubuntu-ppa/backports
     - ppa:kubuntu-ppa/ppa
     - ppa:obsproject/obs-studio
     - ppa:peek-developers/stable
     - ppa:yubico/stable
-    - deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main
-    - ppa:lubuntu-dev/backports
+    - ppa:inkscape.dev/stable
+    - ppa:libreoffice/ppa
+    - ppa:x2go/stable
+    - ppa:peek-developers/stable
+    - ppa:flatpak/stable
+    - ppa:graphics-drivers/ppa
+    - ppa:dtl131/nvidiaexp
+
+
+- name: Add wezterm repo
+  ansible.builtin.deb822_repository:
+    name: wezterm
+    uris: https://apt.fury.io/wez
+    suites: "*"
+    components: "*"
+    architectures: amd64
+    signed_by: https://apt.fury.io/wez/gpg.key
+
+- name: Add brave repo
+  ansible.builtin.deb822_repository:
+    name: brave
+    uris: https://brave-browser-apt-release.s3.brave.com
+    suites: stable
+    components: main
+    architectures: amd64
+    signed_by: https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+
+- name: Add turbovnc repo
+  ansible.builtin.deb822_repository:
+    name: turbovnc
+    uris: https://packagecloud.io/dcommander/turbovnc/any
+    suites: any
+    components: main
+    architectures: amd64
+    signed_by: https://packagecloud.io/dcommander/turbovnc/gpgkey
+
+- name: Add xpra repo
+  ansible.builtin.deb822_repository:
+    name: xpra
+    uris: https://xpra.org
+    suites: jammy
+    components: main
+    architectures: amd64
+    signed_by: https://xpra.org/xpra.asc
+
+- name: Add virtualgl repo
+  ansible.builtin.deb822_repository:
+    name: virtualgl
+    uris: https://packagecloud.io/dcommander/virtualgl/any
+    suites: any
+    components: main
+    architectures: amd64
+    signed_by: https://packagecloud.io/dcommander/virtualgl/gpgkey

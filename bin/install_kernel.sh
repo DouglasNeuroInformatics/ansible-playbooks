@@ -22,15 +22,13 @@ x64_version=$(awk "${check_abi_awkscript}" || true)
 if [[ ${nvidia_driver} == "nvidia-driver-390" ]]; then
   # We have to special case this because the 390 driver won't work on the latest kernel (yet...)
   apt install -y linux-xanmod-lts-${x64_version}
-  apt install -y linux-generic
-  apt-get -y --autoremove purge linux.*hwe.*
-  apt-get -y --autoremove purge linux.*6.5.*
+  apt install -y linux-generic linux-generic-hwe-22.04 linux-generic-hwe-22.04-edge
   apt install -y $(echo ${nvidia_driver} | sed 's/driver/dkms/g')
 elif [[ -n ${nvidia_driver} ]]; then
-  apt install -y linux-generic-hwe-22.04-edge linux-generic-hwe-22.04 linux-xanmod-${x64_version}
+  apt install -y linux-generic linux-generic-hwe-22.04 linux-generic-hwe-22.04-edge linux-xanmod-${x64_version}
   apt install -y $(echo ${nvidia_driver} | sed 's/driver/dkms/g')
 else
-  apt install -y linux-generic-hwe-22.04-edge linux-generic-hwe-22.04 linux-xanmod-${x64_version}
+  apt install -y linux-generic linux-generic-hwe-22.04 linux-generic-hwe-22.04-edge linux-xanmod-${x64_version}
 fi
 
 ls /boot/initrd.img-* | cut -d- -f2- | \

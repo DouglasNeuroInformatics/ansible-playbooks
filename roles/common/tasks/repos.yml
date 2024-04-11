@@ -28,6 +28,7 @@
       - https://apt.llvm.org/llvm-snapshot.gpg.key
       - https://apt.kitware.com/keys/kitware-archive-latest.asc
       - https://pkgs.zabbly.com/key.asc
+      - https://packagecloud.io/dcommander/virtualgl/gpgkey
     list_two:
       - oracle_vbox.asc
       - google_linux_signing_key.asc
@@ -40,6 +41,7 @@
       - llvm.asc
       - kitware.asc
       - zabbly.asc
+      - virtualgl.asc
   get_url:
     url: "{{ item.0 }}"
     dest: "/etc/apt/trusted.gpg.d/{{ item.1 }}"
@@ -77,24 +79,21 @@
 - name: repos enabled
   apt_repository: repo='{{item}}' state=present update_cache=yes
   with_items:
-    - ppa:ansible/ansible
-    - ppa:libreoffice/ppa
-    - ppa:graphics-drivers/ppa
-    - ppa:git-core/ppa
-    - deb https://dl.winehq.org/wine-builds/ubuntu/ jammy main
     - deb https://neuro.debian.net/debian data main contrib non-free
     - deb https://neuro.debian.net/debian jammy main contrib non-free
     - deb https://deb.xanmod.org releases main
-    - ppa:mozillateam/ppa
-    - deb [arch=amd64] https://xpra.org/ jammy main
-    - ppa:flatpak/stable
-    - deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main
     - deb https://apt.kitware.com/ubuntu/ jammy main
     - deb [arch=amd64] https://pkgs.zabbly.com/kernel/stable jammy main
-    - ppa:x2go/stable
 
-- name: chrome repo
-  apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no
+- name: add ppa repos
+  command: apt-add-repository -y -n {{ item }}
+  with_items:
+    - ppa:git-core/ppa
+    - ppa:apt-fast/stable
+    - ppa:yubico/stable
+    - ppa:apptainer/ppa
+    - ppa:rapier1/hpnssh
+    - ppa:ansible/ansible
 
 - name: docker repo
   apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable' state=present filename=docker update_cache=no

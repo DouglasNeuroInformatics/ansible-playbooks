@@ -1,9 +1,3 @@
-- name: install virtualgl
-  apt: deb={{ item }}
-  with_items:
-    - /data/scratch2/.ansible/virtualgl/virtualgl.deb
-  ignore_errors: yes
-
 - name: Setup virtualgl
   command: /opt/VirtualGL/bin/vglserver_config +glx -config +s +f +t
   args:

@@ -103,11 +103,11 @@
     - cpanminus
     - webp
 # Docker
-    - docker-ce
-    - docker-ce-cli
-    - containerd.io
-    - docker-buildx-plugin
-    - docker-compose-plugin
+    # - docker-ce
+    # - docker-ce-cli
+    # - containerd.io
+    # - docker-buildx-plugin
+    # - docker-compose-plugin
 #minc-toolkit-v2 build deps
     - bc
     - bison

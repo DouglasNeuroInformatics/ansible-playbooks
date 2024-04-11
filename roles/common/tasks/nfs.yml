@@ -54,6 +54,20 @@
 - name: configure nfs-common
   copy: src=files/nfs-common dest=/etc/default/nfs-common
 
+- name: optimize dirty_bytes data nfs
+  ansible.posix.sysctl:
+    name: vm.dirty_bytes
+    value: 629145600
+    state: present
+    reload: yes
+
+- name: optimize dirty_background_bytes data nfs
+  ansible.posix.sysctl:
+    name: vm.dirty_background_bytes
+    value: 314572800
+    state: present
+    reload: yes
+
 - name: Flush handlers
   meta: flush_handlers
 

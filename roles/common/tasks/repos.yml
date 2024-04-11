@@ -75,6 +75,7 @@
     - FC918B335044912E
     - C8BEB4C320E36F2F
     - 7CDE3A860A53F9FD
+    - 1A127079A92F09ED
 
 - name: repos enabled
   apt_repository: repo='{{item}}' state=present update_cache=yes

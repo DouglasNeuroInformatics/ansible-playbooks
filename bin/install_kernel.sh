@@ -14,6 +14,12 @@ BEGIN {
 
 apt-mark unhold "linux*" "*nvidia*" >/dev/null 2>&1
 
+apt-get purge '*nvidia*' -y
+
+apt update
+
+aptitude full-upgrade -y
+
 ubuntu-drivers install
 
 nvidia_driver=$(dpkg -l | grep -o -E 'nvidia-driver-[0-9]+' || true)

@@ -21,7 +21,7 @@
     - name: safe-upgrade
       apt: upgrade=safe cache_valid_time=3600 autoclean=yes autoremove=yes
 
-    - name: fukk-upgrade
+    - name: full-upgrade
       apt: upgrade=full cache_valid_time=3600 autoclean=yes autoremove=yes
 
     - name: update-pciids

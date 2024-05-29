@@ -23,7 +23,6 @@
       - https://dl.winehq.org/wine-builds/winehq.key
       - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
       - https://dl.xanmod.org/gpg.key
-      - https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
       - https://xpra.org/xpra.asc
       - https://apt.llvm.org/llvm-snapshot.gpg.key
       - https://apt.kitware.com/keys/kitware-archive-latest.asc
@@ -36,7 +35,6 @@
       - wine.asc
       - nvidia_cuda.asc
       - xanmod.asc
-      - brave-browser-archive-keyring.gpg
       - xpra.asc
       - llvm.asc
       - kitware.asc

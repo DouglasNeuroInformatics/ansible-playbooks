@@ -1,7 +1,7 @@
 - name: Install Manual Deb Files
   apt: deb={{ item }}
   with_items:
-    - http://mirrors.kernel.org/ubuntu/pool/main/t/thermald/thermald_2.5.0-1_amd64.deb
+    - https://mirrors.edge.kernel.org/ubuntu/pool/main/t/thermald/thermald_2.5.2-1_amd64.deb
     - https://github.com/zyedidia/micro/releases/download/v2.0.13/micro-2.0.13-amd64.deb
     - https://github.com/fboender/ansible-cmdb/releases/download/1.31/ansible-cmdb-1.31.deb
     - https://github.com/sharkdp/bat/releases/download/v0.24.0/bat_0.24.0_amd64.deb
@@ -9,4 +9,5 @@
     - https://github.com/bootandy/dust/releases/download/v0.9.0/du-dust_0.9.0-1_amd64.deb
     - https://github.com/lsd-rs/lsd/releases/download/v1.0.0/lsd_1.0.0_amd64.deb
     - https://github.com/BurntSushi/ripgrep/releases/download/14.1.0/ripgrep_14.1.0-1_amd64.deb
+    - https://downloads.rclone.org/v1.66.0/rclone-v1.66.0-linux-amd64.deb
   ignore_errors: yes

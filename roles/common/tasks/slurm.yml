@@ -20,7 +20,7 @@
       - liblz4-dev
       - libmunge2
       - libmunge-dev
-      - libncurses5-dev
+      - libncurses6-dev
       - libpam0g-dev
       - libperl-dev
       - libpam-dev

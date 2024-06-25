@@ -29,19 +29,19 @@
     copy:
       src: files/motd/99-dnp-ssh-welcome
       dest: /etc/update-motd.d/99-dnp-ssh-welcome
-      mode: '0755'
+      mode: 'u=rwx,g=rx,o=rx'
 
   - name: Copy dnp-xsession-welcome.sh to /usr/local/bin
     copy:
       src: files/motd/dnp-xsession-welcome.sh
       dest: /usr/local/bin/dnp-xsession-welcome.sh
-      mode: '0755'
+      mode: 'u=rwx,g=rx,o=rx'
 
   - name: Copy show-dnp-welcome.sh to /etc/profile.d
     copy:
       src: files/motd/show-dnp-welcome.sh
       dest: /etc/profile.d/show-dnp-welcome.sh
-      mode: '0755'
+      mode: 'u=rwx,g=rx,o=rx'
 
   - name: Remove legal warning
     ansible.builtin.file:

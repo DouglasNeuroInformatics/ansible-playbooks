@@ -31,7 +31,7 @@
       dest: /etc/update-motd.d/99-dnp-ssh-welcome
       mode: '0755'
 
-  - name: Copy dnp-welcome.sh to /usr/local/bin
+  - name: Copy dnp-xsession-welcome.sh to /usr/local/bin
     copy:
       src: files/motd/dnp-xsession-welcome.sh
       dest: /usr/local/bin/dnp-xsession-welcome.sh

@@ -25,24 +25,23 @@
       - "98-fsck-at-reboot"
       - "98-reboot-required"
 
-  - name: Copy 99-dnp-msg to /etc/update-motd.d
+  - name: Copy 99-dnp-ssh-welcome to /etc/update-motd.d
     copy:
-      src: files/99-dnp-msg
-      dest: /etc/update-motd.d/99-dnp-msg
+      src: files/motd/99-dnp-ssh-welcome
+      dest: /etc/update-motd.d/99-dnp-ssh-welcome
       mode: '0755'
 
-  - name: Copy x2go-dnp-welcome.sh to /usr/local/bin
+  - name: Copy dnp-welcome.sh to /usr/local/bin
     copy:
-      src: files/x2go-dnp-welcome.sh
-      dest: /usr/local/bin/x2go-dnp-welcome.sh
+      src: files/motd/dnp-xsession-welcome.sh
+      dest: /usr/local/bin/dnp-xsession-welcome.sh
       mode: '0755'
 
-  - name: Add x2go-dnp-welcome.sh to /etc/x2go/Xsession
-    blockinfile:
-      path: /etc/x2go/Xsession
-      insertafter: '^set -e'
-      block: |
-        /usr/local/bin/x2go-dnp-welcome.sh
+  - name: Copy show-dnp-welcome.sh to /etc/profile.d
+    copy:
+      src: files/motd/show-dnp-welcome.sh
+      dest: /etc/profile.d/show-dnp-welcome.sh
+      mode: '0755'
 
   - name: Remove legal warning
     ansible.builtin.file:

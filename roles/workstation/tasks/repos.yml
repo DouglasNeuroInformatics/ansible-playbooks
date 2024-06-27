@@ -40,15 +40,6 @@
     architectures: amd64
     signed_by: https://apt.fury.io/wez/gpg.key
 
-- name: Add brave repo
-  ansible.builtin.deb822_repository:
-    name: brave
-    uris: https://brave-browser-apt-release.s3.brave.com
-    suites: stable
-    components: main
-    architectures: amd64
-    signed_by: https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-
 - name: Add turbovnc repo
   ansible.builtin.deb822_repository:
     name: turbovnc

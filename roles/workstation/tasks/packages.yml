@@ -6,7 +6,6 @@
       - firefox-esr
       - firefox
       - meld
-      - brave-browser
       - gnuplot-qt
       - yubikey-manager
       - yubikey-personalization-gui

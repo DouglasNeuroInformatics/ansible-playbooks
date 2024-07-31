@@ -2,7 +2,6 @@
 - hosts: workstations
   vars_files:
     - vars/slurm.yml
-    - vars/netdata.yml
   strategy: free
   become: yes
   roles:
@@ -15,3 +14,12 @@
   roles:
     - bodsch.snapd
     - common
+  vars_files:
+    - vars/slurm.yml
+
+- hosts: servers
+  become: yes
+  roles:
+    - common
+  vars_files:
+    - vars/slurm.yml

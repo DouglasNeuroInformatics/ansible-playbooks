@@ -1,5 +1,11 @@
+- name: Check if 'pro' command is available
+  command: which pro
+  register: proInstallCheck
+  ignore_errors: true
+
 - name: disable ubuntu pro messages
   command: pro config set apt_news=false
+  when: proInstallCheck.rc == 0
 
 - name: Remove esm spam
   ansible.builtin.file:

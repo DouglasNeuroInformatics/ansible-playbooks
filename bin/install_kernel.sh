@@ -14,11 +14,13 @@ BEGIN {
 
 apt-mark unhold "linux*" "*nvidia*" >/dev/null 2>&1
 
-apt-get purge '*nvidia*' -y
+apt-get purge '*nvidia*' dkms -y --autoremove
+
+rm -rf /var/lib/dkms
 
 apt update
 
-aptitude full-upgrade -y
+apt full-upgrade -y
 
 ubuntu-drivers install
 
@@ -28,13 +30,9 @@ x64_version=$(awk "${check_abi_awkscript}" || true)
 if [[ ${nvidia_driver} == "nvidia-driver-390" ]]; then
   # We have to special case this because the 390 driver won't work on the latest kernel (yet...)
   apt install -y linux-xanmod-lts-${x64_version}
-  apt install -y linux-generic linux-generic-hwe-22.04 linux-generic-hwe-22.04-edge
-  apt install -y $(echo ${nvidia_driver} | sed 's/driver/dkms/g')
-elif [[ -n ${nvidia_driver} ]]; then
-  apt install -y linux-generic linux-generic-hwe-22.04 linux-generic-hwe-22.04-edge linux-xanmod-${x64_version}
   apt install -y $(echo ${nvidia_driver} | sed 's/driver/dkms/g')
 else
-  apt install -y linux-generic linux-generic-hwe-22.04 linux-generic-hwe-22.04-edge linux-xanmod-${x64_version}
+  apt install -y linux-xanmod-${x64_version}
 fi
 
 ls /boot/initrd.img-* | cut -d- -f2- | \

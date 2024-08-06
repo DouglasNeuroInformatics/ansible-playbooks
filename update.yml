@@ -36,11 +36,11 @@
     - name: update-smart-drive-db
       command: update-smart-drivedb
 
-    - name: purge configs
+    - name: purge old configs
       shell: "dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge"
       ignore_errors: yes
 
-    - name: Reboot if required
+    - name: reboot if required
       reboot:
         reboot_timeout: 150
       when: numusers.stdout_lines | length < 2

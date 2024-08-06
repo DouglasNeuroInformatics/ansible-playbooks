@@ -1,5 +1,3 @@
 dicom /-
 quarantine /-
-laborajah3 -fstype=nfs4,nfsvers=4.2,rw,nodev,async,noatime,nodiratime,tcp laborajah3:/localdata
-#scratch    -fstype=nfs4,nfsvers=4.2,rw,nodev,async,noatime,nodiratime,tcp cicss03:/data/scratch
 *          -fstype=nfs4,nfsvers=4.2,rw,nodev,async,noatime,nodiratime,tcp cicss05:/data/&

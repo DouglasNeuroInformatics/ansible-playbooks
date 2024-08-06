@@ -8,7 +8,6 @@
       - meld
       - gnuplot-qt
       - yubikey-manager
-      - yubikey-personalization-gui
       - libpam-yubico
       - libpam-u2f
       - yubioath-desktop
@@ -35,7 +34,6 @@
       - default-jre
       - obs-studio
       - speedcrunch
-      - aeskulap
       - flameshot
       - peek
       # Globus connect personal

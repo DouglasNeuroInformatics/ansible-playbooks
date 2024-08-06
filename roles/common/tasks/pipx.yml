@@ -18,3 +18,5 @@
     - pipenv
     - globus-cli
     - visidata
+    - awscli
+    - datalad

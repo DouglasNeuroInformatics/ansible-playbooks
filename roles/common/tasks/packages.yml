@@ -22,8 +22,8 @@
     - apt-file
     - lz4
     - nfs4-acl-tools
-    - awscli
-    - datalad
+    #- awscli
+    #- datalad
     - jq
     - zsh
     - mosh
@@ -83,7 +83,7 @@
     - ncdu
     - dcmtk
     - rename
-    - libncurses5
+    - libncurses6
     - mdadm
     - libpam-tmpdir
     - libnss-myhostname
@@ -194,15 +194,15 @@
 # rootless docker
     - uidmap
 # nvidia libraries
-    - libcublas11
-    - libcufftw10
-    - libcufft10
+    - libcublas12
+    - libcufftw11
+    - libcufft11
     - libvkfft-dev
-    - libcublaslt11
+    - libcublaslt12
     - libcurand10
     - libcusolver11
     - libcusolvermg11
-    - libcusparse11
+    - libcusparse12
 
 #Fix afni being built against a different version of gsl
 #https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html

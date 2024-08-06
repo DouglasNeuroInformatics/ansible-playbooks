@@ -14,7 +14,7 @@
   copy: src=files/mozillateamppa dest=/etc/apt/preferences.d
 
 - name: enable backports
-  copy: src=files/99-backports dest=/etc/apt/preferences.d
+  template: src=99-backports.j2 dest=/etc/apt/preferences.d/99-backports
 
 - name: config smartmontools
   copy: src=files/smartmontools dest=/etc/default/smartmontools

@@ -14,7 +14,7 @@
 - name: disable nvidia open drivers
   copy: src=files/nonvidiaopen dest=/etc/apt/preferences.d/
 
-- name: downoad apt keys to trusted.gpg.d
+- name: download apt keys to trusted.gpg.d
   vars:
     list_one:
       - https://www.virtualbox.org/download/oracle_vbox.asc
@@ -78,10 +78,10 @@
   apt_repository: repo='{{item}}' state=present update_cache=yes
   with_items:
     - deb https://neuro.debian.net/debian data main contrib non-free
-    - deb https://neuro.debian.net/debian jammy main contrib non-free
+    - deb https://neuro.debian.net/debian {{ ansible_distribution_release }} main contrib non-free
     - deb https://deb.xanmod.org releases main
-    - deb https://apt.kitware.com/ubuntu/ jammy main
-    - deb [arch=amd64] https://pkgs.zabbly.com/kernel/stable jammy main
+    - deb https://apt.kitware.com/ubuntu/ {{ ansible_distribution_release }} main
+    - deb [arch=amd64] https://pkgs.zabbly.com/kernel/stable {{ ansible_distribution_release }} main
 
 - name: add ppa repos
   command: apt-add-repository -y -n {{ item }}
@@ -94,4 +94,4 @@
     - ppa:ansible/ansible
 
 - name: docker repo
-  apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable' state=present filename=docker update_cache=no
+  apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable' state=present filename=docker update_cache=no

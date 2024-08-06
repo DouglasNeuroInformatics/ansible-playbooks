@@ -2,11 +2,6 @@
   copy: src=files/mozillateamppa dest=/etc/apt/preferences.d/mozillateamppa
 
 
-- name: repos enabled
-  apt_repository: repo='{{item}}' state=present update_cache=no
-  with_items:
-    - deb https://dl.winehq.org/wine-builds/ubuntu/ jammy main
-
 - name: chrome repo
   apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no
 
@@ -20,16 +15,13 @@
     - ppa:kubuntu-ppa/backports
     - ppa:kubuntu-ppa/ppa
     - ppa:obsproject/obs-studio
-    - ppa:peek-developers/stable
     - ppa:yubico/stable
     - ppa:inkscape.dev/stable
     - ppa:libreoffice/ppa
     - ppa:x2go/stable
-    - ppa:peek-developers/stable
     - ppa:flatpak/stable
     - ppa:graphics-drivers/ppa
     - ppa:dtl131/nvidiaexp
-
 
 - name: Add wezterm repo
   ansible.builtin.deb822_repository:
@@ -53,7 +45,7 @@
   ansible.builtin.deb822_repository:
     name: xpra
     uris: https://xpra.org
-    suites: jammy
+    suites: "{{ ansible_distribution_release }}"
     components: main
     architectures: amd64
     signed_by: https://xpra.org/xpra.asc

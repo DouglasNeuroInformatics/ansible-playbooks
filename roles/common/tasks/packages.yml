@@ -22,8 +22,6 @@
     - apt-file
     - lz4
     - nfs4-acl-tools
-    - awscli
-    - datalad
     - jq
     - zsh
     - mosh

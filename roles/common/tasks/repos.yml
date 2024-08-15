@@ -1,5 +1,6 @@
 - name: disable ubuntu pro messages
   command: pro config set apt_news=false
+  ignore_errors: true
 
 - name: Remove esm spam
   ansible.builtin.file:
@@ -20,7 +21,6 @@
       - https://www.virtualbox.org/download/oracle_vbox.asc
       - https://dl-ssl.google.com/linux/linux_signing_key.pub
       - https://download.docker.com/linux/ubuntu/gpg
-      - https://dl.winehq.org/wine-builds/winehq.key
       - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
       - https://dl.xanmod.org/gpg.key
       - https://xpra.org/xpra.asc
@@ -32,7 +32,6 @@
       - oracle_vbox.asc
       - google_linux_signing_key.asc
       - docker.asc
-      - wine.asc
       - nvidia_cuda.asc
       - xanmod.asc
       - xpra.asc

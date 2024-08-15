@@ -33,13 +33,6 @@
   copy: src=files/auto.data dest=/etc/auto.data
   notify: restart autofs
 
-- name: create /backup
-  file: path=/backup state=directory
-
-- name: autofs /backup
-  copy: src=files/auto.backup dest=/etc/auto.backup
-  notify: restart autofs
-
 - name: create /dicom
   file: path=/dicom state=directory
 
@@ -67,6 +60,15 @@
     value: 314572800
     state: present
     reload: yes
+
+- name: Symlink for DICOMS
+  ansible.builtin.file:
+    src: /data/dicom/incoming
+    dest: /dicom
+    owner: root
+    group: root
+    state: link
+    force: yes
 
 - name: Flush handlers
   meta: flush_handlers

@@ -33,9 +33,6 @@
   copy: src=files/auto.data dest=/etc/auto.data
   notify: restart autofs
 
-- name: create /dicom
-  file: path=/dicom state=directory
-
 - name: autofs /home
   copy: src=files/auto.home dest=/etc/auto.home
   notify: restart autofs

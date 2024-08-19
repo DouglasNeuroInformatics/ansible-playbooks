@@ -8,7 +8,7 @@
 - name: install debs
   apt: deb={{ item }}
   with_items:
-    - /data/scratch2/.ansible/kyocerya/Ubuntu/Global/kyodialog_amd64/kyodialog_9.1-0_amd64.deb
+    - /data/scratch2/.ansible/kyodialog_9.4-0_amd64.deb
   ignore_errors: yes
 
 - name: disable cups-browsed

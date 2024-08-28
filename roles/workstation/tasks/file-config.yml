@@ -35,6 +35,7 @@
   file:
     path: /usr/lib/x86_64-linux-gnu/libexec/kcheckpass
     mode: u+s
+  when: ansible_distribution_release == "jammy"
 
 - name: disable release upgrade notifications
   lineinfile: dest=/etc/update-manager/release-upgrades regexp=^Prompt line='Prompt=never'

@@ -3,3 +3,4 @@ ansible.log
 *retry
 logs/
 .vscode
+tree/

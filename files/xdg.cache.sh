@@ -29,3 +29,5 @@ mkdir -p  ${CONDA_PKGS_DIRS}
 export APPTAINER_CACHEDIR=${XDG_CACHE_HOME}/.apptainer
 export SINGULARITY_CACHEDIR=${XDG_CACHE_HOME}/.singularity
 mkdir -p ${APPTAINER_CACHEDIR} ${SINGULARITY_CACHEDIR}
+
+mkdir -p ${XDG_CACHE_HOME}/.cache

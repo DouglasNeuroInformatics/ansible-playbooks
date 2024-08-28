@@ -33,6 +33,3 @@
 
 - name: regen grub
   shell: update-grub
-
-- name: Restart Netdata
-  service: name=netdata state=restarted

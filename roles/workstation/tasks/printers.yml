@@ -13,6 +13,7 @@
 
 - name: disable cups-browsed
   service: name=cups-browsed enabled=no state=stopped
+  ignore_errors: yes
 
 - name: Install printer
   command: lpadmin -p Kyocera-Mita-TASKalfa-3253ci-KPDL -E -L "CIC 2nd Floor Lobby" -m kyocera/Kyocera_TASKalfa_3253ci.ppd -v socket://10.116.134.16:9100 -o "Option17=DF7120" -o "Option19=One"

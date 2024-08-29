@@ -12,6 +12,7 @@
     update_cache: yes
     state: present
     pkg:
+    - apptainer
     - autoconf-archive
     - fzf
     - pandoc

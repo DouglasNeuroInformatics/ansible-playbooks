@@ -12,6 +12,7 @@
     update_cache: yes
     state: present
     pkg:
+    - fish
     - apptainer
     - autoconf-archive
     - fzf

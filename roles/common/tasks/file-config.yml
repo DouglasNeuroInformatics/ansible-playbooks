@@ -57,6 +57,9 @@
   notify:
     - regen grub
 
+- name: define apptainer configs
+  copy: src=files/99apptainer.sh dest=/etc/profile.d
+
 - name: improve shutdown/reboot timeout
   community.general.ini_file:
     path: /etc/systemd/system.conf

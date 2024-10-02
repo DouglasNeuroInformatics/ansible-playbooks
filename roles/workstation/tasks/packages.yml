@@ -36,6 +36,8 @@
       - speedcrunch
       - flameshot
       - peek
+      - xclip
+      - xsel
       # Globus connect personal
       - tk
       - tcllib

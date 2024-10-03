@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 # Stolen from xanmod website and modified to generate version to install
 check_abi_awkscript='
 BEGIN {
@@ -22,15 +24,19 @@ apt update
 
 apt full-upgrade -y
 
-ubuntu-drivers install
+nvidia_driver_version=$(ubuntu-drivers list | grep -v server | grep -o -E 'nvidia-driver-(390|550)' | sort  | tail -1)
 
-nvidia_driver=$(dpkg -l | grep -o -E 'nvidia-driver-[0-9]+' || true)
 x64_version=$(awk "${check_abi_awkscript}" || true)
 
-if [[ ${nvidia_driver} == "nvidia-driver-390" ]]; then
+if [[ ${nvidia_driver_version} == "nvidia-driver-390" ]]; then
   # We have to special case this because the 390 driver won't work on the latest kernel (yet...)
-  apt install -y linux-xanmod-lts-${x64_version}
-  apt install -y $(echo ${nvidia_driver} | sed 's/driver/dkms/g')
+  apt install -y linux-xanmod-lts-${x64_version} dkms
+  apt install -y ${nvidia_driver_version}
+  apt install -y $(echo ${nvidia_driver_version} | sed 's/driver/dkms/g')
+elif [[ ${nvidia_driver_version} == "nvidia-driver-550" ]]; then
+  apt install -y linux-xanmod-${x64_version} dkms
+  apt install -y ${nvidia_driver_version}
+  apt install -y $(echo ${nvidia_driver_version} | sed 's/driver/dkms/g')
 else
   apt install -y linux-xanmod-${x64_version}
 fi

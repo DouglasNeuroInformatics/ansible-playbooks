@@ -1,6 +1,9 @@
 #!/bin/bash
 
 set -euo pipefail
+set -x
+
+export DEBIAN_FRONTEND=noninteractive
 
 # Stolen from xanmod website and modified to generate version to install
 check_abi_awkscript='
@@ -10,13 +13,13 @@ BEGIN {
     if (level == 1 && /cx16/&&/lahf/&&/popcnt/&&/sse4_1/&&/sse4_2/&&/ssse3/) level = 2
     if (level == 2 && /avx/&&/avx2/&&/bmi1/&&/bmi2/&&/f16c/&&/fma/&&/abm/&&/movbe/&&/xsave/) level = 3
     if (level == 3 && /avx512f/&&/avx512bw/&&/avx512cd/&&/avx512dq/&&/avx512vl/) level = 4
-    if (level > 0) { print "x64v" level; exit level + 1 }
+    if (level > 0) { print "x64v" level; exit 0 }
     exit 0
 }'
 
 apt-mark unhold "linux*" "*nvidia*" >/dev/null 2>&1
 
-apt-get purge '*nvidia*' dkms -y --autoremove
+apt-get purge '*nvidia*' dkms -y --autoremove || true
 
 rm -rf /var/lib/dkms
 
@@ -24,9 +27,9 @@ apt update
 
 apt full-upgrade -y
 
-nvidia_driver_version=$(ubuntu-drivers list | grep -v server | grep -o -E 'nvidia-driver-(390|550)' | sort  | tail -1)
+nvidia_driver_version=$((ubuntu-drivers list || true) | grep -v server | (grep -o -E 'nvidia-driver-(390|550)' || true) | sort  | tail -1) || true
 
-x64_version=$(awk "${check_abi_awkscript}" || true)
+x64_version=$(awk "${check_abi_awkscript}" || echo 1)
 
 if [[ ${nvidia_driver_version} == "nvidia-driver-390" ]]; then
   # We have to special case this because the 390 driver won't work on the latest kernel (yet...)

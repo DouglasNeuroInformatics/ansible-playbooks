@@ -11,3 +11,5 @@ for XUSER in "${XUSERS[@]}"; do
                        PATH=${PATH} \
                        notify-send -a "DNP Sysadmins" -u critical -t 3600 "$@"
 done
+
+echo "$@" | wall

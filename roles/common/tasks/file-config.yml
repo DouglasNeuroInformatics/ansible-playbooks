@@ -1,3 +1,6 @@
+- name: enable micromamba
+  copy: src=files/99micromamba.sh dest=/etc/profile.d
+
 - name: define QUARANTINE_PATH
   copy: src=files/99quarantine_path.sh dest=/etc/profile.d
 

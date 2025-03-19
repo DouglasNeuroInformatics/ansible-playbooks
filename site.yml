@@ -6,11 +6,14 @@
   become: yes
   roles:
     - bodsch.snapd
+    - mambaorg.micromamba
     - common
     - workstation
+
 
 - hosts: computenodes
   become: yes
   roles:
     - bodsch.snapd
+    - mambaorg.micromamba
     - common

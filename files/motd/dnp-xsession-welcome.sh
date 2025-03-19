@@ -1,5 +1,5 @@
 #!/bin/sh
-    zenity --info --text="
+zenity --info --text="
 ======================================================================================================
 Welcome to the Douglas Neuroinformatics Platform!
 

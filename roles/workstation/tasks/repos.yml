@@ -1,6 +1,7 @@
+---
+
 - name: config use mozilla firefox binary
   copy: src=files/mozillateamppa dest=/etc/apt/preferences.d/mozillateamppa
-
 
 - name: chrome repo
   apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no
@@ -58,3 +59,21 @@
     components: main
     architectures: amd64
     signed_by: https://packagecloud.io/dcommander/virtualgl/gpgkey
+
+- name: Add zoom unofficial repo
+  ansible.builtin.deb822_repository:
+    name: zoom
+    uris: https://mirror.mwt.me/zoom/deb
+    suites: any
+    components: main
+    architectures: amd64
+    signed_by: https://mirror.mwt.me/zoom/gpgkey
+
+- name: Add i3 repo
+  ansible.builtin.deb822_repository:
+    name: i3
+    uris: http://debian.sur5r.net/i3/
+    suites: "{{ ansible_distribution_release }}"
+    components: universe
+    architectures: amd64
+    signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xbfd90f4daaefa72b67bbaf48e3ca1a89941c42e6

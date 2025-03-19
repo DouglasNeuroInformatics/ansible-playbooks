@@ -3,7 +3,7 @@
     update_cache: yes
     state: present
     pkg:
-      - firefox-esr
+      - zoom
       - firefox
       - meld
       - gnuplot-qt
@@ -57,6 +57,10 @@
       - libreoffice-style-breeze
       - krita
       - kdenlive
+# Remote access
+      - xpra
+# Alternative interfaces
+      - i3
 
 - name: remove problematic software
   apt: pkg={{ item }} state=absent update_cache=no cache_valid_time=3600

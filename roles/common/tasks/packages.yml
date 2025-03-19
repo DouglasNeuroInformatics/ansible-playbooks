@@ -86,6 +86,7 @@
     - mdadm
     - libpam-tmpdir
     - libnss-myhostname
+    - ethtool
 #Development software
     - vim
     - emacs
@@ -188,8 +189,6 @@
     - libglew-dev
 # fancy python
     - pipx
-# better remote x
-    - xpra
 # rootless docker
     - uidmap
 

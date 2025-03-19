@@ -70,6 +70,12 @@
     option: DefaultTimeoutStopSec
     value: 10s
 
+- name: Disable apport
+  ansible.builtin.lineinfile:
+    path: /etc/default/apport
+    regexp: '^enabled='
+    line: enabled=0
+
 - name: Flush handlers
   meta: flush_handlers
 

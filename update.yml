@@ -14,10 +14,6 @@
     - name: update apt-get cache
       apt: update_cache=yes
 
-    - name: Install kernel and nvidia and hold packages
-      ansible.builtin.script: bin/install_kernel.sh
-      when: numusers.stdout_lines | length < 2
-
     - name: safe-upgrade
       apt: upgrade=safe cache_valid_time=3600 autoclean=yes autoremove=yes
 
@@ -40,7 +36,11 @@
       shell: "dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge"
       ignore_errors: yes
 
+    - name: Install kernel and nvidia and hold packages
+      ansible.builtin.script: bin/install_kernel.sh
+      when: numusers.stdout_lines | length < 2
+
     - name: reboot if required
       reboot:
-        reboot_timeout: 150
+        reboot_timeout: 300
       when: numusers.stdout_lines | length < 2

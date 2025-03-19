@@ -17,25 +17,26 @@ BEGIN {
     exit 0
 }'
 
-apt-mark unhold "linux*" "*nvidia*" >/dev/null 2>&1
+apt-mark unhold "*" >/dev/null 2>&1
 
-apt-get purge '*nvidia*' dkms -y --autoremove || true
+apt-get purge '*nvidia*' '*xanmod*' '*zabbly*' dkms -y --autoremove || true
 
 rm -rf /var/lib/dkms
 
-apt update
-
-apt full-upgrade -y
-
-nvidia_driver_version=$((ubuntu-drivers list || true) | grep -v server | (grep -o -E 'nvidia-driver-(390|550)' || true) | sort  | tail -1) || true
+nvidia_driver_version=$((ubuntu-drivers list || true) | grep -v server | (grep -o -E 'nvidia-driver-(390|570)' || true) | sort  | tail -1) || true
 
 x64_version=$(awk "${check_abi_awkscript}" || echo 1)
 
+add-apt-repository ppa:kisak/turtle -y
+apt full-upgrade -y
+
+
 if [[ ${nvidia_driver_version} == "nvidia-driver-390" ]]; then
   # We have to special case this because the 390 driver won't work on the latest kernel (yet...)
-  apt install -y linux-xanmod-lts-${x64_version} dkms
-  apt install -y ${nvidia_driver_version}
-  apt install -y $(echo ${nvidia_driver_version} | sed 's/driver/dkms/g')
+  # apt install -y linux-xanmod-lts-${x64_version} dkms
+  # apt install -y ${nvidia_driver_version}
+  # apt install -y $(echo ${nvidia_driver_version} | sed 's/driver/dkms/g')
+  apt install -y linux-xanmod-${x64_version}
 elif [[ ${nvidia_driver_version} == "nvidia-driver-550" ]]; then
   apt install -y linux-xanmod-${x64_version} dkms
   apt install -y ${nvidia_driver_version}
@@ -44,7 +45,11 @@ else
   apt install -y linux-xanmod-${x64_version}
 fi
 
-ls /boot/initrd.img-* | cut -d- -f2- | \
-    xargs -n1 /usr/lib/dkms/dkms_autoinstaller start || true
+apt-get --purge autoremove -y
+
+if [[ -s /usr/lib/dkms/dkms_autoinstaller ]]; then
+  ls /boot/initrd.img-* | cut -d- -f2- | \
+      xargs -n1 /usr/lib/dkms/dkms_autoinstaller start || true
+fi
 
 apt-mark hold 'linux*' "*nvidia*" >/dev/null 2>&1

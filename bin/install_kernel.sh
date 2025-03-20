@@ -37,7 +37,7 @@ if [[ ${nvidia_driver_version} == "nvidia-driver-390" ]]; then
   # apt install -y ${nvidia_driver_version}
   # apt install -y $(echo ${nvidia_driver_version} | sed 's/driver/dkms/g')
   apt install -y linux-xanmod-${x64_version}
-elif [[ ${nvidia_driver_version} == "nvidia-driver-550" ]]; then
+elif [[ ${nvidia_driver_version} == "nvidia-driver-570" ]]; then
   apt install -y linux-xanmod-${x64_version} dkms
   apt install -y ${nvidia_driver_version}
   apt install -y $(echo ${nvidia_driver_version} | sed 's/driver/dkms/g')

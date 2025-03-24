@@ -30,7 +30,6 @@ x64_version=$(awk "${check_abi_awkscript}" || echo 1)
 add-apt-repository ppa:kisak/turtle -y
 apt full-upgrade -y
 
-
 if [[ ${nvidia_driver_version} == "nvidia-driver-390" ]]; then
   # We have to special case this because the 390 driver won't work on the latest kernel (yet...)
   # apt install -y linux-xanmod-lts-${x64_version} dkms
@@ -38,7 +37,7 @@ if [[ ${nvidia_driver_version} == "nvidia-driver-390" ]]; then
   # apt install -y $(echo ${nvidia_driver_version} | sed 's/driver/dkms/g')
   apt install -y linux-xanmod-${x64_version}
 elif [[ ${nvidia_driver_version} == "nvidia-driver-570" ]]; then
-  apt install -y linux-xanmod-${x64_version} dkms
+  apt install -y linux-xanmod-lts-${x64_version} dkms
   apt install -y ${nvidia_driver_version}
   apt install -y $(echo ${nvidia_driver_version} | sed 's/driver/dkms/g')
 else

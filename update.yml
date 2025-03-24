@@ -1,12 +1,12 @@
 ---
 - hosts:
   - workstations
-  - computenodes
+#  - computenodes
   become: yes
   tasks:
     - name: Gather logged in user
       shell:
-        cmd: who | cut -d " " -f 1 | sort | uniq
+        cmd: who | cut -d " " -f 1 | grep -v localadmin | sort | uniq
       register: numusers
       changed_when: false
       check_mode: false
@@ -38,9 +38,9 @@
 
     - name: Install kernel and nvidia and hold packages
       ansible.builtin.script: bin/install_kernel.sh
-      when: numusers.stdout_lines | length < 2
+      when: numusers.stdout_lines | length < 1
 
     - name: reboot if required
       reboot:
         reboot_timeout: 300
-      when: numusers.stdout_lines | length < 2
+      when: numusers.stdout_lines | length < 1

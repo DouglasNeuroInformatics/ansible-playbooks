@@ -1,15 +1,38 @@
 ---
 - hosts:
   - workstations
-#  - computenodes
+  - computenodes
+  vars:
+    list_v4: ['avx512f', 'avx512bw', 'avx512cd', 'avx512dq', 'avx512vl']
+    list_v3: ['avx', 'avx2', 'bmi1', 'bmi2', 'f16c', 'fma', 'abm', 'movbe', 'xsave']
+    list_v2: ['cx16', 'lahf_lm', 'popcnt', 'sse4_1', 'sse4_2', 'ssse3']
+    list_v1: ['lm', 'cmov', 'cx8', 'fpu', 'fxsr', 'mmx', 'syscall', 'sse2']
+    nvidia_version: nvidia-driver-570
   become: yes
   tasks:
-    - name: Gather logged in user
-      shell:
-        cmd: who | cut -d " " -f 1 | grep -v localadmin | sort | uniq
-      register: numusers
-      changed_when: false
-      check_mode: false
+    - name: Get logged-in users (excluding Ansible executor) count
+      ansible.builtin.shell: |
+        who | awk '{print $1}' | grep -v localadmin | sort -u | wc -l
+      register: logged_in_users_count
+      changed_when: false  # This task never changes system state
+
+    - name: get cpu flags
+      command: >
+        awk -F: '/^flags/ {print $2; exit}' /proc/cpuinfo
+      register: cpu_flags_cmd
+      changed_when: false  # This task never changes system state
+
+    - name: set cpu flags fact
+      set_fact:
+        cpu_flags: "{{ cpu_flags_cmd.stdout.split() }}"
+
+    - name: Determine highest supported x64 version
+      set_fact:
+        x64_version: >-
+          {%- if list_v4 is subset(cpu_flags) -%}v4
+          {%- elif list_v1 is subset(cpu_flags) and list_v2 is subset(cpu_flags) and list_v3 is subset(cpu_flags) -%}v3
+          {%- elif list_v1 is subset(cpu_flags) and list_v2 is subset(cpu_flags) -%}v2
+          {%- elif list_v1 is subset(cpu_flags) -%}v1{% endif %}
 
     - name: update apt-get cache
       apt: update_cache=yes
@@ -20,27 +43,63 @@
     - name: full-upgrade
       apt: upgrade=full cache_valid_time=3600 autoclean=yes autoremove=yes
 
+    - name: purge old configs
+      ansible.builtin.shell: |
+        dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge
+      ignore_errors: yes
+
     - name: update-pciids
       command: update-pciids
-
-    - name: update-initram-fs
-      command: update-initramfs -k all -c
-
-    - name: update-grub
-      command: update-grub
 
     - name: update-smart-drive-db
       command: update-smart-drivedb
 
-    - name: purge old configs
-      shell: "dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge"
-      ignore_errors: yes
+    - name: Install or upgrade kernel
+      ansible.builtin.apt:
+        name:  "linux-xanmod-lts-x64{{ x64_version }}"
+        state: latest
+        allow_change_held_packages: true
+      register: kernel_installed
 
-    - name: Install kernel and nvidia and hold packages
-      ansible.builtin.script: bin/install_kernel.sh
-      when: numusers.stdout_lines | length < 1
+    - name: Check if nvidia-driver is needed
+      ansible.builtin.shell: |
+        ubuntu-drivers devices | grep -o {{ nvidia_version }}
+      ignore_errors: true
+      register: nvidia_driver_needed
+      changed_when: false  # This task never changes system state
 
-    - name: reboot if required
+    - name: Unhold nvidia-driver
+      command: >
+        apt-mark unhold '*nvidia*'
+      when:
+        - nvidia_driver_needed.rc == 0
+        - not (logged_in_users_count.stdout | int > 0)
+
+    - name: Install or upgrade nvidia driver
+      ansible.builtin.apt:
+        name:  "{{ nvidia_version }}"
+        state: latest
+        allow_change_held_packages: true
+      register: nvidia_installed
+      when:
+        - nvidia_driver_needed.rc == 0
+        - not (logged_in_users_count.stdout | int > 0)
+
+    - name: Rebuild all dkms packages
+      ansible.builtin.shell: |
+        ls /boot/initrd.img-* | cut -d- -f2- | xargs -n1 /usr/lib/dkms/dkms_autoinstaller start
+      when:
+        - nvidia_driver_needed.rc == 0
+
+    - name: Hold nvidia-driver
+      command: >
+        apt-mark hold '*nvidia*'
+      when:
+        - nvidia_driver_needed.rc == 0
+
+    - name: Reboot if changes
       reboot:
         reboot_timeout: 300
-      when: numusers.stdout_lines | length < 1
+      when:
+        - not (logged_in_users_count.stdout | int > 0)
+        - (nvidia_installed.changed | default(false)) or (kernel_installed.changed | default(false))

@@ -15,73 +15,6 @@
 - name: disable nvidia open drivers
   copy: src=files/nonvidiaopen dest=/etc/apt/preferences.d/
 
-- name: download apt keys to trusted.gpg.d
-  vars:
-    list_one:
-      - https://www.virtualbox.org/download/oracle_vbox.asc
-      - https://dl-ssl.google.com/linux/linux_signing_key.pub
-      - https://download.docker.com/linux/ubuntu/gpg
-      - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
-      - https://dl.xanmod.org/gpg.key
-      - https://xpra.org/xpra.asc
-      - https://apt.llvm.org/llvm-snapshot.gpg.key
-      - https://apt.kitware.com/keys/kitware-archive-latest.asc
-      - https://pkgs.zabbly.com/key.asc
-      - https://packagecloud.io/dcommander/virtualgl/gpgkey
-    list_two:
-      - oracle_vbox.asc
-      - google_linux_signing_key.asc
-      - docker.asc
-      - nvidia_cuda.asc
-      - xanmod.asc
-      - xpra.asc
-      - llvm.asc
-      - kitware.asc
-      - zabbly.asc
-      - virtualgl.asc
-  get_url:
-    url: "{{ item.0 }}"
-    dest: "/etc/apt/trusted.gpg.d/{{ item.1 }}"
-  loop: "{{ list_one | zip(list_two) | list }}"
-
-- name: apt keys from keyserver
-  apt_key:
-    id: "{{ item }}"
-    keyserver: "hkp://keyserver.ubuntu.com:80"
-    state: present
-    keyring: /etc/apt/trusted.gpg.d/{{ item }}.gpg
-  with_items:
-    - 005EAE8119BB5BCA
-    - 2836CB0A8AC93F7A
-    - 43D5C49532CBA1A9
-    - 76F1A20FF987672F
-    - 7EA0A9C3F273FCD8
-    - 83FBA1751378B444
-    - 86F7D09EE734E623
-    - 93C4A3FD7BB9C367
-    - 9578539176BAFBC6
-    - 9BDB3D89CE49EC21
-    - 9DA4BD18B9A06DE3
-    - A1715D88E1DF1F24
-    - A4BCBD87CEF9E52D
-    - A5D32F012649A5A9
-    - EFC71127F425E228
-    - FCAE110B1118213C
-    - B8B9D41229DFA5F5
-    - FC918B335044912E
-    - C8BEB4C320E36F2F
-    - 7CDE3A860A53F9FD
-    - 1A127079A92F09ED
-
-- name: repos enabled
-  apt_repository: repo='{{item}}' state=present update_cache=yes
-  with_items:
-    - deb https://neuro.debian.net/debian data main contrib non-free
-    - deb https://neuro.debian.net/debian {{ ansible_distribution_release }} main contrib non-free
-    - deb https://deb.xanmod.org releases main
-    - deb https://apt.kitware.com/ubuntu/ {{ ansible_distribution_release }} main
-    - deb [arch=amd64] https://pkgs.zabbly.com/kernel/stable {{ ansible_distribution_release }} main
-
 - name: add ppa repos
   command: apt-add-repository -y -n {{ item }}
   with_items:
@@ -92,6 +25,91 @@
     - ppa:rapier1/hpnssh
     - ppa:ansible/ansible
     - ppa:fish-shell/release-3
+    - ppa:neovim-ppa/stable
 
-- name: docker repo
-  apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable' state=present filename=docker update_cache=no
+- name: Add xpra repo
+  deb822_repository:
+    name: xpra
+    types: deb
+    uris: https://xpra.org
+    suites: '{{ ansible_distribution_release }}'
+    components: main
+    architectures: amd64 arm64
+    signed_by: https://xpra.org/xpra.asc
+
+- name: Add docker repo
+  deb822_repository:
+    name: docker
+    types: deb
+    uris: https://download.docker.com/linux/ubuntu
+    suites: '{{ ansible_distribution_release }}'
+    components: stable
+    architectures: amd64
+    signed_by: https://download.docker.com/linux/ubuntu/gpg
+
+- name: Add zabbly repo
+  deb822_repository:
+    name: zabbly
+    types: deb
+    uris: https://pkgs.zabbly.com/kernel/stable
+    suites: '{{ ansible_distribution_release }}'
+    components: main
+    architectures: amd64
+    signed_by: https://pkgs.zabbly.com/key.asc
+
+- name: Add xanmod repo
+  deb822_repository:
+    name: xanmod
+    types: deb
+    uris:  http://deb.xanmod.org
+    suites: releases
+    components: main
+    architectures: amd64
+    signed_by: https://dl.xanmod.org/archive.key
+
+- name: Add virtualgl repo
+  deb822_repository:
+    name: virtualgl
+    types: deb
+    uris:  https://packagecloud.io/dcommander/virtualgl/any/
+    suites: any
+    components: main
+    architectures: amd64
+    signed_by: https://packagecloud.io/dcommander/virtualgl/gpgkey
+
+- name: Add cmake repo
+  deb822_repository:
+    name: cmake
+    types: deb
+    uris: https://apt.kitware.com/ubuntu/
+    suites: '{{ ansible_distribution_release }}'
+    components: main
+    architectures: amd64
+    signed_by: https://apt.kitware.com/keys/kitware-archive-latest.asc
+
+- name: Add neurodebian repo
+  deb822_repository:
+    name: neurodebian
+    types: deb
+    uris: http://neuro.debian.net/debian
+    suites: '{{ ansible_distribution_release }}'
+    components:
+      - main
+      - contrib
+      - non-free
+    architectures: amd64
+    signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA5D32F012649A5A9
+
+- name: Add neurodebian data repo
+  deb822_repository:
+    name: neurodebian-data
+    types: deb
+    uris: http://neuro.debian.net/debian
+    suites: data
+    components:
+      - main
+      - contrib
+      - non-free
+    architectures: amd64
+    signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA5D32F012649A5A9
+

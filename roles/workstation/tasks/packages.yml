@@ -72,8 +72,6 @@
     - transmission-gtk
     - transmission-common
 
-- name: Install kernel and nvidia and hold
-  ansible.builtin.script: bin/install_kernel.sh
 
 - name: default firefox for browser
   community.general.alternatives:

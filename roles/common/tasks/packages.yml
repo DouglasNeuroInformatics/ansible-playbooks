@@ -1,6 +1,4 @@
-- name: accept mscorefonts
-  debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
-
+---
 - name: default libmkl-rt
   debconf: name='libmkl-rt' question='libmkl-rt/use-as-default-blas-lapack' value='true' vtype='select'
 
@@ -12,6 +10,7 @@
     update_cache: yes
     state: present
     pkg:
+    - micro
     - fish
     - apptainer
     - autoconf-archive
@@ -192,14 +191,13 @@
 # rootless docker
     - uidmap
 
-#Fix afni being built against a different version of gsl
-#https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html
-- name: fix libgsl
-  file:
-    src: /usr/lib/x86_64-linux-gnu/libgsl.so.27
-    dest: /usr/lib/x86_64-linux-gnu/libgsl.so.19
-    state: link
-
+# Fix afni being built against a different version of gsl
+# https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html
+# - name: fix libgsl
+#   file:
+#     src: /usr/lib/x86_64-linux-gnu/libgsl.so.27
+#     dest: /usr/lib/x86_64-linux-gnu/libgsl.so.19
+#     state: link
 
 #Install missing perl package
 - cpanm: name="Math::Matrix"

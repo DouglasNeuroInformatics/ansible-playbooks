@@ -15,7 +15,7 @@
 - {import_tasks: qbatch.yml, tags: [software,qbatch] }
 - {import_tasks: manual-deb.yml, tags: [software,manualdeb]}
 - {import_tasks: file-config.yml, tags: files}
-- {import_tasks: slurm.yml, tags: slurm}
+#- {import_tasks: slurm.yml, tags: slurm}
 - {import_tasks: system-config.yml, tags: system}
 - {import_tasks: motd.yml, tags: motd}
 

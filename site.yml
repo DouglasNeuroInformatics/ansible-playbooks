@@ -2,6 +2,13 @@
 - hosts: workstations
   vars_files:
     - vars/slurm.yml
+  vars:
+    list_v4: ['avx512f', 'avx512bw', 'avx512cd', 'avx512dq', 'avx512vl']
+    list_v3: ['avx', 'avx2', 'bmi1', 'bmi2', 'f16c', 'fma', 'abm', 'movbe', 'xsave']
+    list_v2: ['cx16', 'lahf_lm', 'popcnt', 'sse4_1', 'sse4_2', 'ssse3']
+    list_v1: ['lm', 'cmov', 'cx8', 'fpu', 'fxsr', 'mmx', 'syscall', 'sse2']
+    nvidia_version: nvidia-driver-570
+    bad_nvidia_version: nvidia-driver-390
   strategy: free
   become: yes
   roles:
@@ -9,7 +16,6 @@
     - mambaorg.micromamba
     - common
     - workstation
-
 
 - hosts: computenodes
   become: yes

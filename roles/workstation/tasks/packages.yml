@@ -25,18 +25,8 @@
       - libpam-u2f
       - yubioath-desktop
       - texlive-full
-      - x2goserver
-      - x2goclient
-      - x2goserver-xsession
-      - x2golxdebindings
-      - language-pack-en
-      - language-pack-fr
-      - language-pack-gnome-en
-      - language-pack-gnome-fr
       - feh
       - xfig
-      - lxqt-core
-      - lxde-core
       - google-chrome-stable
       - hunspell-en-ca
       - hunspell-en-gb
@@ -56,29 +46,31 @@
       - tcllib
       # VMWARE Connect
       - libudev0
-      - flameshot
       - dconf-editor
       - pspp
       - sassc
       - autokey-gtk
       - virtualgl
-#KDE specific
-      - partitionmanager
-      - kubuntu-restricted-addons
-      - kubuntu-restricted-extras
-      - kolourpaint
-      - libreoffice-style-breeze
-      - krita
-      - kdenlive
-# Remote access
+      - gparted
+      - ubuntu-restricted-extras
+      - ubuntu-restricted-addons
+# Remote access tools
       - xpra
+      - turbovnc
+      - x2goserver
+      - x2goclient
+      - x2goserver-xsession
 # Alternative interfaces
       - i3
 
 - name: remove problematic software
-  apt: pkg={{ item }} state=absent update_cache=no cache_valid_time=3600
+  apt: pkg={{ item }} state=absent update_cache=no autoremove=true purge=true cache_valid_time=3600
   with_items:
     - ktorrent
+    - hexchat
+    - pidgin
+    - transmission-gtk
+    - transmission-common
 
 - name: Install kernel and nvidia and hold
   ansible.builtin.script: bin/install_kernel.sh

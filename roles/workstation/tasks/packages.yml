@@ -72,8 +72,7 @@
     - transmission-gtk
     - transmission-common
 
-
-- name: default firefox for browser
+- name: default brave for browser
   community.general.alternatives:
     name: x-www-browser
-    path: /usr/bin/firefox
+    path: /usr/bin/brave-browser

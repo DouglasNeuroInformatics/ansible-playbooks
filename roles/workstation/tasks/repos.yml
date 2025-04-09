@@ -3,17 +3,13 @@
 - name: config use mozilla firefox binary
   copy: src=files/mozillateamppa dest=/etc/apt/preferences.d/mozillateamppa
 
-
 - name: add ppa repos
   command: apt-add-repository -y -n {{ item }}
   with_items:
-    #- ppa:lubuntu-dev/backports
+    - ppa:lubuntu-dev/backports
     - ppa:obsproject/obs-studio
     - ppa:mozillateam/ppa
     - ppa:ubuntuhandbook1/gimp-3
-    #- ppa:kubuntu-ppa/backports
-    #- ppa:kubuntu-ppa/ppa
-    - ppa:obsproject/obs-studio
     - ppa:yubico/stable
     - ppa:inkscape.dev/stable
     - ppa:libreoffice/ppa
@@ -118,5 +114,3 @@
     components: stable
     architectures: amd64
     signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x9FA6017ECABE0266
-
-

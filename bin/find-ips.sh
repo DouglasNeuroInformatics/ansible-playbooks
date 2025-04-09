@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 (for prefix in cicws dnpws cicss cicus cicvmhost ciccs; do
   for n in {01..50}; do

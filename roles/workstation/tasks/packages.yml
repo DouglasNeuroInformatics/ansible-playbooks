@@ -63,6 +63,15 @@
 # Alternative interfaces
       - i3
 
+- name: Install LXDE for remote connections
+  apt:
+    update_cache: yes
+    state: present
+    install_recommends: false
+    pkg:
+      - lxde-core
+      - x2golxdebindings
+
 - name: remove problematic software
   apt: pkg={{ item }} state=absent update_cache=no autoremove=true purge=true cache_valid_time=3600
   with_items:

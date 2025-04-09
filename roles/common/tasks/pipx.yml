@@ -20,3 +20,4 @@
     - visidata
     - awscli
     - datalad
+    - uv

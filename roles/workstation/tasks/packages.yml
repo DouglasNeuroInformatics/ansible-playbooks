@@ -11,6 +11,11 @@
     update_cache: yes
     state: present
     pkg:
+      - bruno
+      - wezterm
+      - turbovnc
+      - brave-browser
+      - code
       - zoom
       - firefox
       - meld

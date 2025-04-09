@@ -1,0 +1,15 @@
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.login1.reboot" ||
+        action.id == "org.freedesktop.login1.reboot-multiple-sessions" ||
+        action.id == "org.freedesktop.login1.power-off" ||
+        action.id == "org.freedesktop.login1.power-off-multiple-sessions" ||
+        action.id == "org.freedesktop.login1.suspend" ||
+        action.id == "org.freedesktop.login1.suspend-multiple-sessions" ||
+        action.id == "org.freedesktop.login1.hibernate" ||
+        action.id == "org.freedesktop.login1.hibernate-multiple-sessions" ||
+        action.id == "org.freedesktop.login1.hybrid-sleep" ||
+        action.id == "org.freedesktop.login1.hybrid-sleep-multiple-sessions") {
+        return subject.active && subject.local && subject.isInGroup("admin") ?
+            polkit.Result.YES : polkit.Result.NO;
+    }
+});

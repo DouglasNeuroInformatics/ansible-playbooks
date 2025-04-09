@@ -13,7 +13,6 @@
     pkg:
       - bruno
       - wezterm
-      - turbovnc
       - brave-browser
       - code
       - zoom

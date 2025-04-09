@@ -10,6 +10,7 @@
     update_cache: yes
     state: present
     pkg:
+    - wdiff
     - pigz
     - micro
     - fish

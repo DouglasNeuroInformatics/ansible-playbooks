@@ -1,3 +1,11 @@
+---
+
+- name: disable adding vscode repo
+  debconf: name='code' question='code/add-microsoft-repo' value='false' vtype='select'
+
+- name: accept mscorefonts
+  debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
+
 - name: Install workstation apt packages
   apt:
     update_cache: yes

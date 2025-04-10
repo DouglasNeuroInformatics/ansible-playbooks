@@ -2,6 +2,7 @@
 - hosts: workstations
   vars_files:
     - vars/slurm.yml
+    - vars/kernel-nvidia.yml
   strategy: free
   become: yes
   roles:
@@ -9,7 +10,6 @@
     - mambaorg.micromamba
     - common
     - workstation
-
 
 - hosts: computenodes
   become: yes

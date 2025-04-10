@@ -1,6 +1,4 @@
 ---
-- name: flatpak repo
-  apt_repository: repo='ppa:flatpak/stable' state=present update_cache=yes
 
 - name: Install flatpak
   ansible.builtin.apt:

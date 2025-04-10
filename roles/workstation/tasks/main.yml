@@ -3,10 +3,10 @@
 - {import_tasks: repos.yml, tags: repos}
 - {import_tasks: manual-deb.yml, tags: software}
 - {import_tasks: packages.yml, tags: software}
+- {import_tasks: kernel-driver.yml, tags: kernel}
 - {import_tasks: flatpak.yml, tags: [software, flatpak]}
 - {import_tasks: file-config.yml, tags: files}
 - {import_tasks: printers.yml, tags: printers}
-- {import_tasks: vmware.yml, tags: vmware}
 - {import_tasks: virtualgl.yml, tags: virtualgl}
 - {import_tasks: swap.yml, tags: swap}
 - {import_tasks: motd.yml, tags: motd}

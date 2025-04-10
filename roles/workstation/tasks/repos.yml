@@ -3,19 +3,13 @@
 - name: config use mozilla firefox binary
   copy: src=files/mozillateamppa dest=/etc/apt/preferences.d/mozillateamppa
 
-- name: chrome repo
-  apt_repository: repo='deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no
-
 - name: add ppa repos
   command: apt-add-repository -y -n {{ item }}
   with_items:
     - ppa:lubuntu-dev/backports
     - ppa:obsproject/obs-studio
     - ppa:mozillateam/ppa
-    - ppa:ubuntuhandbook1/gimp
-    - ppa:kubuntu-ppa/backports
-    - ppa:kubuntu-ppa/ppa
-    - ppa:obsproject/obs-studio
+    - ppa:ubuntuhandbook1/gimp-3
     - ppa:yubico/stable
     - ppa:inkscape.dev/stable
     - ppa:libreoffice/ppa
@@ -77,3 +71,46 @@
     components: universe
     architectures: amd64
     signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xbfd90f4daaefa72b67bbaf48e3ca1a89941c42e6
+
+- name: Add brave repo
+  ansible.builtin.deb822_repository:
+    name: brave
+    uris: https://brave-browser-apt-release.s3.brave.com/
+    suites: stable
+    components: main
+    architectures: amd64
+    signed_by: https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+
+- name: Add vscode repo
+  ansible.builtin.deb822_repository:
+    name: vscode
+    uris: https://packages.microsoft.com/repos/code
+    suites: stable
+    components: main
+    architectures: amd64
+    signed_by: https://packages.microsoft.com/keys/microsoft.asc
+
+- name: disable chrome add repo
+  copy:
+    content: ""
+    dest: /etc/default/google-chrome
+    force: true
+
+- name: Add chrome repo
+  ansible.builtin.deb822_repository:
+    name: chrome
+    uris: https://dl.google.com/linux/chrome/deb/
+    suites: stable
+    components: main
+    architectures: amd64
+    signed_by: https://dl.google.com/linux/linux_signing_key.pub
+
+- name: Add bruno repo
+  deb822_repository:
+    name: bruno
+    types: deb
+    uris: http://debian.usebruno.com/
+    suites: bruno
+    components: stable
+    architectures: amd64
+    signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x9FA6017ECABE0266

@@ -1,0 +1,72 @@
+---
+
+- name: Get logged-in users (excluding Ansible executor) count
+  ansible.builtin.shell: |
+    who | awk '{print $1}' | grep -v localadmin | sort -u | wc -l
+  register: logged_in_users_count
+  changed_when: false  # This task never changes system state
+
+- name: get cpu flags
+  command: >
+    awk -F: '/^flags/ {print $2; exit}' /proc/cpuinfo
+  register: cpu_flags_cmd
+  changed_when: false  # This task never changes system state
+
+- name: set cpu flags fact
+  set_fact:
+    cpu_flags: "{{ cpu_flags_cmd.stdout.split() }}"
+
+- name: Determine highest supported x64 version
+  set_fact:
+    x64_version: >-
+      {%- if list_v4 is subset(cpu_flags) -%}v4
+      {%- elif list_v1 is subset(cpu_flags) and list_v2 is subset(cpu_flags) and list_v3 is subset(cpu_flags) -%}v3
+      {%- elif list_v1 is subset(cpu_flags) and list_v2 is subset(cpu_flags) -%}v2
+      {%- elif list_v1 is subset(cpu_flags) -%}v1{% endif %}
+
+- name: Install or upgrade kernel
+  ansible.builtin.apt:
+    name:  "linux-xanmod-lts-x64{{ x64_version }}"
+    state: present
+    allow_change_held_packages: true
+  register: kernel_installed
+
+- name: Check if nvidia-driver is needed
+  ansible.builtin.shell: |
+    ubuntu-drivers devices | grep -o {{ nvidia_version }}
+  ignore_errors: true
+  register: nvidia_driver_needed
+  changed_when: false  # This task never changes system state
+
+- name: Unhold nvidia-driver
+  command: >
+    apt-mark unhold '*nvidia*'
+  when:
+    - nvidia_driver_needed.rc == 0
+    - not (logged_in_users_count.stdout | int > 0)
+
+- name: Remove bad nvidia driver
+  ansible.builtin.apt:
+    name:  "{{ bad_nvidia_version }}"
+    state: absent
+    allow_change_held_packages: true
+    autoclean: yes
+    autoremove: yes
+  when:
+    - not (logged_in_users_count.stdout | int > 0)
+
+- name: Install or upgrade nvidia driver
+  ansible.builtin.apt:
+    name:  "{{ nvidia_version }}"
+    state: present
+    allow_change_held_packages: true
+  register: nvidia_installed
+  when:
+    - nvidia_driver_needed.rc == 0
+    - not (logged_in_users_count.stdout | int > 0)
+
+- name: Hold nvidia-driver
+  command: >
+    apt-mark hold '*nvidia*'
+  when:
+    - nvidia_driver_needed.rc == 0

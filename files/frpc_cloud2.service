@@ -1,0 +1,14 @@
+[Unit] 
+Description=Frp Cloud2 Client Service 
+After=network.target 
+  
+[Service] 
+Type=simple 
+User=frpclient
+Restart=always
+RestartSec=5s 
+ExecStart=/opt/frp/frp_0.53.2_linux_amd64/frpc -c /opt/frp/frp_0.53.2_linux_amd64/frpc_cloud2.toml 
+LimitNOFILE=1048576
+
+[Install]
+WantedBy=multi-user.target

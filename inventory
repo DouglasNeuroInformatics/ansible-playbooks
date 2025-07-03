@@ -80,6 +80,8 @@ ciccs09
 ciccs10
 
 [userservers]
-dnpus01
+cicus03 nis_role=master
+dnpus01 nis_role=slave
+cicbs nis_role=slave slurmctld=master
 
 [servers]

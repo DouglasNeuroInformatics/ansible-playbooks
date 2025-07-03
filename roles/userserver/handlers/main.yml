@@ -1,0 +1,52 @@
+- name: restart rpcbind
+  service: name=rpcbind state=restarted
+
+- name: restart ypbind
+  service: name=ypbind state=restarted
+
+- name: restart ypserv
+  service:
+    name: ypserv
+    state: restarted
+
+- name: restart autofs
+  service: name=autofs state=restarted
+
+- name: restart smartmontools
+  service: name=smartmontools state=restarted
+
+- name: restart apcupsd
+  service: name=apcupsd state=restarted
+
+- name: restart ntpd
+  service: name=openntpd state=restarted
+
+- name: restart ssh
+  service: name=ssh state=restarted
+
+#- name: restart watchdog
+#  service: name=watchdog state=restarted
+
+- name: restart timesyncd
+  service: name=systemd-timesyncd state=restarted
+
+- name: regen grub
+  shell: update-grub
+
+- name: reload systemd
+  command: systemctl daemon-reexec
+
+- name: restart munge
+  systemd: name=munge state=restarted enabled=yes daemon_reload=yes
+
+- name: restart slurmctld
+  systemd: name=slurmctld state=restarted enabled=yes daemon_reload=yes
+
+- name: restart slurmdbd
+  systemd: name=slurmdbd state=restarted enabled=yes daemon_reload=yes
+
+- name: reload systemd
+  systemd: daemon_reload=yes
+
+- name: restart nfs-server
+  service: name=nfs-server state=restarted enabled=yes

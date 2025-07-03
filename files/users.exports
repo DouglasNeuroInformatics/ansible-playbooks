@@ -1,0 +1,10 @@
+/tank 172.16.67.0/24(rw,async,fsid=0,crossmnt,no_subtree_check,root_squash) \
+      127.0.0.1(rw,async,fsid=0,crossmnt,no_subtree_check,root_squash) \
+      172.16.67.231(rw,async,fsid=0,crossmnt,no_subtree_check,root_squash) \
+      10.116.134.0/24(rw,async,fsid=0,crossmnt,no_subtree_check,root_squash) \
+      10.116.130.0/24(rw,async,fsid=0,crossmnt,no_subtree_check,root_squash) \
+      cichm*(rw,async,fsid=0,crossmnt,no_subtree_check,root_squash) \
+      cicws*(rw,async,fsid=0,crossmnt,no_subtree_check,root_squash) \
+      ciccs*(rw,async,fsid=0,crossmnt,no_subtree_check,root_squash) \
+      dnpws*(rw,async,fsid=0,crossmnt,no_subtree_check,root_squash) \
+      cicss*(rw,async,fsid=0,crossmnt,no_subtree_check,root_squash)

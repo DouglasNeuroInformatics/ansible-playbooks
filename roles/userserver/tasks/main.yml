@@ -1,0 +1,30 @@
+- name: enable ssh keys
+  authorized_key: user=localadmin key="{{ lookup('file', 'files/beatom.pub') }}"
+
+- name: enable ssh keys
+  authorized_key: user=localadmin key="{{ lookup('file', 'files/devgab.pub') }}"
+
+
+- {import_tasks: hosts.yml, tags: hosts}
+- {import_tasks: nis.yml, tags: nis}
+- {import_tasks: nfs.yml, tags: nfs}
+- {import_tasks: repos.yml, tags: repos}
+- {import_tasks: packages.yml, tags: software}
+- {import_tasks: file-config.yml, tags: files}
+- {import_tasks: slurm.yml, tags: slurm}
+- {import_tasks: system-config.yml, tags: system}
+- {import_tasks: frpc.yml, tags: frp }
+
+- name: Set default locale to en_CA.UTF-8
+  debconf:
+    name: locales
+    question: locales/default_environment_locale
+    value: en_CA.UTF-8
+    vtype: select
+
+- name: Reconfigure apparmor
+  debconf:
+    name: apparmor
+    question: apparmor/homedirs
+    value: /home/cic/
+    vtype: string

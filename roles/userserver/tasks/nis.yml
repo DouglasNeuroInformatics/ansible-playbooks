@@ -1,0 +1,120 @@
+---
+    - name: Get NIS master hostname from inventory
+      ansible.builtin.set_fact:
+        nis_master_hostname: "{{ hostvars[item].inventory_hostname }}"
+      when: hostvars[item].nis_role is defined and hostvars[item].nis_role == 'master'
+      loop: "{{ groups['userservers'] }}"
+
+    - name: Install NIS server and client packages
+      ansible.builtin.apt:
+        name:
+          - nis
+          - rpcbind
+          - nscd
+        state: present
+        update_cache: yes
+      notify:
+        - restart rpcbind
+        - restart ypbind
+        - restart ypserv
+
+    - name: Set NIS domain name file
+      ansible.builtin.copy:
+        content: "{{ lookup('file', 'files/defaultdomain') | trim }}\n"
+        dest: /etc/defaultdomain
+        notify:
+          - restart rpcbind
+          - restart ypbind
+          - restart ypserv
+
+    - name: Set NIS domain fact from file
+      ansible.builtin.set_fact:
+        nis_domain: "{{ lookup('file', 'files/defaultdomain') | trim }}"
+
+    - name: Set /etc/yp.conf
+      ansible.builtin.copy:
+        src: files/yp.conf
+        dest: /etc/yp.conf
+        mode: '0644'
+      notify:
+          - restart ypbind
+          - restart ypserv
+
+    - name: Set /etc/default/nis for master or slave
+      ansible.builtin.copy:
+        content: |
+          NISSERVER={{ 'master' if hostvars[inventory_hostname].nis_role == 'master' else 'slave' }}
+          NISCLIENT=true
+          YPPWDDIR=/etc
+          YPCHANGEOK=chsh
+          NISMASTER={{ nis_master_hostname }}
+          YPSERVARGS=
+          YPBINDARGS=
+          YPPASSWDDARGS=
+          YPXFRDARGS=
+        dest: /etc/default/nis
+      notify:
+        - restart ypbind
+        - restart ypserv
+
+    - name: Set nsswitch.conf for NIS
+      ansible.builtin.copy:
+        src: files/nsswitch.conf
+        dest: /etc/nsswitch.conf
+        mode: '0644'
+
+    - name: Ensure ypserv is enabled and running
+      ansible.builtin.service:
+        name: ypserv
+        enabled: yes
+        state: started
+      when: hostvars[inventory_hostname].nis_role in ['master', 'slave'] # Only on NIS servers
+
+    - name: Ensure ypbind is enabled and running
+      ansible.builtin.service:
+        name: ypbind
+        enabled: yes
+        state: started
+
+    - name: Ensure rpcbind is enabled and running
+      ansible.builtin.service:
+        name: rpcbind
+        enabled: yes
+        state: started
+
+    - name: Initialize YP maps (master)
+      ansible.builtin.command: ypinit -m
+      args:
+        creates: "/var/yp/{{ nis_domain }}"
+      when: hostvars[inventory_hostname].nis_role == 'master'
+      notify: restart ypserv
+
+    - name: Initialize YP maps (slave)
+      ansible.builtin.command: ypinit -s {{ nis_master_hostname }}
+      args:
+        creates: "/var/yp/{{ nis_domain }}"
+      when: hostvars[inventory_hostname].nis_role == 'slave'
+      notify: restart ypserv
+
+    - name: Ensure extrausers directory exists
+      ansible.builtin.file:
+        path: /var/lib/extrausers
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Ensure YPPWDDIR points to /var/lib/extrausers in Makefile
+      ansible.builtin.lineinfile:
+        path: /var/yp/Makefile
+        regexp: '^YPPWDDIR\s*='
+        line: 'YPPWDDIR = /var/lib/extrausers'
+
+    - name: Restart ypbind to ensure maps are refreshed
+      ansible.builtin.service:
+        name: ypbind
+        state: restarted
+      when: hostvars[inventory_hostname].nis_role in ['slave', 'master']
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers

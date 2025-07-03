@@ -1,0 +1,67 @@
+# Basic SLURM configuration
+ClusterName={{ slurm_cluster_name | default('dnp') }}
+SlurmctldHost={{ slurmctld_host | default(ansible_hostname) }}
+MaxNodeCount={{ slurm_max_node_count | default(1000) }}
+SlurmUser=slurm
+
+# Enable configless mode and allow for memory mismatches
+SlurmctldParameters=enable_configless,mem_on_node_exceed,cloud_node_defaults
+
+# Communication ports
+SlurmctldPort=6817
+SlurmdPort=6818
+
+# Paths
+StateSaveLocation=/var/spool/slurmctld
+SlurmdSpoolDir=/var/spool/slurmd
+
+# Logs
+SlurmctldLogFile=/var/log/slurm/slurmctld.log
+SlurmdLogFile=/opt/slurm/logs/slurmd.log
+SlurmctldPidFile=/var/run/slurm/slurmctld.pid
+SlurmdPidFile=/run/slurm/slurmd.pid
+JobCompLoc=/var/log/slurm/jobcomp.log
+
+# Timeouts and scheduling settings
+SlurmctldTimeout=120
+SlurmdTimeout=300
+MinJobAge=300
+KillWait=30
+Waittime=0
+
+# Scheduler and Task Plugins
+SchedulerType=sched/backfill
+SelectType=select/cons_tres
+SelectTypeParameters=CR_Core_Memory
+TaskPlugin=task/affinity,task/cgroup
+
+# Accounting and logging
+JobAcctGatherType=jobacct_gather/cgroup
+JobAcctGatherFrequency=30
+AccountingStorageType=accounting_storage/slurmdbd
+AccountingStorageHost={{ slurmdbd_host | default(slurmctld_host) }}
+
+# General options
+ProctrackType=proctrack/cgroup
+MpiDefault=none
+TreeWidth=65533
+ReturnToService=2
+
+NodeName=DEFAULT State=UNKNOWN Weight=50
+
+# NodeSet definitions
+NodeSet=workstations Feature=workstation
+NodeSet=computenodes Feature=computenode
+
+# Define partitions
+PartitionName=debug Nodes=ALL Default=NO MaxTime=INFINITE State=UP AllowGroups=cicadministrators PriorityTier=65535 LLN=yes
+PartitionName=batch Nodes=ALL Default=YES MaxTime=48:00:00 State=UP DefMemPerCPU=2048 LLN=yes
+
+# Optional features
+#GresTypes=gpu
+#NodeSet=gpu_nodes Feature=gpu
+
+PrologFlags=Contain
+
+# Set nice and ionice to lowest for all jobs
+TaskProlog=/opt/quarantine/software/task_prolog.sh

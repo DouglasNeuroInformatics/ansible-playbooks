@@ -1,0 +1,179 @@
+---
+- name: Install mariadb server
+  ansible.builtin.apt:
+    name: mariadb-server
+    state: present
+    update_cache: yes
+
+- name: Ensure mariadb is started and enabled
+  ansible.builtin.service:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Ensure slurmdbd database exists
+  shell: |
+    mysql -uroot -e "CREATE DATABASE IF NOT EXISTS slurm_acct_db CHARACTER SET utf8;"
+  changed_when: false
+
+- name: Ensure slurm user exists and has privileges
+  shell: |
+    mysql -uroot <<EOF
+    CREATE USER IF NOT EXISTS 'slurm'@'localhost' IDENTIFIED BY '{{ mysql_slurmdb_password }}';
+    GRANT ALL PRIVILEGES ON slurm_acct_db.* TO 'slurm'@'localhost';
+    FLUSH PRIVILEGES;
+    EOF
+
+- name: Install slurm build and runtime dependencies
+  apt:
+    state: present
+    update_cache: yes
+    pkg:
+      - build-essential
+      - libmunge-dev
+      - libmunge2
+      - munge
+      - hwloc
+      - libhwloc-dev
+      - libjson-c-dev
+      - libyaml-dev
+      - liblz4-dev
+      - libpam0g-dev
+      - libreadline-dev
+      - zlib1g-dev
+      - libjwt-dev
+      - libcurl4-openssl-dev
+      - man2html-base
+      - pkg-config
+      - libmariadb-dev
+      - libmariadb-dev-compat
+
+- name: Verify that slurm directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: slurm
+    group: slurm
+    mode: '0755'
+  loop:
+    - /opt/slurm
+    - /opt/slurm/logs
+    - /opt/slurm/etc
+    - /var/spool/slurmctld
+
+- name: Download slurm source
+  get_url:
+    url: https://download.schedmd.com/slurm/slurm-24.05.1.tar.bz2
+    dest: /tmp/slurm-24.05.1.tar.bz2
+    mode: '0644'
+
+- name: Extract slurm source
+  unarchive:
+    src: /tmp/slurm-24.05.1.tar.bz2
+    dest: /tmp
+    remote_src: yes
+
+- name: Configure slurm
+  command: >
+    ./configure
+    --prefix=/opt/slurm/24.05.1
+    --sysconfdir=/opt/slurm/etc
+    --with-mysql=/usr
+    --enable-pam
+  args:
+    chdir: /tmp/slurm-24.05.1
+  register: slurm_configure
+
+- name: Build and install Slurm
+  shell: |
+    make -j "$(nproc)"
+    make install
+    make -j "$(nproc)" contrib
+    make install-contrib
+  args:
+    chdir: /tmp/slurm-24.05.1
+  when: slurm_configure is changed
+
+- name: Link Slurm to /opt/slurm/current
+  file:
+    src: /opt/slurm/24.05.1
+    dest: /opt/slurm/current
+    state: link
+    force: yes
+
+- name: Copy slurmctld and slurmdbd service files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/systemd/system/
+  loop:
+    - files/slurmctld.service
+    - files/slurmdbd.service
+  notify: reload systemd
+
+- name: Set slurmctld_host from inventory
+  set_fact:
+    slurmctld_host: "{{ hostvars[item].inventory_hostname }}"
+  loop: "{{ groups['userservers'] }}"
+  when: hostvars[item].slurmctld is defined and hostvars[item].slurmctld == 'master'
+
+- name: Ensure /run/slurm exists
+  ansible.builtin.file:
+    path: /run/slurm
+    state: directory
+    owner: slurm
+    group: slurm
+    mode: '0755'
+
+- name: Ensure /var/log/slurm exists
+  ansible.builtin.file:
+    path: /var/log/slurm
+    state: directory
+    owner: slurm
+    group: slurm
+    mode: '0755'
+
+- name: Copy slurm.conf
+  template:
+    src: slurm.conf.j2
+    dest: /opt/slurm/etc/slurm.conf
+    owner: slurm
+    group: slurm
+    mode: '0644'
+  notify: restart slurmctld
+
+- name: Copy slurmdbd.conf
+  template:
+    src: slurmdbd.conf.j2
+    dest: /opt/slurm/etc/slurmdbd.conf
+    owner: slurm
+    group: slurm
+    mode: '0600'
+  notify: restart slurmdbd
+
+- name: Install munge key
+  copy:
+    src: files/munge.key
+    dest: /etc/munge/munge.key
+    owner: munge
+    group: munge
+    mode: '0400'
+  notify: restart munge
+
+- name: Ensure SLURM services are enabled and running
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  loop:
+    - munge
+    - slurmdbd
+    - slurmctld
+
+- name: Ensure /opt/slurm is owned by slurm
+  file:
+    path: /opt/slurm
+    state: directory
+    recurse: yes
+    owner: slurm
+    group: slurm

@@ -99,6 +99,7 @@
     - gfortran
     - default-jdk
     - git
+    - git-annex
     - make
     - ninja-build
     - cpanminus

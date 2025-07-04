@@ -1,0 +1,17 @@
+[Unit]
+Description=Slurm database daemon
+After=network.target munge.service
+ConditionPathExists=/opt/slurm/etc/slurmdbd.conf
+
+[Service]
+User=slurm
+Group=slurm
+ExecStart=/opt/slurm/current/sbin/slurmdbd  -D
+PIDFile=/run/slurmdbd.pid
+LimitNOFILE=65536
+Environment="SLURM_PLUGIN_DEBUG=1"
+Environment="SLURM_CONF=/opt/slurm/etc/slurm.conf"
+Environment="SLURMDBD_CONF=/opt/slurm/etc/slurmdbd.conf"
+
+[Install]
+WantedBy=multi-user.target

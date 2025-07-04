@@ -25,7 +25,7 @@
     - name: Determine highest supported x64 version
       set_fact:
         x64_version: >-
-          {%- if list_v4 is subset(cpu_flags) -%}v4
+          {%- if list_v4 is subset(cpu_flags) -%}v3
           {%- elif list_v1 is subset(cpu_flags) and list_v2 is subset(cpu_flags) and list_v3 is subset(cpu_flags) -%}v3
           {%- elif list_v1 is subset(cpu_flags) and list_v2 is subset(cpu_flags) -%}v2
           {%- elif list_v1 is subset(cpu_flags) -%}v1{% endif %}
@@ -66,7 +66,7 @@
 
     - name: Unhold nvidia-driver
       command: >
-        apt-mark unhold '*nvidia*'
+        apt-mark unhold '*nvidia*' 'linux*'
       when:
         - nvidia_driver_needed.rc == 0
         - not (logged_in_users_count.stdout | int > 0)
@@ -100,7 +100,7 @@
 
     - name: Hold nvidia-driver
       command: >
-        apt-mark hold '*nvidia*'
+        apt-mark hold '*nvidia*' 'linux*'
       when:
         - nvidia_driver_needed.rc == 0
 

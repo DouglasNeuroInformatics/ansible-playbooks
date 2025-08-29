@@ -61,6 +61,8 @@
       - x2goserver-xsession
 # Alternative interfaces
       - i3
+# PyQC
+      - python3-qtpy
 
 - name: Install LXDE for remote connections
   apt:

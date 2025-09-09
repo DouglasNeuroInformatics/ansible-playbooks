@@ -12,8 +12,13 @@
     path: /etc/apt/trusted.gpg
     state: absent
 
-- name: disable nvidia open drivers
-  copy: src=files/nonvidiaopen dest=/etc/apt/preferences.d/
+# - name: disable nvidia open drivers
+#   copy: src=files/nonvidiaopen dest=/etc/apt/preferences.d/
+
+- name: Remove nvidia open limit
+  ansible.builtin.file:
+    path: /etc/apt/preferences.d/nonvidiaopen
+    state: absent
 
 - name: add ppa repos
   command: apt-add-repository -y -n {{ item }}
@@ -24,18 +29,8 @@
     - ppa:apptainer/ppa
     - ppa:rapier1/hpnssh
     - ppa:ansible/ansible
-    - ppa:fish-shell/release-3
+    - ppa:fish-shell/release-4
     - ppa:neovim-ppa/stable
-
-- name: Add xpra repo
-  deb822_repository:
-    name: xpra
-    types: deb
-    uris: https://xpra.org
-    suites: '{{ ansible_distribution_release }}'
-    components: main
-    architectures: amd64 arm64
-    signed_by: https://xpra.org/xpra.asc
 
 - name: Add docker repo
   deb822_repository:
@@ -62,20 +57,10 @@
     name: xanmod
     types: deb
     uris:  http://deb.xanmod.org
-    suites: releases
-    components: main
+    suites: '{{ ansible_distribution_release }}'
+    components: main non-free
     architectures: amd64
     signed_by: https://dl.xanmod.org/archive.key
-
-- name: Add virtualgl repo
-  deb822_repository:
-    name: virtualgl
-    types: deb
-    uris:  https://packagecloud.io/dcommander/virtualgl/any/
-    suites: any
-    components: main
-    architectures: amd64
-    signed_by: https://packagecloud.io/dcommander/virtualgl/gpgkey
 
 - name: Add cmake repo
   deb822_repository:
@@ -86,30 +71,3 @@
     components: main
     architectures: amd64
     signed_by: https://apt.kitware.com/keys/kitware-archive-latest.asc
-
-- name: Add neurodebian repo
-  deb822_repository:
-    name: neurodebian
-    types: deb
-    uris: http://neuro.debian.net/debian
-    suites: '{{ ansible_distribution_release }}'
-    components:
-      - main
-      - contrib
-      - non-free
-    architectures: amd64
-    signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA5D32F012649A5A9
-
-- name: Add neurodebian data repo
-  deb822_repository:
-    name: neurodebian-data
-    types: deb
-    uris: http://neuro.debian.net/debian
-    suites: data
-    components:
-      - main
-      - contrib
-      - non-free
-    architectures: amd64
-    signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA5D32F012649A5A9
-

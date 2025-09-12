@@ -40,8 +40,13 @@
   notify:
     - restart watchdog
 
-- name: fix timesyncd
-  lineinfile: dest=/etc/systemd/timesyncd.conf regexp="^NTP=" line="NTP=ca.pool.ntp.org"
+- name: set ntp primary
+  lineinfile: dest=/etc/systemd/timesyncd.conf regexp="^NTP=" line="NTP=ntp.rtss.qc.ca"
+  notify:
+    - restart timesyncd
+
+- name: set ntp primary
+  lineinfile: dest=/etc/systemd/timesyncd.conf regexp="^FallbackNTP=" line="FallbackNTP=ca.pool.ntp.org"
   notify:
     - restart timesyncd
 
@@ -55,8 +60,8 @@
 #  notify:
 #    - restart watchdog
 
-- name: make-linux-fast-again
-  lineinfile: dest=/etc/default/grub regexp=^GRUB_CMDLINE_LINUX_DEFAULT line='GRUB_CMDLINE_LINUX_DEFAULT="quiet splash noibrs noibpb nopti nospectre_v2 nospectre_v1 l1tf=off nospec_store_bypass_disable no_stf_barrier mds=off tsx=on tsx_async_abort=off mitigations=off zswap.enabled=1 zswap.compressor=zstd zswap.zpool=z3fold cgroup_enable=memory swapaccount=1 pcie_aspm=off"'
+- name: Set kernel command line
+  lineinfile: dest=/etc/default/grub regexp=^GRUB_CMDLINE_LINUX_DEFAULT line='GRUB_CMDLINE_LINUX_DEFAULT="cgroup_enable=memory swapaccount=1 pcie_aspm=off"'
   notify:
     - regen grub
 

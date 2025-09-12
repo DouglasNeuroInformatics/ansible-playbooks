@@ -6,6 +6,18 @@
     - vars/kernel-nvidia.yml
   become: yes
   tasks:
+    - name: update-pciids
+      command: update-pciids
+
+    - name: update-smart-drive-db
+      command: update-smart-drivedb
+
+    # - name: For overriding user check
+    #   ansible.builtin.shell: |
+    #     echo 0
+    #   register: logged_in_users_count
+    #   changed_when: false  # This task never changes system state
+
     - name: Get logged-in users (excluding Ansible executor) count
       ansible.builtin.shell: |
         who | awk '{print $1}' | grep -v localadmin | sort -u | wc -l
@@ -33,29 +45,38 @@
     - name: update apt-get cache
       apt: update_cache=yes
 
-    - name: safe-upgrade
-      apt: upgrade=safe cache_valid_time=3600 autoclean=yes autoremove=yes
+    - name: Unhold packages
+      command: >
+        apt-mark unhold '*nvidia*' 'linux*'
+      when:
+        - not (logged_in_users_count.stdout | int > 0)
 
-    - name: full-upgrade
-      apt: upgrade=full cache_valid_time=3600 autoclean=yes autoremove=yes
+    - name: Remove nvidia and kernel
+      command: >
+        apt-get --autoremove -y purge '*xanmod*' '*nvidia*'
+      when:
+        - not (logged_in_users_count.stdout | int > 0)
 
-    - name: purge old configs
-      ansible.builtin.shell: |
-        dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge
-      ignore_errors: yes
-
-    - name: update-pciids
-      command: update-pciids
-
-    - name: update-smart-drive-db
-      command: update-smart-drivedb
-
-    - name: Install or upgrade kernel
+    - name: Install kernel dependencies
       ansible.builtin.apt:
-        name:  "linux-xanmod-lts-x64{{ x64_version }}"
+        state: present
+        allow_change_held_packages: true
+        pkg:
+          - clang
+          - lld
+          - llvm
+          - libdw-dev
+
+    - name: Install or upgrade kernels
+      ansible.builtin.apt:
         state: latest
         allow_change_held_packages: true
+        pkg:
+          - "linux-xanmod-x64{{ x64_version }}"
+          - "linux-xanmod-lts-x64{{ x64_version }}"
       register: kernel_installed
+      when:
+        - not (logged_in_users_count.stdout | int > 0)
 
     - name: Check if nvidia-driver is needed
       ansible.builtin.shell: |
@@ -63,23 +84,6 @@
       ignore_errors: true
       register: nvidia_driver_needed
       changed_when: false  # This task never changes system state
-
-    - name: Unhold nvidia-driver
-      command: >
-        apt-mark unhold '*nvidia*' 'linux*'
-      when:
-        - nvidia_driver_needed.rc == 0
-        - not (logged_in_users_count.stdout | int > 0)
-
-    - name: Remove bad nvidia driver
-      ansible.builtin.apt:
-        name:  "{{ bad_nvidia_version }}"
-        state: absent
-        allow_change_held_packages: true
-        autoclean: yes
-        autoremove: yes
-      when:
-        - not (logged_in_users_count.stdout | int > 0)
 
     - name: Install or upgrade nvidia driver
       ansible.builtin.apt:
@@ -98,15 +102,24 @@
         - nvidia_driver_needed.rc == 0
         - (nvidia_installed.changed | default(false)) or (kernel_installed.changed | default(false))
 
-    - name: Hold nvidia-driver
+    - name: Hold kernel and nvidia
       command: >
         apt-mark hold '*nvidia*' 'linux*'
-      when:
-        - nvidia_driver_needed.rc == 0
+
+    - name: safe-upgrade
+      apt: upgrade=safe cache_valid_time=3600 autoclean=yes autoremove=yes
+
+    - name: full-upgrade
+      apt: upgrade=full cache_valid_time=3600 autoclean=yes autoremove=yes
+
+    - name: purge old configs
+      ansible.builtin.shell: |
+        dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge
+      ignore_errors: yes
 
     - name: Reboot if changes
       reboot:
         reboot_timeout: 300
       when:
         - not (logged_in_users_count.stdout | int > 0)
-        - (nvidia_installed.changed | default(false)) or (kernel_installed.changed | default(false))
+        #- (nvidia_installed.changed | default(false)) or (kernel_installed.changed | default(false))

@@ -11,6 +11,7 @@
     update_cache: yes
     state: present
     pkg:
+      - apcupsd
       - bruno
       - wezterm
       - brave-browser

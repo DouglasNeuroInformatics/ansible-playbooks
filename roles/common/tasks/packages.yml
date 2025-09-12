@@ -41,7 +41,6 @@
     - landscape-common
     - tmux
     - screen
-    - apcupsd
     - imagemagick
     - exfatprogs
     - ntfs-3g

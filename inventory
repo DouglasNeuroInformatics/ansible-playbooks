@@ -1,6 +1,3 @@
-[all:vars]
-ansible_ssh_user=localadmin
-
 [workstations]
 cicws01
 cicws02
@@ -19,6 +16,7 @@ cicws16
 cicws17
 cicws18
 cicws19
+cicws23
 cicws24
 cicws25
 cicws26
@@ -66,8 +64,14 @@ dnpws22
 dnpws23
 dnpws24
 dnpws25
+dnpws26
 
-[computenodes]
+[compute_nodes]
+ciccs01
+ciccs02
+ciccs03
+ciccs04
+ciccs05
 ciccs06
 ciccs07
 ciccs08
@@ -75,3 +79,17 @@ ciccs09
 ciccs10
 
 [servers]
+cicvmhost01 ansible_user=localadmin ansible_python_interpreter=/usr/bin/python3.8
+
+[user_servers]
+cicus03
+dnpus01
+
+[storage_servers]
+cicss04 ansible_python_interpreter=/usr/bin/python3.8
+cicss05
+cicss06
+
+[vms]
+cloud1.douglasneuroinformatics.ca
+cloud2.douglasneuroinformatics.ca

@@ -18,6 +18,7 @@
 - {import_tasks: slurm.yml, tags: slurm}
 - {import_tasks: system-config.yml, tags: system}
 - {import_tasks: motd.yml, tags: motd}
+- {import_tasks: snipeIT.yml, tags: snipeit}
 
 - name: Set default locale to en_CA.UTF-8
   debconf:

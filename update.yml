@@ -3,8 +3,8 @@
   - workstations
   - computenodes
   - servers
-  - user_servers
-  - storage_servers
+  - userservers
+  - storageservers
   - vms
 
   become: yes

@@ -66,7 +66,7 @@ dnpws24
 dnpws25
 dnpws26
 
-[compute_nodes]
+[computenodes]
 ciccs01
 ciccs02
 ciccs03
@@ -81,11 +81,11 @@ ciccs10
 [servers]
 cicvmhost01 ansible_user=localadmin ansible_python_interpreter=/usr/bin/python3.8
 
-[user_servers]
+[userservers]
 cicus03
 dnpus01
 
-[storage_servers]
+[storageservers]
 cicss04 ansible_python_interpreter=/usr/bin/python3.8
 cicss05
 cicss06

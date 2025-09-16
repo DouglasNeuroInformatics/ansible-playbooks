@@ -67,10 +67,10 @@
       set_fact:
         model_id: >-
           {% if 'workstations' in group_names %}1
-          {% elif 'compute_nodes' in group_names %}3
+          {% elif 'computenodes' in group_names %}3
           {% elif 'vms' in group_names %}4
-          {% elif 'user_servers' in group_names %}5
-          {% elif 'storage_servers' in group_names %}6
+          {% elif 'userservers' in group_names %}5
+          {% elif 'storageservers' in group_names %}6
           {% elif 'servers' in group_names %}12
           {% else %}13  # Default model ID if not matched
           {% endif %}

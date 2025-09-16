@@ -2,6 +2,11 @@
 - hosts:
   - workstations
   - computenodes
+  - servers
+  - user_servers
+  - storage_servers
+  - vms
+
   become: yes
   tasks:
     - name: Gather logged in user

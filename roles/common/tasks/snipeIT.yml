@@ -1,0 +1,107 @@
+#Fetch system facts and add them to our inventory
+    - name: Retrieve BIOS vendor
+      command: dmidecode -s bios-vendor
+      register: bios_vendor
+      ignore_errors: yes
+
+    - name: Retrieve BIOS version
+      command: dmidecode -s bios-version
+      register: bios_version
+      ignore_errors: yes
+
+    - name: Retrieve BIOS revision
+      command: dmidecode -s bios-revision
+      register: bios_revision
+      ignore_errors: yes
+
+    - name: Set BIOS info
+      set_fact:
+         bios_version: "{{ bios_vendor.stdout | default('') | trim }} {{ bios_version.stdout | default('') | trim }} {{ bios_revision.stdout | default('') | trim }}"
+
+    - name: Retrieve baseboard manufacturer
+      command: dmidecode -s baseboard-manufacturer
+      register: baseboard_manufacturer
+
+    - name: Retrieve baseboard product name
+      command: dmidecode -s baseboard-product-name
+      register: baseboard_product_name
+
+    - name: Set motherboard info
+      set_fact:
+        motherboard: "{{ baseboard_manufacturer.stdout | trim }} {{ baseboard_product_name.stdout | trim }}"
+
+    - name: Retrieve baseboard serial number
+      command: dmidecode -s baseboard-serial-number
+      register: baseboard_serial_number
+
+    - name: Set serial number
+      set_fact:
+        serial_number: "{{ baseboard_serial_number.stdout | trim }}"
+
+    - name: Retrieve cpu type
+      command: dmidecode -s processor-family
+      register: processor_family
+
+    - name: Retrieve cpu manufacturer
+      command: dmidecode -s processor-manufacturer
+      register: processor_manufacturer
+
+    - name: Retrieve cpu version
+      command: dmidecode -s processor-version
+      register: processor_version
+
+    - name: Set cpu info
+      set_fact:
+        cpu: "{{ processor_family.stdout | trim }} {{ processor_manufacturer.stdout | trim }} {{ processor_version.stdout | trim }}"
+
+    - name: Retrieve gpu
+      command: lshw -C display
+      register: gpu_info
+      failed_when: "'command not found' in gpu_info.stderr"
+
+    - name: Parse gpu model
+      set_fact:
+        gpu_model: "{{ gpu_info.stdout | regex_search('product: (.+)', '\\1') | default('Unknown') | replace('[', '') | replace(']', '') | replace('\"', '') | replace(\"'\", '') }}"
+
+    - name: Determine model_id based on inventory group
+      set_fact:
+        model_id: >-
+          {% if 'workstations' in group_names %}1
+          {% elif 'compute_nodes' in group_names %}3
+          {% elif 'vms' in group_names %}4
+          {% elif 'user_servers' in group_names %}5
+          {% elif 'storage_servers' in group_names %}6
+          {% elif 'servers' in group_names %}12
+          {% else %}13  # Default model ID if not matched
+          {% endif %}
+
+    - name: Create asset in Snipe-IT
+      uri:
+        url: "https://inventory.douglasneuroinformatics.ca/api/v1/hardware"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ lookup('file', 'files/snipeIT.key') }}"
+          Accept: "application/json"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          name: "{{ ansible_hostname }}"
+          asset_tag: "{{ serial_number }}"
+          serial: "{{ serial_number }}"
+          model_id: "{{ model_id }}"
+          status_id: 4  #Online status
+          _snipeit_bios_15: "{{ bios_version }}"
+          _snipeit_motherboard_16: "{{ motherboard }}"
+          _snipeit_os_8: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
+          _snipeit_ram_10: "{{ ansible_memtotal_mb }} MB"
+          _snipeit_cpu_11: "{{ cpu }}"
+          _snipeit_gpu_9: "{{ gpu_model }}"
+          _snipeit_ip_address_12: "{{ ansible_all_ipv4_addresses | join(', ') }}"
+          _snipeit_mac_address_1: "{{ ansible_default_ipv4.macaddress }}"
+          _snipeit_location_nickname_3: "unknown"
+          _snipeit_primary_user_5: "unknown"
+          _snipeit_purchase_date_aprox_6: "unknown"
+          _snipeit_owner_4: "unknown"
+          _snipeit_service_status_13: "in service"
+        status_code: [200, 201]
+      delegate_to: localhost

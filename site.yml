@@ -9,8 +9,33 @@
     - common
     - workstation
 
-- hosts: computenodes
+- hosts: compute_nodes
   become: yes
   roles:
     - bodsch.snapd
     - common
+
+- hosts: servers
+  become: yes
+  roles:
+    - bodsch.snapd
+    - common
+
+- hosts: user_servers
+  become: yes
+  roles:
+    - bodsch.snapd
+    - common
+
+- hosts: storage_servers
+  become: yes
+  roles:
+    - bodsch.snapd
+#    - common
+
+- hosts: vms
+  become: yes
+  roles:
+    - bodsch.snapd
+#    - common
+

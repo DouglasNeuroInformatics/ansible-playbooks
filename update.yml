@@ -24,23 +24,23 @@
       register: logged_in_users_count
       changed_when: false  # This task never changes system state
 
-    - name: get cpu flags
-      command: >
-        awk -F: '/^flags/ {print $2; exit}' /proc/cpuinfo
-      register: cpu_flags_cmd
-      changed_when: false  # This task never changes system state
-
-    - name: set cpu flags fact
-      set_fact:
-        cpu_flags: "{{ cpu_flags_cmd.stdout.split() }}"
-
-    - name: Determine highest supported x64 version
-      set_fact:
-        x64_version: >-
-          {%- if list_v4 is subset(cpu_flags) -%}v3
-          {%- elif list_v1 is subset(cpu_flags) and list_v2 is subset(cpu_flags) and list_v3 is subset(cpu_flags) -%}v3
-          {%- elif list_v1 is subset(cpu_flags) and list_v2 is subset(cpu_flags) -%}v2
-          {%- elif list_v1 is subset(cpu_flags) -%}v1{% endif %}
+#     - name: get cpu flags
+#       command: >
+#         awk -F: '/^flags/ {print $2; exit}' /proc/cpuinfo
+#       register: cpu_flags_cmd
+#       changed_when: false  # This task never changes system state
+#
+#     - name: set cpu flags fact
+#       set_fact:
+#         cpu_flags: "{{ cpu_flags_cmd.stdout.split() }}"
+#
+#     - name: Determine highest supported x64 version
+#       set_fact:
+#         x64_version: >-
+#           {%- if list_v4 is subset(cpu_flags) -%}v3
+#           {%- elif list_v1 is subset(cpu_flags) and list_v2 is subset(cpu_flags) and list_v3 is subset(cpu_flags) -%}v3
+#           {%- elif list_v1 is subset(cpu_flags) and list_v2 is subset(cpu_flags) -%}v2
+#           {%- elif list_v1 is subset(cpu_flags) -%}v1{% endif %}
 
     - name: update apt-get cache
       apt: update_cache=yes
@@ -57,37 +57,47 @@
       when:
         - not (logged_in_users_count.stdout | int > 0)
 
-    - name: Install kernel dependencies
-      ansible.builtin.apt:
-        state: present
-        allow_change_held_packages: true
-        pkg:
-          - clang
-          - lld
-          - llvm
-          - libdw-dev
+    # - name: Install kernel dependencies
+    #   ansible.builtin.apt:
+    #     state: present
+    #     allow_change_held_packages: true
+    #     pkg:
+    #       - clang
+    #       - lld
+    #       - llvm
+    #       - libdw-dev
+
+    # - name: Install or upgrade kernels
+    #   ansible.builtin.apt:
+    #     state: latest
+    #     allow_change_held_packages: true
+    #     pkg:
+    #       - "linux-xanmod-x64{{ x64_version }}"
+    #       - "linux-xanmod-lts-x64{{ x64_version }}"
+    #   register: kernel_installed
+    #   when:
+    #     - not (logged_in_users_count.stdout | int > 0)
 
     - name: Install or upgrade kernels
       ansible.builtin.apt:
         state: latest
         allow_change_held_packages: true
         pkg:
-          - "linux-xanmod-x64{{ x64_version }}"
-          - "linux-xanmod-lts-x64{{ x64_version }}"
+          - linux-zabbly
       register: kernel_installed
       when:
         - not (logged_in_users_count.stdout | int > 0)
 
     - name: Check if nvidia-driver is needed
       ansible.builtin.shell: |
-        ubuntu-drivers devices | grep -o {{ nvidia_version }}
+        ubuntu-drivers list | cut -d, -f1 | grep -v server | sort -V | tail -1 | grep nvidia-driver
       ignore_errors: true
       register: nvidia_driver_needed
       changed_when: false  # This task never changes system state
 
     - name: Install or upgrade nvidia driver
       ansible.builtin.apt:
-        name:  "{{ nvidia_version }}"
+        name:  "{{ nvidia_driver_needed.stdout }}"
         state: latest
         allow_change_held_packages: true
       register: nvidia_installed

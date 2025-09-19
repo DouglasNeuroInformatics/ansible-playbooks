@@ -86,4 +86,4 @@
 - name: default brave for browser
   community.general.alternatives:
     name: x-www-browser
-    path: /usr/bin/brave-browser
+    path: /usr/bin/brave-browser-stable

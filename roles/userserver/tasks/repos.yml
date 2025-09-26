@@ -1,0 +1,74 @@
+- name: disable ubuntu pro messages
+  command: pro config set apt_news=false
+  ignore_errors: true
+
+- name: Remove esm spam
+  ansible.builtin.file:
+    path: /etc/apt/apt.conf.d/20apt-esm-hook.conf
+    state: absent
+
+- name: Remove old keyfile
+  ansible.builtin.file:
+    path: /etc/apt/trusted.gpg
+    state: absent
+
+- name: add ppa repos
+  command: apt-add-repository -y -n {{ item }}
+  with_items:
+    - ppa:git-core/ppa
+    - ppa:apt-fast/stable
+    - ppa:yubico/stable
+    - ppa:apptainer/ppa
+    - ppa:rapier1/hpnssh
+    - ppa:ansible/ansible
+    - ppa:neovim-ppa/stable
+
+- name: Add xpra repo
+  deb822_repository:
+    name: xpra
+    types: deb
+    uris: https://xpra.org
+    suites: '{{ ansible_distribution_release }}'
+    components: main
+    architectures: amd64 arm64
+    signed_by: https://xpra.org/xpra.asc
+
+- name: Add docker repo
+  deb822_repository:
+    name: docker
+    types: deb
+    uris: https://download.docker.com/linux/ubuntu
+    suites: '{{ ansible_distribution_release }}'
+    components: stable
+    architectures: amd64
+    signed_by: https://download.docker.com/linux/ubuntu/gpg
+
+- name: Add zabbly repo
+  deb822_repository:
+    name: zabbly
+    types: deb
+    uris: https://pkgs.zabbly.com/kernel/stable
+    suites: '{{ ansible_distribution_release }}'
+    components: main
+    architectures: amd64
+    signed_by: https://pkgs.zabbly.com/key.asc
+
+- name: Add xanmod repo
+  deb822_repository:
+    name: xanmod
+    types: deb
+    uris:  http://deb.xanmod.org
+    suites: releases
+    components: main
+    architectures: amd64
+    signed_by: https://dl.xanmod.org/archive.key
+
+- name: Add virtualgl repo
+  deb822_repository:
+    name: virtualgl
+    types: deb
+    uris:  https://packagecloud.io/dcommander/virtualgl/any/
+    suites: any
+    components: main
+    architectures: amd64
+    signed_by: https://packagecloud.io/dcommander/virtualgl/gpgkey

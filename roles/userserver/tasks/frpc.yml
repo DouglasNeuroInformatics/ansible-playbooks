@@ -1,0 +1,89 @@
+---
+- name: Ensure frpclient group exists
+  group:
+    name: frpclient
+    system: yes
+
+- name: Ensure frpclient user exists
+  user:
+    name: frpclient
+    group: frpclient
+    system: yes
+    shell: /usr/sbin/nologin
+    home: /nonexistent
+    create_home: no
+
+- name: Ensure FRP directory exists
+  file:
+    path: /opt/frp
+    state: directory
+    owner: root
+    group: frpclient
+    mode: '0770'
+
+- name: Download FRP client
+  get_url:
+    url: https://github.com/fatedier/frp/releases/download/v0.53.2/frp_0.53.2_linux_amd64.tar.gz
+    dest: /opt/frp/frp_0.53.2_linux_amd64.tar.gz
+    mode: '0644'
+    owner: root
+    group: frpclient
+
+- name: Ensure FRP version directory exists
+  file:
+    path: /opt/frp/frp_0.53.2_linux_amd64
+    state: directory
+    owner: root
+    group: frpclient
+    mode: '0770'
+
+- name: Extract FRP
+  unarchive:
+    src: /opt/frp/frp_0.53.2_linux_amd64.tar.gz
+    dest: /opt/frp/frp_0.53.2_linux_amd64
+    remote_src: yes
+    creates: /opt/frp/frp_0.53.2_linux_amd64/frpc
+    owner: root
+    group: frpclient
+    mode: '0770'
+
+- name: Ensure /var/log/frp exists
+  file:
+    path: /var/log/frp
+    state: directory
+    owner: frpclient
+    group: frpclient
+    mode: '0775'
+
+- name: Copy frpc config files
+  copy:
+    src: "{{ item }}"
+    dest: "/opt/frp/frp_0.53.2_linux_amd64/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - frpc_cloud2.toml
+    - frpc_cloud1_bk.toml
+
+- name: Copy frpc systemd service files
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - frpc_cloud2.service
+    - frpc_cloud1_bk.service
+  notify: reload systemd
+
+- name: Enable and start frpc services
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  loop:
+    - frpc_cloud2
+    - frpc_cloud1_bk

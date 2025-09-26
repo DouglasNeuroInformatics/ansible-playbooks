@@ -17,3 +17,9 @@
     - bodsch.snapd
     - mambaorg.micromamba
     - common
+- hosts: userservers
+  vars_files:
+    - vars/slurm.yml
+  become: yes
+  roles:
+    - userserver

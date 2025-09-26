@@ -1,36 +1,11 @@
-#- name: Download VMware Horizon Installer
-#  unarchive:
-#    src: https://download3.vmware.com/software/CART23FQ2_LIN_2206_TARBALL/VMware-Horizon-Client-Linux-2212.1-8.8.1-21219348.tar.gz
-#    dest: /data/scratch2/.ansible/vmware
-#    remote_src: yes
-
-- name: Unpack VMware Horizon Client
-  ansible.builtin.command: tar xzvf /data/scratch2/.ansible/vmware/VMware-Horizon-Client-Linux-2212.1-8.8.1-21219348/x64/VMware-Horizon-Client-2212.1-8.8.1-21219348.x64.tar.gz -C /usr --strip-components=1
-  args:
-    creates: /usr/bin/vmware-view
-
-- name: Unpack VMware Horizon PCoIP
-  ansible.builtin.command: tar xzvf /data/scratch2/.ansible/vmware/VMware-Horizon-Client-Linux-2212.1-8.8.1-21219348/x64/VMware-Horizon-PCoIP-2212.1-8.8.1-21219348.x64.tar.gz -C /usr --strip-components=1
-  args:
-    creates: /usr/lib/libpcoip_client.so
-
-- name: Unpack VMware USB Redirection
-  ansible.builtin.command: tar xzvf /data/scratch2/.ansible/vmware/VMware-Horizon-Client-Linux-2212.1-8.8.1-21219348/x64/VMware-Horizon-USB-2212.1-8.8.1-21219348.x64.tar.gz -C /usr --strip-components=1
-  args:
-    creates: /usr/lib/vmware/view/usb/libvmware-view-usbd.so
+- name: install vmware horizon debs
+  apt: deb={{ item }}
+  with_items:
+    - https://download3.vmware.com/software/CART25FQ1_LIN64_DebPkg_2312.1/VMware-Horizon-Client-2312.1-8.12.1-23543969.x64.deb
+  ignore_errors: yes
 
 - name: config vmware horizon client
   copy: src=files/view-mandatory-config dest=/etc/vmware/
 
 - name: vmware daemon config
   copy: src=files/vmware_config dest=/etc/vmware/config
-
-- name: config USB vmware redirection service
-  copy: src=files/vmware-usbarbitrator.service dest=/etc/systemd/system/vmware-usbarbitrator.service
-
-- name: systemd reload files
-  ansible.builtin.systemd:
-    daemon_reload: yes
-
-- name: enable USB VMware redirection service
-  service: name=vmware-usbarbitrator enabled=yes state=restarted

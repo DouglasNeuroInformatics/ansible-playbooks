@@ -1,11 +1,11 @@
-- name: install vmware horizon debs
-  apt: deb={{ item }}
-  with_items:
-    - https://download3.vmware.com/software/CART25FQ1_LIN64_DebPkg_2312.1/VMware-Horizon-Client-2312.1-8.12.1-23543969.x64.deb
-  ignore_errors: yes
+#VMware is now Omnissa, URL for .deb   https://customerconnect.omnissa.com/downloads/details?downloadGroup=CART26FQ2_LIN64_DEBPKG_2506&productId=1616&rPId=119132
+
+- name: Install VMware Horizon Client from local .deb
+  ansible.builtin.apt:
+    deb: "/data/scratch2/.ansible/omnissa/Omnissa-Horizon-Client-2506-8.16.0-16536624989.x64.deb"
 
 - name: config vmware horizon client
-  copy: src=files/view-mandatory-config dest=/etc/vmware/
+  copy: src=files/view-mandatory-config dest=/etc/omnissa/horizon-default-config
 
 - name: vmware daemon config
-  copy: src=files/vmware_config dest=/etc/vmware/config
+  copy: src=files/vmware_config dest=/etc/omnissa/horizon-mandatory-config

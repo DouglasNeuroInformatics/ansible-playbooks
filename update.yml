@@ -116,6 +116,12 @@
       command: >
         apt-mark hold '*nvidia*' 'linux*'
 
+    - name: setuid bit on /sbin/unix_chkpwd
+      ansible.builtin.file:
+        path: /sbin/unix_chkpwd
+        mode: 'u+s'
+        state: file
+
     - name: safe-upgrade
       apt: upgrade=safe cache_valid_time=3600 autoclean=yes autoremove=yes
 

@@ -1,0 +1,21 @@
+- name: Update root user GECOS field for email readability
+  ansible.builtin.user:
+    name: root
+    comment: "root@{{ ansible_facts['nodename'] }}"
+
+- name: configure sudo email address
+  lineinfile:
+    path: /etc/sudoers.d/99-sudoers-config
+    create: yes
+    line: "Defaults mailfrom=\"{{ ansible_facts['nodename'] }}@douglas.mcgill.ca\""
+    validate: 'visudo -cf %s'
+
+- name: add cicadministrators to sudoers
+  lineinfile:
+    path: /etc/sudoers.d/99-sudoers-config
+    line: "%cicadministrators ALL=(ALL) NOPASSWD:ALL"
+    validate: 'visudo -cf %s'
+
+- name: apply settings to bash history
+  copy: src=files/bash_history_timestamp.sh dest=/etc/profile.d/
+

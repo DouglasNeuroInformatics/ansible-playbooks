@@ -41,7 +41,7 @@
     - restart watchdog
 
 - name: set ntp primary
-  lineinfile: dest=/etc/systemd/timesyncd.conf regexp="^NTP=" line="NTP=ntp.rtss.qc.ca"
+  lineinfile: dest=/etc/systemd/timesyncd.conf regexp="^NTP=" line="NTP=ca.pool.ntp.org"
   notify:
     - restart timesyncd
 

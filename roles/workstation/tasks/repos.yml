@@ -105,12 +105,12 @@
     architectures: amd64
     signed_by: https://dl.google.com/linux/linux_signing_key.pub
 
-- name: Add bruno repo
-  deb822_repository:
-    name: bruno
-    types: deb
-    uris: http://debian.usebruno.com/
-    suites: bruno
-    components: stable
-    architectures: amd64
-    signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x9FA6017ECABE0266
+# - name: Add bruno repo
+#   deb822_repository:
+#     name: bruno
+#     types: deb
+#     uris: http://debian.usebruno.com/
+#     suites: bruno
+#     components: stable
+#     architectures: amd64
+#     signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x9FA6017ECABE0266

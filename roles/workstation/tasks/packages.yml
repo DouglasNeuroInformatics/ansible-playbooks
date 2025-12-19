@@ -12,7 +12,7 @@
     state: present
     pkg:
       - apcupsd
-      - bruno
+      # - bruno
       - wezterm
       - brave-browser
       - code

@@ -1,0 +1,15 @@
+[all:vars]
+ansible_ssh_user=localadmin
+
+[storageservers]
+cicss04
+cicss05
+cicss06
+
+[userservers]
+cicus03
+cicus04
+dnpus01
+
+[vmservers]
+cicvmhost01

@@ -34,7 +34,7 @@
 - block:
     - name: turn off swap
       ansible.builtin.command:
-        cmd: swapoff /swapfile
+        cmd: swapoff -a
       ignore_errors: true
 
     # use fallocate because it's significantly faster than dd

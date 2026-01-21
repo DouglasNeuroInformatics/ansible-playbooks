@@ -20,6 +20,7 @@
       - liblz4-dev
       - libmunge2
       - libmunge-dev
+      - libncurses6
       - libncurses-dev
       - libpam0g-dev
       - libperl-dev
@@ -36,6 +37,7 @@
 
 
 - name: Check if current version is installed
+  become: yes
   stat:
     path: "{{ slurm_prefix_path}}/sbin/slurmd"
   register: slurmd_installed
@@ -102,11 +104,32 @@
 - name: restart munge
   systemd: state=restarted enabled=true name=munge daemon_reload=yes
 
-- name: install slurm default config
-  copy: src=files/default.slurmd dest=/etc/default/slurmd
+- name: copy slurm default configuration based on node type
+  block:
+    - name: Install slurm default config on workstations
+      copy:
+        src: files/default.slurmd.workstation
+        dest: /etc/default/slurmd
+      when: "'workstations' in group_names"
+
+    - name: Install slurm default config on compute nodes
+      copy:
+        src: files/default.slurmd.computenode
+        dest: /etc/default/slurmd
+      when: "'computenodes' in group_names"
 
 - name: install slurm path
   copy: src=files/99slurm_path.sh dest=/etc/profile.d/
 
+- name: update slurmd ExecStart to use the highest nice value
+  lineinfile:
+    path: /etc/systemd/system/slurmd.service
+    regexp: '^ExecStart='
+    line: "ExecStart=/opt/slurm/current/sbin/slurmd --systemd $SLURMD_OPTIONS -n 19"
+  tags:
+    - execstart
+
 - name: enable slurmd
   systemd: state=restarted enabled=true name=slurmd daemon_reload=yes
+  tags:
+    - execstart

@@ -1,0 +1,97 @@
+- name: nfs-common installed
+  apt:  pkg=nfs-common state=present
+
+- name: autofs installed
+  apt: pkg=autofs state=present
+
+- name: autofs installed
+  apt: pkg=cachefilesd state=absent
+  notify: restart autofs
+
+- name: enable cachefilesd
+  ansible.builtin.lineinfile:
+    path: /etc/default/cachefilesd
+    regexp: '^RUN='
+    line: RUN=no
+  notify: restart autofs
+  ignore_errors: true
+
+- name: create place for homdirs
+  file: path=/home/cic state=directory
+
+- name: create autofs directory
+  file: path=/etc/auto.master.d state=directory
+
+- name: setup cic.autofs
+  copy: src=files/cic.autofs dest=/etc/auto.master.d
+  notify: restart autofs
+
+- name: create /data
+  file: path=/data state=directory
+
+- name: autofs /data
+  copy: src=files/auto.data dest=/etc/auto.data
+  notify: restart autofs
+
+- name: autofs /home
+  copy: src=files/auto.home dest=/etc/auto.home
+  notify: restart autofs
+
+- name: autofs direct maps
+  copy: src=files/auto.direct  dest=/etc/auto.direct
+  notify: restart autofs
+
+- name: configure nfs-common
+  copy: src=files/nfs-common dest=/etc/default/nfs-common
+
+- name: optimize dirty_bytes data nfs
+  ansible.posix.sysctl:
+    name: vm.dirty_bytes
+    value: 629145600
+    state: present
+    reload: yes
+
+- name: optimize dirty_background_bytes data nfs
+  ansible.posix.sysctl:
+    name: vm.dirty_background_bytes
+    value: 314572800
+    state: present
+    reload: yes
+
+- name: Symlink for DICOMS
+  ansible.builtin.file:
+    src: /data/dicom/incoming
+    dest: /dicom
+    owner: root
+    group: root
+    state: link
+    force: yes
+
+- name: install NFS server
+  apt:
+    name: nfs-kernel-server
+    state: present
+
+- name: verify that /etc/exports.d exists
+  file:
+    path: /etc/exports.d
+    state: directory
+    mode: '0755'
+
+- name: configure /etc/exports
+  copy:
+    src: files/users.exports
+    dest: /etc/exports.d/users.exports
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart nfs-server
+
+- name: enable and start NFS server
+  systemd:
+    name: nfs-server
+    state: started
+    enabled: yes
+
+- name: flush handlers
+  meta: flush_handlers

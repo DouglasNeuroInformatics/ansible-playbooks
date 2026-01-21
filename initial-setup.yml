@@ -1,6 +1,7 @@
 - hosts:
   - computenodes
   - workstations
+  - userserver
   become: yes
   tasks:
     - name: enable ssh keys

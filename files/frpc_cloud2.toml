@@ -1,0 +1,33 @@
+# FRP client service currently running on cicus03
+#
+serverAddr = "198.168.187.56"
+serverPort = 7000
+tcpMux = false
+tls_enable = true
+#transport.protocol = "kcp"
+#transport.protocol = "quic"
+auth.token = "raiCeeshie6ahz1ahre2Eegha5eeng8Shahx1Ma8vae0xeepheiShieshaeN5eic"
+loginFailExit = false
+log.to = "/var/log/frp/frpc_cloud2.log"
+#log.to = "/home/localadmin/frpc.log"
+# trace, debug, info, warn, error
+log.level = "info"
+log.maxDays = 3
+
+[[proxies]]
+name = "SSH"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 22
+remotePort = 46572
+# transport.useEncryption = false
+healthCheck.type = "tcp"
+
+# [[proxies]]
+# name = "SSH2"
+# type = "tcp"
+# localIP = "127.0.0.1"
+# localPort = 22
+# remotePort = 46572
+# transport.useEncryption = true
+# healthCheck.type = "tcp"

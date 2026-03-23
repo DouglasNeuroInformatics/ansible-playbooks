@@ -11,6 +11,8 @@
     update_cache: yes
     state: present
     pkg:
+      - rclone
+      - vlc
       - nouveau-firmware
       - apcupsd
       # - bruno

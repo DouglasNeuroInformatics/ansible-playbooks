@@ -19,6 +19,7 @@ cicws16
 cicws17
 cicws18
 cicws19
+cicws23
 cicws24
 cicws25
 cicws26
@@ -56,7 +57,6 @@ dnpws13
 dnpws14
 dnpws15
 dnpws16
-cichm01
 dnpws17
 dnpws18
 dnpws19
@@ -66,12 +66,23 @@ dnpws22
 dnpws23
 dnpws24
 dnpws25
+dnpws26
+cichm01
 
 [computenodes]
+ciccs01
+ciccs02
+ciccs03
+ciccs04
+ciccs05
 ciccs06
 ciccs07
 ciccs08
 ciccs09
 ciccs10
+
+[userservers]
+cicus03 nis_role=master
+dnpus01 nis_role=slave
 
 [servers]

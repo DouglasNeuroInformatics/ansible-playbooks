@@ -68,10 +68,20 @@ dnpws24
 dnpws25
 
 [computenodes]
+ciccs01
+ciccs02
+ciccs03
+ciccs04
+ciccs05
 ciccs06
 ciccs07
 ciccs08
 ciccs09
 ciccs10
+
+[userservers]
+cicus03 nis_role=master
+dnpus01 nis_role=slave
+cicbs nis_role=slave slurmctld=master
 
 [servers]

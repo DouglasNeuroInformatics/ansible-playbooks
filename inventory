@@ -19,6 +19,7 @@ cicws16
 cicws17
 cicws18
 cicws19
+cicws23
 cicws24
 cicws25
 cicws26
@@ -30,8 +31,8 @@ cicws31
 cicws32
 cicws33
 cicws35
-cicws40
 cicws38
+cicws40
 cicws41
 cicws42
 cicws43
@@ -66,12 +67,20 @@ dnpws22
 dnpws23
 dnpws24
 dnpws25
+dnpws26
+dnpws27
 
 [computenodes]
+ciccs01
+ciccs02
+ciccs03
+ciccs04
+ciccs05
 ciccs06
 ciccs07
 ciccs08
 ciccs09
 ciccs10
-
-[servers]
+ciccs11
+ciccs12
+ciccs13

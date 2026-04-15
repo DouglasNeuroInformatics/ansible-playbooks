@@ -8,8 +8,7 @@ cicss06
 
 [userservers]
 cicus03
-cicus04
 dnpus01
 
 [vmservers]
-cicvmhost01
+dnpapphost01

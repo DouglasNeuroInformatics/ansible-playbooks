@@ -1,0 +1,2 @@
+- name: restrict cron to allowed users
+  copy: src=files/cron.allow dest=/etc/cron.allow owner=root group=root mode='0644'

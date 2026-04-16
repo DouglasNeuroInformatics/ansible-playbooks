@@ -21,7 +21,7 @@
 - name: Add wezterm repo
   ansible.builtin.deb822_repository:
     name: wezterm
-    uris: https://apt.fury.io/wez
+    uris: http://apt.fury.io/wez
     suites: "*"
     components: "*"
     architectures: amd64
@@ -30,7 +30,7 @@
 - name: Add turbovnc repo
   ansible.builtin.deb822_repository:
     name: turbovnc
-    uris: https://packagecloud.io/dcommander/turbovnc/any
+    uris: http://packagecloud.io/dcommander/turbovnc/any
     suites: any
     components: main
     architectures: amd64
@@ -39,7 +39,7 @@
 - name: Add xpra repo
   ansible.builtin.deb822_repository:
     name: xpra
-    uris: https://xpra.org
+    uris: http://xpra.org
     suites: "{{ ansible_distribution_release }}"
     components: main
     architectures: amd64
@@ -48,7 +48,7 @@
 - name: Add virtualgl repo
   ansible.builtin.deb822_repository:
     name: virtualgl
-    uris: https://packagecloud.io/dcommander/virtualgl/any
+    uris: http://packagecloud.io/dcommander/virtualgl/any
     suites: any
     components: main
     architectures: amd64
@@ -57,7 +57,7 @@
 - name: Add zoom unofficial repo
   ansible.builtin.deb822_repository:
     name: zoom
-    uris: https://mirror.mwt.me/zoom/deb
+    uris: http://mirror.mwt.me/zoom/deb
     suites: any
     components: main
     architectures: amd64
@@ -70,12 +70,12 @@
     suites: "{{ ansible_distribution_release }}"
     components: universe
     architectures: amd64
-    signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xbfd90f4daaefa72b67bbaf48e3ca1a89941c42e6
+    signed_by: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xbfd90f4daaefa72b67bbaf48e3ca1a89941c42e6
 
 - name: Add brave repo
   ansible.builtin.deb822_repository:
     name: brave
-    uris: https://brave-browser-apt-release.s3.brave.com/
+    uris: http://brave-browser-apt-release.s3.brave.com/
     suites: stable
     components: main
     architectures: amd64
@@ -84,7 +84,7 @@
 - name: Add vscode repo
   ansible.builtin.deb822_repository:
     name: vscode
-    uris: https://packages.microsoft.com/repos/code
+    uris: http://packages.microsoft.com/repos/code
     suites: stable
     components: main
     architectures: amd64
@@ -99,7 +99,7 @@
 - name: Add chrome repo
   ansible.builtin.deb822_repository:
     name: chrome
-    uris: https://dl.google.com/linux/chrome/deb/
+    uris: http://dl.google.com/linux/chrome/deb/
     suites: stable
     components: main
     architectures: amd64

@@ -1,3 +1,10 @@
+- name: Set ubuntu mirror in ubuntu.sources
+  ansible.builtin.lineinfile:
+    path: /etc/apt/sources.list.d/ubuntu.sources
+    regexp: '^URIs:'
+    line: 'URIs: http://ubuntu.mirror.globo.tech/'
+    firstmatch: true
+
 - name: disable ubuntu pro messages
   command: pro config set apt_news=false
   ignore_errors: true

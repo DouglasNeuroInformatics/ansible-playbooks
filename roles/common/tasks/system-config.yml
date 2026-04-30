@@ -19,3 +19,22 @@
 - name: apply settings to bash history
   copy: src=files/bash_history_timestamp.sh dest=/etc/profile.d/
 
+- name: Block algif_aead from being loaded (mitigation for CVE-2026-31431)
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/disable-algif-aead.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      # Mitigation for CVE-2026-31431 ("Copy Fail")
+      install algif_aead /bin/false
+  tags:
+    - security
+
+- name: Unload algif_aead if currently loaded
+  ansible.builtin.command: rmmod algif_aead
+  register: rmmod_algif_aead
+  changed_when: rmmod_algif_aead.rc == 0
+  failed_when: false
+  tags:
+    - security

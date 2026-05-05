@@ -1,0 +1,8 @@
+{
+  "GenAILocalFoundationalModelSettings": 1,
+  "GeminiSettings": 1,
+  "PromptAPISettings": 1,
+  "SummarizationAPISettings": 1,
+  "WritingHelpAPISettings": 1,
+  "TranslationAPISettings": 1
+}

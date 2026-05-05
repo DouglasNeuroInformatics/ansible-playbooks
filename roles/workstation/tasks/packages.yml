@@ -1,3 +1,6 @@
+
+
+
 ---
 
 - name: disable adding vscode repo
@@ -11,6 +14,7 @@
     update_cache: yes
     state: present
     pkg:
+      - python3-pyqt5
       - rclone
       - vlc
       - nouveau-firmware

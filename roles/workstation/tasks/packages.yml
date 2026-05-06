@@ -104,10 +104,10 @@
     mode: '0755'
   tags: chrome
 
-- name: deploy chrome AI restrictions policy
+- name: deploy custom DNP chrome policies
   ansible.builtin.copy:
-    src: ai-restrictions.json
-    dest: /etc/opt/chrome/policies/managed/ai-restrictions.json
+    src: dnp-policies.json
+    dest: /etc/opt/chrome/policies/managed/dnp-policies.json
     owner: root
     group: root
     mode: '0644'

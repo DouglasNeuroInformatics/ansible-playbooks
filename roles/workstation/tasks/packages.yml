@@ -94,3 +94,21 @@
   community.general.alternatives:
     name: x-www-browser
     path: /usr/bin/brave-browser-stable
+
+- name: ensure chrome managed policy directory exists
+  ansible.builtin.file:
+    path: /etc/opt/chrome/policies/managed
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  tags: chrome
+
+- name: deploy custom DNP chrome policies
+  ansible.builtin.copy:
+    src: dnp-policies.json
+    dest: /etc/opt/chrome/policies/managed/dnp-policies.json
+    owner: root
+    group: root
+    mode: '0644'
+  tags: chrome

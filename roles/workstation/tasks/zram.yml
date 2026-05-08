@@ -1,0 +1,45 @@
+# Configure zram as the preferred compressed RAM swap layer.
+# /dev/zram0 gets high priority and /swapfile remains lower-priority fallback.
+
+- name: Install zram generator
+  ansible.builtin.apt:
+    name: systemd-zram-generator
+    state: present
+    update_cache: true
+
+- name: Configure zram generator
+  ansible.builtin.copy:
+    dest: /etc/systemd/zram-generator.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [zram0]
+      zram-size = min(ram / 4, 32768)
+      compression-algorithm = zstd
+      swap-priority = 100
+      fs-type = swap
+
+- name: Set zram-friendly sysctl values
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/99-zram.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      vm.swappiness = 180
+      vm.watermark_boost_factor = 0
+      vm.watermark_scale_factor = 125
+      vm.page-cluster = 0
+
+- name: Apply zram sysctl values
+  ansible.builtin.command:
+    cmd: sysctl --system
+  changed_when: true
+
+- name: Ensure disk swap has lower priority in fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: '^\s*/swapfile\s+'
+    line: "/swapfile none swap sw,pri=-2 0 0"
+    state: present

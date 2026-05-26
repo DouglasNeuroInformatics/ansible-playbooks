@@ -1,0 +1,8 @@
+polkit.addRule(function(action, subject) {
+    if (action.id === "org.freedesktop.packagekit.system-sources-refresh") {
+        // Block anyone who isn't root or in the sudo group
+        if (subject.user !== "root" && !subject.isInGroup("sudo")) {
+            return polkit.Result.NO;
+        }
+    }
+});

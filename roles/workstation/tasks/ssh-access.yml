@@ -1,0 +1,70 @@
+- name: Ensure sshd_config.d exists
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: ssh_access_policy_enabled | default(false) | bool
+
+- name: Check whether sshd_config includes sshd_config.d
+  ansible.builtin.command: >
+    grep -Eq '^[[:space:]]*Include[[:space:]]+/etc/ssh/sshd_config\.d/\*\.conf'
+    /etc/ssh/sshd_config
+  register: sshd_include_check
+  changed_when: false
+  failed_when: sshd_include_check.rc not in [0, 1]
+  check_mode: false
+  when: ssh_access_policy_enabled | default(false) | bool
+
+- name: Add Include for sshd_config.d if missing
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    insertafter: BOF
+    line: "Include /etc/ssh/sshd_config.d/*.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - ssh_access_policy_enabled | default(false) | bool
+    - sshd_include_check.rc == 1
+  notify: restart ssh
+
+- name: Confirm allowed SSH groups exist
+  ansible.builtin.command: "getent group {{ item }}"
+  loop: "{{ ssh_access_allow_groups | default([]) }}"
+  changed_when: false
+  check_mode: false
+  when:
+    - ssh_access_policy_enabled | default(false) | bool
+    - ssh_access_allow_groups | default([]) | length > 0
+
+- name: Confirm Ansible SSH user is in an allowed group
+  ansible.builtin.command: "id -nG {{ ansible_ssh_user }}"
+  register: ansible_user_groups
+  changed_when: false
+  check_mode: false
+  when:
+    - ssh_access_policy_enabled | default(false) | bool
+    - ssh_access_allow_groups | default([]) | length > 0
+
+- name: Refuse to apply policy if Ansible user would be locked out
+  ansible.builtin.assert:
+    that:
+      - ansible_user_groups.stdout.split() | intersect(ssh_access_allow_groups | default([])) | length > 0
+    fail_msg: >
+      Refusing to apply SSH access policy. The Ansible SSH user {{ ansible_ssh_user }}
+      is not in any allowed group: {{ ssh_access_allow_groups | default([]) | join(', ') }}.
+  when:
+    - ssh_access_policy_enabled | default(false) | bool
+    - ssh_access_allow_groups | default([]) | length > 0
+
+- name: Install SSH access policy
+  ansible.builtin.template:
+    src: 50-ssh-access.conf.j2
+    dest: "{{ ssh_access_policy_file | default('/etc/ssh/sshd_config.d/50-ssh-access-policy.conf') }}"
+    owner: root
+    group: root
+    mode: "0644"
+  when: ssh_access_policy_enabled | default(false) | bool
+  notify: Validate and reload ssh

@@ -1,0 +1,6 @@
+ssh_access_policy_enabled: true
+ssh_access_policy_file: /etc/ssh/sshd_config.d/50-ssh-access-policy.conf
+ssh_access_allow_groups: [pis, cicadministrators, sudo]
+ssh_access_allow_users: []
+ssh_access_deny_groups: []
+ssh_access_deny_users: []

@@ -1,3 +1,17 @@
+- name: Set ubuntu archive mirror in ubuntu.sources
+  ansible.builtin.lineinfile:
+    path: /etc/apt/sources.list.d/ubuntu.sources
+    regexp: '^URIs:.*archive'
+    line: 'URIs: {{ ubuntu_mirror_uri }}'
+    firstmatch: true
+
+- name: Set ubuntu security mirror in ubuntu.sources
+  ansible.builtin.lineinfile:
+    path: /etc/apt/sources.list.d/ubuntu.sources
+    regexp: '^URIs:.*security'
+    line: 'URIs: {{ ubuntu_mirror_uri }}'
+    firstmatch: true
+
 - name: disable ubuntu pro messages
   command: pro config set apt_news=false
   ignore_errors: true

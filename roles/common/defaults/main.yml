@@ -1,1 +1,5 @@
 ubuntu_mirror_uri: http://ubuntu.mirror.globo.tech/ubuntu/
+cron_allowed_users:
+  - localadmin
+  - beatom
+  - devgab

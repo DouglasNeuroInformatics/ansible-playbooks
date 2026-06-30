@@ -19,6 +19,7 @@
 - {import_tasks: system-config.yml, tags: system}
 - {import_tasks: motd.yml, tags: motd}
 - {import_tasks: logs.yml, tags: logs}
+- {import_tasks: snipeit.yml, tags: [snipeit, never]}
 
 
 - name: Set default locale to en_CA.UTF-8

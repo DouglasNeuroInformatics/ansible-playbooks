@@ -1,4 +1,6 @@
 *~
+.vault_pass
+api_token.txt
 ansible.log
 *retry
 logs/

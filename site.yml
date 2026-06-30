@@ -3,6 +3,7 @@
   vars_files:
     - vars/slurm.yml
     - vars/kernel-nvidia.yml
+    - vars/secrets.yml
   strategy: free
   become: yes
   roles:
@@ -12,6 +13,8 @@
     - workstation
 
 - hosts: computenodes
+  vars_files:
+    - vars/secrets.yml
   become: yes
   roles:
     - bodsch.snapd

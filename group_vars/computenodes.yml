@@ -1,0 +1,4 @@
+---
+# Snipe-IT model id for compute nodes (models.id 3 = "compute_nodes").
+# Workstations use the role default (1).
+snipeit_model_id: 3

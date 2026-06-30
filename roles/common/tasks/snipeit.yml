@@ -63,6 +63,7 @@
     gpu_model: "{{ gpu_info.stdout | regex_search('product: (.+)', '\\1') | default('Unknown') | replace('[', '') | replace(']', '') | replace('\"', '') | replace(\"'\", '') }}"
 
 - name: Create asset in Snipe-IT
+  no_log: true  # prevent the Bearer token from being written to log_path
   uri:
     url: "{{ snipeit_url }}/api/v1/hardware"
     method: POST

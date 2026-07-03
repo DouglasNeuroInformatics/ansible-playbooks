@@ -1,0 +1,23 @@
+---
+- name: Deploy the Beszel monitoring agent
+  vars:
+    hub_url: "https://monitor.douglasneuroinformatics.ca"
+    agent_port: "45876"
+  block:
+    - name: Download and run Beszel install script
+      shell: |
+        curl -sL https://get.beszel.dev | bash -s -- \
+        -p {{ agent_port }} \
+        -k "{{ vault_beszel_key }}" \
+        -t "{{ vault_beszel_token }}" \
+        -url "{{ hub_url }}"
+      args:
+        # Skip if the agent binary already exists to avoid re-running
+        creates: /opt/beszel-agent/beszel-agent
+      no_log: true
+
+    - name: Ensure beszel-agent is enabled and running
+      systemd:
+        name: beszel-agent
+        enabled: yes
+        state: started

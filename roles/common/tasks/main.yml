@@ -19,6 +19,7 @@
 - {import_tasks: system-config.yml, tags: system}
 - {import_tasks: motd.yml, tags: motd}
 - {import_tasks: logs.yml, tags: logs}
+- {import_tasks: beszel.yml, tags: beszel}
 
 
 - name: Set default locale to en_CA.UTF-8

@@ -5,6 +5,11 @@
 #    remote_src: yes
 #    creates: /data/scratch2/.ansible/kyocerya/Ubuntu/Global/kyodialog_amd64/kyodialog_9.1-0_amd64.deb
 
+- name: Install cups
+  ansible.builtin.apt:
+    name: cups
+    state: present
+
 - name: install debs
   apt: deb={{ item }}
   with_items:

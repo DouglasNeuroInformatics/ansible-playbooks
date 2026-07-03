@@ -95,3 +95,8 @@
     path: /sbin/unix_chkpwd
     mode: 'u+s'
     state: file
+
+- name: disable refreshing sources from workstation unprivileged accounts
+  copy: src=files/49-deny-packagekit-refresh.rules dest=/etc/polkit-1/rules.d
+  notify:
+    - restart polkit

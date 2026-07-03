@@ -138,4 +138,4 @@
         reboot_timeout: 300
       when:
         - not (logged_in_users_count.stdout | int > 0)
-        #- (nvidia_installed.changed | default(false)) or (kernel_installed.changed | default(false))
+        - (nvidia_installed.changed | default(false)) or (kernel_installed.changed | default(false))

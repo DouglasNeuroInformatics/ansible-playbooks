@@ -4,15 +4,17 @@
 - name: autofs installed
   apt: pkg=autofs state=present
 
-- name: autofs installed
-  apt: pkg=cachefilesd state=absent
-  notify: restart autofs
+- name: cachefilesd installed
+  apt: pkg=cachefilesd state=present
+  notify:
+    - restart autofs
+    - restart cachefilesd
 
 - name: Enable cachefilesd
   ansible.builtin.lineinfile:
     path: /etc/default/cachefilesd
     regexp: '^RUN='
-    line: RUN=no
+    line: RUN=yes
   notify: restart autofs
   ignore_errors: true
 

@@ -20,43 +20,49 @@
 - name: Retrieve baseboard manufacturer
   command: dmidecode -s baseboard-manufacturer
   register: baseboard_manufacturer
+  ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Retrieve baseboard product name
   command: dmidecode -s baseboard-product-name
   register: baseboard_product_name
+  ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Set motherboard info
   set_fact:
-    motherboard: "{{ baseboard_manufacturer.stdout | trim }} {{ baseboard_product_name.stdout | trim }}"
+    motherboard: "{{ baseboard_manufacturer.stdout | default('') | trim }} {{ baseboard_product_name.stdout | default('') | trim }}"
 
 - name: Retrieve baseboard serial number
   command: dmidecode -s baseboard-serial-number
   register: baseboard_serial_number
+  ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Set serial number
   set_fact:
-    serial_number: "{{ baseboard_serial_number.stdout | trim }}"
+    serial_number: "{{ baseboard_serial_number.stdout | default('') | trim }}"
 
 - name: Retrieve cpu type
   command: dmidecode -s processor-family
   register: processor_family
+  ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Retrieve cpu manufacturer
   command: dmidecode -s processor-manufacturer
   register: processor_manufacturer
+  ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Retrieve cpu version
   command: dmidecode -s processor-version
   register: processor_version
+  ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Set cpu info
   set_fact:
-    cpu: "{{ processor_family.stdout | trim }} {{ processor_manufacturer.stdout | trim }} {{ processor_version.stdout | trim }}"
+    cpu: "{{ processor_family.stdout | default('') | trim }} {{ processor_manufacturer.stdout | default('') | trim }} {{ processor_version.stdout | default('') | trim }}"
 
 - name: Retrieve gpu
   command: lshw -C display
   register: gpu_info
-  failed_when: "'command not found' in gpu_info.stderr"
+  failed_when: "'command not found' in (gpu_info.stderr | default(''))"
 
 - name: Parse gpu model
   set_fact:
@@ -92,5 +98,6 @@
       _snipeit_owner_4: "unknown"
       _snipeit_service_status_13: "in service"
     status_code: [200, 201]
+    timeout: 30  # don't block indefinitely if Snipe-IT is unresponsive
   delegate_to: localhost
-  become_user: localadmin
+  become: false  # HTTP POST on the control node needs no privilege escalation

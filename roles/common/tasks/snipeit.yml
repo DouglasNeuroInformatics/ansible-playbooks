@@ -1,3 +1,17 @@
+- name: Load Snipe-IT vaulted secrets
+  # Loaded here (rather than in site.yml) so vault decryption is only required
+  # for snipeit-tagged runs, not every routine site.yml run.
+  include_vars: "{{ playbook_dir }}/vars/secrets.yml"
+
+- name: Ensure hardware discovery tools are installed
+  # packages.yml is tagged 'software' and does not run under --tags snipeit,
+  # so install the tools this role needs directly.
+  apt:
+    name:
+      - dmidecode
+      - lshw
+    state: present
+
 - name: Retrieve BIOS vendor
   command: dmidecode -s bios-vendor
   register: bios_vendor
@@ -62,11 +76,11 @@
 - name: Retrieve gpu
   command: lshw -C display
   register: gpu_info
-  failed_when: "'command not found' in (gpu_info.stderr | default(''))"
+  ignore_errors: yes  # degrade gracefully if lshw is unavailable or fails
 
 - name: Parse gpu model
   set_fact:
-    gpu_model: "{{ gpu_info.stdout | regex_search('product: (.+)', '\\1') | default('Unknown') | replace('[', '') | replace(']', '') | replace('\"', '') | replace(\"'\", '') }}"
+    gpu_model: "{{ gpu_info.stdout | default('') | regex_search('product: (.+)', '\\1') | default('Unknown') | replace('[', '') | replace(']', '') | replace('\"', '') | replace(\"'\", '') }}"
 
 - name: Create asset in Snipe-IT
   no_log: true  # prevent the Bearer token from being written to log_path
@@ -97,7 +111,14 @@
       _snipeit_purchase_date_aprox_6: "unknown"
       _snipeit_owner_4: "unknown"
       _snipeit_service_status_13: "in service"
-    status_code: [200, 201]
+    status_code: [200, 201, 422]
     timeout: 30  # don't block indefinitely if Snipe-IT is unresponsive
   delegate_to: localhost
   become: false  # HTTP POST on the control node needs no privilege escalation
+  register: snipeit_result
+  # Snipe-IT rejects a duplicate asset_tag with 422; treat that as success so
+  # reruns are idempotent, but still fail on any other (non-duplicate) error.
+  failed_when: >-
+    snipeit_result.status not in [200, 201]
+    and not (snipeit_result.status == 422
+             and 'asset_tag' in (snipeit_result.json.messages | default({})))

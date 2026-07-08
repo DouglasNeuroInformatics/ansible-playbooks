@@ -1,0 +1,2 @@
+- name: restrict cron to allowed users
+  template: src=cron.allow.j2 dest=/etc/cron.allow owner=root group=root mode='0644'

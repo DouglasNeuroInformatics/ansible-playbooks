@@ -11,34 +11,41 @@
       - dmidecode
       - lshw
     state: present
+    update_cache: yes
+    cache_valid_time: 3600  # refresh stale apt lists so freshly provisioned hosts can locate the packages
 
 - name: Retrieve BIOS vendor
   command: dmidecode -s bios-vendor
   register: bios_vendor
+  changed_when: false  # read-only probe, never a change
   ignore_errors: yes  # this fails because of older dmidecode versions
 
 - name: Retrieve BIOS version
   command: dmidecode -s bios-version
-  register: bios_version
+  register: bios_version_raw
+  changed_when: false  # read-only probe, never a change
   ignore_errors: yes  # this fails because of older dmidecode versions
 
 - name: Retrieve BIOS revision
   command: dmidecode -s bios-revision
   register: bios_revision
+  changed_when: false  # read-only probe, never a change
   ignore_errors: yes  # this fails because of older dmidecode versions
 
 - name: Set BIOS info
   set_fact:
-    bios_version: "{{ bios_vendor.stdout | default('') | trim }} {{ bios_version.stdout | default('') | trim }} {{ bios_revision.stdout | default('') | trim }}"
+    bios_version: "{{ bios_vendor.stdout | default('') | trim }} {{ bios_version_raw.stdout | default('') | trim }} {{ bios_revision.stdout | default('') | trim }}"
 
 - name: Retrieve baseboard manufacturer
   command: dmidecode -s baseboard-manufacturer
   register: baseboard_manufacturer
+  changed_when: false  # read-only probe, never a change
   ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Retrieve baseboard product name
   command: dmidecode -s baseboard-product-name
   register: baseboard_product_name
+  changed_when: false  # read-only probe, never a change
   ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Set motherboard info
@@ -48,6 +55,7 @@
 - name: Retrieve baseboard serial number
   command: dmidecode -s baseboard-serial-number
   register: baseboard_serial_number
+  changed_when: false  # read-only probe, never a change
   ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Set serial number
@@ -57,16 +65,19 @@
 - name: Retrieve cpu type
   command: dmidecode -s processor-family
   register: processor_family
+  changed_when: false  # read-only probe, never a change
   ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Retrieve cpu manufacturer
   command: dmidecode -s processor-manufacturer
   register: processor_manufacturer
+  changed_when: false  # read-only probe, never a change
   ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Retrieve cpu version
   command: dmidecode -s processor-version
   register: processor_version
+  changed_when: false  # read-only probe, never a change
   ignore_errors: yes  # degrade gracefully on older dmidecode versions
 
 - name: Set cpu info
@@ -76,11 +87,12 @@
 - name: Retrieve gpu
   command: lshw -C display
   register: gpu_info
+  changed_when: false  # read-only probe, never a change
   ignore_errors: yes  # degrade gracefully if lshw is unavailable or fails
 
 - name: Parse gpu model
   set_fact:
-    gpu_model: "{{ gpu_info.stdout | default('') | regex_search('product: (.+)', '\\1') | default('Unknown') | replace('[', '') | replace(']', '') | replace('\"', '') | replace(\"'\", '') }}"
+    gpu_model: "{{ gpu_info.stdout | default('') | regex_search('product: (.+)', '\\1') | default('Unknown', true) | replace('[', '') | replace(']', '') | replace('\"', '') | replace(\"'\", '') }}"
 
 - name: Retrieve storage devices
   # Dedupe by disk serial so multipath SAS enclosures (each physical disk is

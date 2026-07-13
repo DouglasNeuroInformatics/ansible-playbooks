@@ -82,43 +82,161 @@
   set_fact:
     gpu_model: "{{ gpu_info.stdout | default('') | regex_search('product: (.+)', '\\1') | default('Unknown') | replace('[', '') | replace(']', '') | replace('\"', '') | replace(\"'\", '') }}"
 
-- name: Create asset in Snipe-IT
-  no_log: true  # prevent the Bearer token from being written to log_path
-  uri:
-    url: "{{ snipeit_url }}/api/v1/hardware"
-    method: POST
-    headers:
+- name: Retrieve storage devices
+  # Dedupe by disk serial so multipath SAS enclosures (each physical disk is
+  # visible via several I/O paths) are counted once, not dozens of times.
+  # Genuinely identical disks have distinct serials, so they are preserved and
+  # collapsed to "MODEL SIZE (bus) xN".
+  shell: |
+    set -o pipefail
+    lsblk -dn -P -o NAME,MODEL,SERIAL,SIZE,TRAN,ROTA,TYPE | awk '
+      {
+        delete f
+        while (match($0, /[A-Z]+="[^"]*"/)) {
+          kv = substr($0, RSTART, RLENGTH); eq = index(kv, "=")
+          f[substr(kv, 1, eq-1)] = substr(kv, eq+2, length(kv)-eq-2)
+          $0 = substr($0, RSTART+RLENGTH)
+        }
+        if (f["TYPE"] != "disk") next
+        if (f["NAME"] ~ /^(loop|sr|ram|zram)/) next           # skip non-disk block devices
+        id = (f["SERIAL"] != "" ? f["SERIAL"] : f["NAME"])
+        if (seen[id]++) next                                  # collapse multipath duplicates
+        label = f["MODEL"]; gsub(/[ \t]+$/, "", label)
+        if (label == "") label = f["NAME"]
+        label = label " " f["SIZE"]
+        if (f["TRAN"] != "") label = label " (" f["TRAN"] ")"
+        if (!(label in cnt)) order[++n] = label
+        cnt[label]++
+      }
+      END {
+        for (i = 1; i <= n; i++) {
+          l = order[i]
+          printf "%s%s%s", (i > 1 ? "; " : ""), l, (cnt[l] > 1 ? " x" cnt[l] : "")
+        }
+      }'
+  args:
+    executable: /bin/bash
+  register: storage_info
+  changed_when: false
+  ignore_errors: yes  # degrade gracefully if lsblk is unavailable
+
+- name: Set storage info
+  set_fact:
+    storage: "{{ storage_info.stdout | default('') | trim }}"
+
+- name: Retrieve memory DIMM layout
+  # Emit populated DIMMs grouped as "N x SIZE"; drop empty slots and the sub-GB
+  # reserved regions dmidecode reports (e.g. a spurious "4 MB" module).
+  shell: |
+    set -o pipefail
+    dmidecode -t memory | awk '
+      /^\s*Size:/ {
+        if ($2 ~ /^[0-9]+$/) {
+          if ($3 == "MB" && $2 + 0 < 1024) next               # skip sub-GB filler entries
+          size = $2 " " $3
+          if (!(size in cnt)) order[++n] = size
+          cnt[size]++
+        }
+      }
+      END {
+        for (i = 1; i <= n; i++) printf "%s%s x %s", (i > 1 ? ", " : ""), cnt[order[i]], order[i]
+      }'
+  args:
+    executable: /bin/bash
+  register: memory_info
+  changed_when: false
+  ignore_errors: yes  # degrade gracefully on older dmidecode versions
+
+- name: Set memory info
+  set_fact:
+    memory_slots: "{{ memory_info.stdout | default('') | trim }}"
+
+- name: Define Snipe-IT API headers
+  no_log: true  # keep the Bearer token out of the log
+  set_fact:
+    snipeit_headers:
       Authorization: "Bearer {{ snipeit_api_token }}"
       Accept: "application/json"
       Content-Type: "application/json"
-    body_format: json
-    body:
+
+- name: Assemble Snipe-IT asset payload
+  # Hardware-derived fields only. Human-managed fields (location, owner, primary
+  # user, purchase date) are deliberately omitted: this payload is PATCHed on
+  # every rerun, so sending them would clobber values edited in the Snipe-IT UI.
+  set_fact:
+    snipeit_body:
       name: "{{ ansible_hostname }}"
-      asset_tag: "{{ ansible_hostname }}"
-      serial: "{{ serial_number }}"
       model_id: "{{ snipeit_model_id }}"
-      status_id: 4  #Online status
+      status_id: 4  # Online status
+      serial: "{{ serial_number }}"
       _snipeit_bios_15: "{{ bios_version }}"
       _snipeit_motherboard_16: "{{ motherboard }}"
       _snipeit_os_8: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
       _snipeit_ram_10: "{{ ansible_memtotal_mb }} MB"
       _snipeit_cpu_11: "{{ cpu }}"
       _snipeit_gpu_9: "{{ gpu_model }}"
+      _snipeit_storage_17: "{{ storage }}"
+      _snipeit_memory_slots_18: "{{ memory_slots }}"
       _snipeit_ip_address_12: "{{ ansible_all_ipv4_addresses | join(', ') }}"
       _snipeit_mac_address_1: "{{ ansible_default_ipv4.macaddress }}"
-      _snipeit_location_nickname_3: "unknown"
-      _snipeit_primary_user_5: "unknown"
-      _snipeit_purchase_date_aprox_6: "unknown"
-      _snipeit_owner_4: "unknown"
       _snipeit_service_status_13: "in service"
-    status_code: [200, 201, 422]
+
+- name: Look up existing Snipe-IT asset by name
+  # Match on name (== hostname), NOT asset_tag: tags in this instance are
+  # inconsistent (mostly serials, some hostnames, some MACs), so keying on
+  # asset_tag would fail to find most assets and create duplicates on rerun.
+  # Snipe-IT has no by-name endpoint, so search then filter to an exact match.
+  no_log: true
+  uri:
+    url: "{{ snipeit_url }}/api/v1/hardware?search={{ ansible_hostname | urlencode }}&limit=100"
+    headers: "{{ snipeit_headers }}"
+    timeout: 30
+  delegate_to: localhost
+  become: false  # HTTP call on the control node needs no privilege escalation
+  register: snipeit_lookup
+
+- name: Select exact-name match (search is fuzzy, so filter precisely)
+  set_fact:
+    snipeit_matches: "{{ snipeit_lookup.json.rows | default([]) | selectattr('name', 'equalto', ansible_hostname) | list }}"
+
+- name: Refuse to guess when a hostname maps to multiple assets
+  assert:
+    that: snipeit_matches | length <= 1
+    fail_msg: "Multiple Snipe-IT assets named {{ ansible_hostname }} (ids {{ snipeit_matches | map(attribute='id') | list }}); resolve the duplicate before running."
+
+- name: Update existing asset in Snipe-IT
+  # PATCH reconciles the record on every run: backfills new fields and refreshes
+  # changed hardware. Only the fields in snipeit_body are touched.
+  when: snipeit_matches | length == 1
+  no_log: true
+  uri:
+    url: "{{ snipeit_url }}/api/v1/hardware/{{ (snipeit_matches | first).id }}"
+    method: PATCH
+    headers: "{{ snipeit_headers }}"
+    body_format: json
+    body: "{{ snipeit_body }}"
+    status_code: 200
     timeout: 30  # don't block indefinitely if Snipe-IT is unresponsive
   delegate_to: localhost
-  become: false  # HTTP POST on the control node needs no privilege escalation
-  register: snipeit_result
-  # Snipe-IT rejects a duplicate asset_tag with 422; treat that as success so
-  # reruns are idempotent, but still fail on any other (non-duplicate) error.
-  failed_when: >-
-    snipeit_result.status not in [200, 201]
-    and not (snipeit_result.status == 422
-             and 'asset_tag' in (snipeit_result.json.messages | default({})))
+  become: false
+  register: snipeit_update
+  # Snipe-IT returns HTTP 200 with a status field even on validation errors.
+  failed_when: (snipeit_update.json.status | default('error')) == 'error'
+
+- name: Create asset in Snipe-IT
+  # First registration only. New assets are tagged with the hostname (guaranteed
+  # present and unique), which the lookup above will match on subsequent runs.
+  when: snipeit_matches | length == 0
+  no_log: true
+  uri:
+    url: "{{ snipeit_url }}/api/v1/hardware"
+    method: POST
+    headers: "{{ snipeit_headers }}"
+    body_format: json
+    body: "{{ snipeit_body | combine({'asset_tag': ansible_hostname}) }}"
+    status_code: 200
+    timeout: 30
+  delegate_to: localhost
+  become: false
+  register: snipeit_create
+  failed_when: (snipeit_create.json.status | default('error')) == 'error'

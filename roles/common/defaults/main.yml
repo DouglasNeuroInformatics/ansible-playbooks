@@ -1,1 +1,3 @@
 ubuntu_mirror_uri: http://ubuntu.mirror.globo.tech/ubuntu/
+snipeit_url: https://inventory.douglasneuroinformatics.ca
+snipeit_model_id: 1   # workstation model; override per group in group_vars

@@ -10,6 +10,6 @@ set -euo pipefail
 
 hostname=${1}
 ansible-playbook -K -k  -i inventory initial-setup.yml --limit "${hostname}"
-ansible-playbook  -i inventory site.yml --limit "${hostname}" --ask-vault-password
+ansible-playbook  -i inventory site.yml --limit "${hostname}" --tags all,snipeit
 ansible-playbook  -i inventory update.yml --limit "${hostname}"
 ansible -b -m reboot all --limit "${hostname}"

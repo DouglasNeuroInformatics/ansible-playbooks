@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+{% if ssh_access_deny_users | default([]) | length > 0 %}
+DenyUsers {{ ssh_access_deny_users | join(' ') }}
+{% endif %}
+{% if ssh_access_deny_groups | default([]) | length > 0 %}
+DenyGroups {{ ssh_access_deny_groups | join(' ') }}
+{% endif %}
+{% if ssh_access_allow_users | default([]) | length > 0 %}
+AllowUsers {{ ssh_access_allow_users | join(' ') }}
+{% endif %}
+{% if ssh_access_allow_groups | default([]) | length > 0 %}
+AllowGroups {{ ssh_access_allow_groups | join(' ') }}
+{% endif %}

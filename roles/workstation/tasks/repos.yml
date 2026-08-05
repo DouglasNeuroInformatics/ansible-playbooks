@@ -32,7 +32,7 @@
 - name: Add wezterm repo
   ansible.builtin.deb822_repository:
     name: wezterm
-    uris: http://apt.fury.io/wez
+    uris: https://apt.fury.io/wez
     suites: "*"
     components: "*"
     architectures: amd64

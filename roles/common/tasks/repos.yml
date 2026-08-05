@@ -101,3 +101,61 @@
     components: main
     architectures: amd64
     signed_by: https://apt.kitware.com/keys/kitware-archive-latest.asc
+
+# Two passes over every source file, including ones these roles do not own:
+# vendor .list files dropped by .deb postinst (cuda, tailscale, zerotier...),
+# hand-added sources, and PPAs written by apt-add-repository.
+#
+# Pass 1 makes https the default, skipping the repos acng caches -- acng needs
+# to read the request to cache it, and it re-fetches those upstream over https
+# itself. Pass 2 then forces those cached repos down to http. A repo we do not
+# cache therefore never ends up plaintext on the public internet.
+#
+# The lookahead in pass 1 is what keeps this idempotent: without it pass 1 and
+# pass 2 flip the same lines back and forth and every cached repo reports
+# changed on every run.
+- name: Find apt source files
+  ansible.builtin.find:
+    paths:
+      - /etc/apt
+      - /etc/apt/sources.list.d
+    patterns:
+      - '*.list'
+      - '*.sources'
+  register: apt_source_files
+
+- name: Force https on deb822 sources
+  ansible.builtin.replace:
+    path: '{{ item.path }}'
+    regexp: '^(URIs:\s*)http://(?!(?:{{ apt_cached_repos | map(attribute="url") | map("regex_escape") | join("|") }}))'
+    replace: '\1https://'
+  loop: '{{ apt_source_files.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+
+- name: Force https on one-line sources
+  ansible.builtin.replace:
+    path: '{{ item.path }}'
+    regexp: '^(deb(?:-src)?\s+(?:\[[^]]*\]\s+)?)http://(?!(?:{{ apt_cached_repos | map(attribute="url") | map("regex_escape") | join("|") }}))'
+    replace: '\1https://'
+  loop: '{{ apt_source_files.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+
+- name: Route cached repos through the apt cache in deb822 sources
+  ansible.builtin.replace:
+    path: '{{ item.path }}'
+    regexp: '^(URIs:\s*)https://({{ apt_cached_repos | map(attribute="url") | map("regex_escape") | join("|") }})'
+    replace: '\1http://\2'
+  loop: '{{ apt_source_files.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+
+- name: Route cached repos through the apt cache in one-line sources
+  ansible.builtin.replace:
+    path: '{{ item.path }}'
+    regexp: '^(deb(?:-src)?\s+(?:\[[^]]*\]\s+)?)https://({{ apt_cached_repos | map(attribute="url") | map("regex_escape") | join("|") }})'
+    replace: '\1http://\2'
+  loop: '{{ apt_source_files.files }}'
+  loop_control:
+    label: '{{ item.path }}'

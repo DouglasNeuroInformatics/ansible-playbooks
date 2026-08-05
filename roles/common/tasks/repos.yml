@@ -50,6 +50,18 @@
     - ppa:fish-shell/release-4
     - ppa:neovim-ppa/stable
 
+# Dropping a PPA from the list above does not remove it from hosts that already
+# have it, so retired ones are deleted explicitly. apt-fast published nothing
+# for noble -- apt-add-repository left the entry behind without ever creating a
+# usable repo.
+- name: remove retired ppa repos
+  ansible.builtin.file:
+    path: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
+    state: absent
+  with_items:
+    - ppa:apt-fast/stable
+    - ppa:fish-shell/release-3   # superseded by release-4 above
+
 - name: Add docker repo
   deb822_repository:
     name: docker

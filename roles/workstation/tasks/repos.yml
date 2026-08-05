@@ -19,7 +19,15 @@
     - ppa:x2go/stable
     - ppa:flatpak/stable
     - ppa:graphics-drivers/ppa
+
+# See the note on the matching task in the common role.
+- name: remove retired ppa repos
+  ansible.builtin.file:
+    path: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
+    state: absent
+  with_items:
     - ppa:dtl131/nvidiaexp
+    - ppa:ubuntuhandbook1/gimp   # superseded by gimp-3 above
 
 - name: Add wezterm repo
   ansible.builtin.deb822_repository:

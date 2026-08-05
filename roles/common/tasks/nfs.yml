@@ -64,8 +64,6 @@
   ansible.builtin.file:
     src: /data/dicom/incoming
     dest: /dicom
-    owner: root
-    group: root
     state: link
     force: yes
 

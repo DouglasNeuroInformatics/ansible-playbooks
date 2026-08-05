@@ -1,3 +1,7 @@
 ubuntu_mirror_uri: http://ca.archive.ubuntu.com/ubuntu/
+
+# pipx itself lives here; the tool venvs it manages stay in PIPX_HOME=/opt/pipx.
+pipx_venv: /opt/pipx-venv
+pipx_executable: "{{ pipx_venv }}/bin/pipx"
 snipeit_url: https://inventory.douglasneuroinformatics.ca
 snipeit_model_id: 1   # workstation model; override per group in group_vars

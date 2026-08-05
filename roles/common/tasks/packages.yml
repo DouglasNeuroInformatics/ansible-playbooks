@@ -191,8 +191,6 @@
     - intel-mkl
 # VTK compile
     - libglew-dev
-# fancy python
-    - pipx
 # rootless docker
     - uidmap
 

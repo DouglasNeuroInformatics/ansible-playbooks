@@ -1,5 +1,7 @@
 
 #Pipx packages
+- import_tasks: pipx-bootstrap.yml
+
 - name: ensure /opt/pipx
   ansible.builtin.file:
     path: /opt/pipx
@@ -10,6 +12,7 @@
   community.general.pipx:
     name: "{{ item }}"
     state: present
+    executable: "{{ pipx_executable }}"
   environment:
     PIPX_HOME: /opt/pipx
     PIPX_BIN_DIR: /usr/local/bin

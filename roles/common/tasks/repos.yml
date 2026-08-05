@@ -1,16 +1,16 @@
-- name: Set ubuntu archive mirror in ubuntu.sources
-  ansible.builtin.lineinfile:
-    path: /etc/apt/sources.list.d/ubuntu.sources
-    regexp: '^URIs:.*archive'
-    line: 'URIs: {{ ubuntu_mirror_uri }}'
-    firstmatch: true
+- name: Ensure https transport prerequisites
+  ansible.builtin.apt:
+    name: ca-certificates
+    state: present
 
-- name: Set ubuntu security mirror in ubuntu.sources
-  ansible.builtin.lineinfile:
+# Matches every URIs: stanza (archive and security both point at our mirror).
+# Anchoring on 'archive'/'security' only matched the stock Ubuntu URLs, so it
+# never fired again once a host had been pointed at the mirror.
+- name: Set ubuntu mirror in ubuntu.sources
+  ansible.builtin.replace:
     path: /etc/apt/sources.list.d/ubuntu.sources
-    regexp: '^URIs:.*security'
-    line: 'URIs: {{ ubuntu_mirror_uri }}'
-    firstmatch: true
+    regexp: '^URIs:.*$'
+    replace: 'URIs: {{ ubuntu_mirror_uri }}'
 
 - name: disable ubuntu pro messages
   command: pro config set apt_news=false
@@ -34,17 +34,33 @@
     path: /etc/apt/preferences.d/nonvidiaopen
     state: absent
 
+# creates: keeps this from re-running once the PPA exists. Without it,
+# apt-add-repository would not recognise the http:// entry the apt-cache pass
+# leaves behind and would add a duplicate https:// stanza on every run.
 - name: add ppa repos
-  command: apt-add-repository -y -n {{ item }}
+  command:
+    cmd: apt-add-repository -y -n {{ item }}
+    creates: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
   with_items:
     - ppa:git-core/ppa
-    - ppa:apt-fast/stable
     - ppa:yubico/stable
     - ppa:apptainer/ppa
     - ppa:rapier1/hpnssh
     - ppa:ansible/ansible
     - ppa:fish-shell/release-4
     - ppa:neovim-ppa/stable
+
+# Dropping a PPA from the list above does not remove it from hosts that already
+# have it, so retired ones are deleted explicitly. apt-fast published nothing
+# for noble -- apt-add-repository left the entry behind without ever creating a
+# usable repo.
+- name: remove retired ppa repos
+  ansible.builtin.file:
+    path: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
+    state: absent
+  with_items:
+    - ppa:apt-fast/stable
+    - ppa:fish-shell/release-3   # superseded by release-4 above
 
 - name: Add docker repo
   deb822_repository:
@@ -70,7 +86,7 @@
   deb822_repository:
     name: xanmod
     types: deb
-    uris:  http://deb.xanmod.org
+    uris: http://deb.xanmod.org
     suites: '{{ ansible_distribution_release }}'
     components: main non-free
     architectures: amd64
@@ -85,3 +101,71 @@
     components: main
     architectures: amd64
     signed_by: https://apt.kitware.com/keys/kitware-archive-latest.asc
+
+# Non-PPA counterpart to the retired-ppa tasks above; see
+# group_vars/all/repo-cleanup.yml for what is deliberately left in place.
+# Runs before the sweep below so removed files are not picked up by it.
+- name: remove stale repo files
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/{{ item }}
+    state: absent
+  loop: '{{ stale_repo_files }}'
+  when: inventory_hostname not in repo_cleanup_exempt_hosts
+
+# Two passes over every source file, including ones these roles do not own:
+# vendor .list files dropped by .deb postinst (cuda, tailscale, zerotier...),
+# hand-added sources, and PPAs written by apt-add-repository.
+#
+# Pass 1 makes https the default, skipping the repos acng caches -- acng needs
+# to read the request to cache it, and it re-fetches those upstream over https
+# itself. Pass 2 then forces those cached repos down to http. A repo we do not
+# cache therefore never ends up plaintext on the public internet.
+#
+# The lookahead in pass 1 is what keeps this idempotent: without it pass 1 and
+# pass 2 flip the same lines back and forth and every cached repo reports
+# changed on every run.
+- name: Find apt source files
+  ansible.builtin.find:
+    paths:
+      - /etc/apt
+      - /etc/apt/sources.list.d
+    patterns:
+      - '*.list'
+      - '*.sources'
+  register: apt_source_files
+
+- name: Force https on deb822 sources
+  ansible.builtin.replace:
+    path: '{{ item.path }}'
+    regexp: '^(URIs:\s*)http://(?!(?:{{ apt_cached_repos | map(attribute="url") | map("regex_escape") | join("|") }}))'
+    replace: '\1https://'
+  loop: '{{ apt_source_files.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+
+- name: Force https on one-line sources
+  ansible.builtin.replace:
+    path: '{{ item.path }}'
+    regexp: '^(deb(?:-src)?\s+(?:\[[^]]*\]\s+)?)http://(?!(?:{{ apt_cached_repos | map(attribute="url") | map("regex_escape") | join("|") }}))'
+    replace: '\1https://'
+  loop: '{{ apt_source_files.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+
+- name: Route cached repos through the apt cache in deb822 sources
+  ansible.builtin.replace:
+    path: '{{ item.path }}'
+    regexp: '^(URIs:\s*)https://({{ apt_cached_repos | map(attribute="url") | map("regex_escape") | join("|") }})'
+    replace: '\1http://\2'
+  loop: '{{ apt_source_files.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+
+- name: Route cached repos through the apt cache in one-line sources
+  ansible.builtin.replace:
+    path: '{{ item.path }}'
+    regexp: '^(deb(?:-src)?\s+(?:\[[^]]*\]\s+)?)https://({{ apt_cached_repos | map(attribute="url") | map("regex_escape") | join("|") }})'
+    replace: '\1http://\2'
+  loop: '{{ apt_source_files.files }}'
+  loop_control:
+    label: '{{ item.path }}'

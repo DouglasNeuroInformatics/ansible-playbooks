@@ -1,0 +1,40 @@
+---
+# community.general's pipx module requires pipx >= 1.7.0, but noble only ships
+# 1.4.3 and nothing newer exists in updates or backports. The module does not
+# search PATH either -- it runs `python -m pipx` against the target's system
+# interpreter unless given an explicit executable -- so installing a newer pipx
+# somewhere on PATH is not enough on its own.
+#
+# So: keep a current pipx in its own venv and point the module at it with
+# executable:. Imported by both pipx.yml and qbatch.yml, since each carries its
+# own tag and has to work when run alone.
+
+- name: ensure venv tooling
+  ansible.builtin.apt:
+    name: python3-venv
+    state: present
+
+# virtualenv_command is required -- without it the pip module looks for a
+# 'virtualenv' binary that is not installed. A venv also sidesteps PEP 668,
+# which blocks installing into the system interpreter.
+- name: install a current pipx
+  ansible.builtin.pip:
+    name: pipx
+    state: latest
+    virtualenv: '{{ pipx_venv }}'
+    virtualenv_command: /usr/bin/python3 -m venv
+
+# /usr/local/bin precedes /usr/bin on the default PATH, so this is the pipx
+# interactive users get too.
+- name: link pipx onto PATH
+  ansible.builtin.file:
+    src: '{{ pipx_executable }}'
+    dest: /usr/local/bin/pipx
+    state: link
+    force: true
+
+# Ordered after the venv and symlink so there is never a window with no pipx.
+- name: remove distro pipx
+  ansible.builtin.apt:
+    name: pipx
+    state: absent

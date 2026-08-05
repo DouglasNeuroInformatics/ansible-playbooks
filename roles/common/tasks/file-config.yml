@@ -10,9 +10,6 @@
 - name: enable periodic upgrades
   copy: src=files/10periodic dest=/etc/apt/apt.conf.d/
 
-- name: enable apt proxy
-  copy: src=files/99proxy dest=/etc/apt/apt.conf.d/
-
 - name: prioritize mozilla ppa
   copy: src=files/mozillateamppa dest=/etc/apt/preferences.d
 

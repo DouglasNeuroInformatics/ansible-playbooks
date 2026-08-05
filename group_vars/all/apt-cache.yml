@@ -1,0 +1,55 @@
+---
+# apt-cacher-ng on cicus03.
+#
+# acng cannot cache what it cannot read, so repos we want cached must be
+# referenced by clients over http:// -- that plaintext leg is LAN-only. acng
+# then fetches upstream over https via its Remap rules, so nothing crosses the
+# public internet in plaintext. apt verifies the GPG signature on every index
+# regardless of transport, so the LAN leg is a confidentiality question, not an
+# integrity one.
+#
+# Anything NOT listed here stays https end-to-end and is tunnelled uncached.
+#
+# The matching Remap rules in /etc/apt-cacher-ng/zzz-dnp-remap.conf on the
+# cache host are maintained BY HAND. Adding a repo here without adding its
+# Remap rule there does not break apt -- acng just fetches it over plaintext
+# http from the internet, silently losing the https upstream leg. Keep the two
+# lists in step.
+
+apt_cache_host: cicus03
+apt_cache_port: 3142
+
+# 'name' becomes an acng cache subdirectory and shares a namespace with real
+# host names -- the acng manual warns against names that look like hostnames.
+apt_cached_repos:
+  - name: ubunturepo
+    url: ca.archive.ubuntu.com/ubuntu
+  - name: launchpadppa
+    url: ppa.launchpadcontent.net
+  - name: dockerrepo
+    url: download.docker.com/linux/ubuntu
+  - name: zabblyrepo
+    url: pkgs.zabbly.com/kernel/stable
+  - name: xanmodrepo
+    url: deb.xanmod.org
+  - name: kitwarerepo
+    url: apt.kitware.com/ubuntu
+  # apt.fury.io/wez is deliberately absent: that repo uses a literal '*' for
+  # both Suites and Components, which acng cannot map (404 through the cache,
+  # 200 direct). It stays https and tunnels uncached.
+  - name: turbovncrepo
+    url: packagecloud.io/dcommander/turbovnc/any
+  - name: xprarepo
+    url: xpra.org
+  - name: virtualglrepo
+    url: packagecloud.io/dcommander/virtualgl/any
+  - name: zoomrepo
+    url: mirror.mwt.me/zoom/deb
+  - name: i3repo
+    url: debian.sur5r.net/i3
+  - name: braverepo
+    url: brave-browser-apt-release.s3.brave.com
+  - name: vscoderepo
+    url: packages.microsoft.com/repos/code
+  - name: chromerepo
+    url: dl.google.com/linux/chrome/deb

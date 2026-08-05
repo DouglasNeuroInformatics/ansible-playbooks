@@ -10,6 +10,7 @@
 - {import_tasks: nfs.yml, tags: nfs}
 - {import_tasks: quarantine.yml, tags: quarantine}
 - {import_tasks: repos.yml, tags: repos}
+- {import_tasks: snapd.yml, tags: snapd}
 - {import_tasks: packages.yml, tags: software}
 - {import_tasks: pipx.yml, tags: [software,pipx]}
 - {import_tasks: qbatch.yml, tags: [software,qbatch] }

@@ -1,2 +1,5 @@
-# remove snapd role
-- name: bodsch.snapd
+---
+# bodsch.snapd was removed -- snapd removal now lives in
+# roles/common/tasks/snapd.yml. mambaorg.micromamba is still used by site.yml
+# but has never been declared here; it is installed out of band.
+[]

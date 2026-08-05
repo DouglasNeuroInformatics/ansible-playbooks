@@ -3,8 +3,11 @@
 - name: config use mozilla firefox binary
   copy: src=files/mozillateamppa dest=/etc/apt/preferences.d/mozillateamppa
 
+# See the note on the matching task in the common role.
 - name: add ppa repos
-  command: apt-add-repository -y -n {{ item }}
+  command:
+    cmd: apt-add-repository -y -n {{ item }}
+    creates: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
   with_items:
     - ppa:lubuntu-dev/backports
     - ppa:obsproject/obs-studio
@@ -16,12 +19,20 @@
     - ppa:x2go/stable
     - ppa:flatpak/stable
     - ppa:graphics-drivers/ppa
+
+# See the note on the matching task in the common role.
+- name: remove retired ppa repos
+  ansible.builtin.file:
+    path: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
+    state: absent
+  with_items:
     - ppa:dtl131/nvidiaexp
+    - ppa:ubuntuhandbook1/gimp   # superseded by gimp-3 above
 
 - name: Add wezterm repo
   ansible.builtin.deb822_repository:
     name: wezterm
-    uris: http://apt.fury.io/wez
+    uris: https://apt.fury.io/wez
     suites: "*"
     components: "*"
     architectures: amd64
@@ -70,7 +81,11 @@
     suites: "{{ ansible_distribution_release }}"
     components: universe
     architectures: amd64
-    signed_by: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xbfd90f4daaefa72b67bbaf48e3ca1a89941c42e6
+    # keys.openpgp.org, not keyserver.ubuntu.com: sur5r renewed this key to
+    # 2027-02-06 but never uploaded the renewal to Ubuntu's keyserver, which
+    # still serves the copy that expired 2026-04-01 and enrols an EXPKEYSIG.
+    # Same fingerprint either way, only the self-signature differs.
+    signed_by: https://keys.openpgp.org/pks/lookup?op=get&search=0xbfd90f4daaefa72b67bbaf48e3ca1a89941c42e6
 
 - name: Add brave repo
   ansible.builtin.deb822_repository:

@@ -1,0 +1,7 @@
+{{ ansible_managed | comment('c') }}
+// Repos listed in apt_cached_repos are referenced over http so apt-cacher-ng
+// can cache them; it re-fetches those upstream over https via its Remap rules.
+// Everything else stays https and is tunnelled through acng uncached, which
+// keeps a single egress point for apt traffic.
+Acquire::http::proxy "http://{{ apt_cache_host }}:{{ apt_cache_port }}";
+Acquire::https::proxy "http://{{ apt_cache_host }}:{{ apt_cache_port }}";

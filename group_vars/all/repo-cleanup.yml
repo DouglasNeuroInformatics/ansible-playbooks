@@ -1,0 +1,26 @@
+---
+# Repo files that are not PPAs and are no longer configured here. Dropping a
+# repo from repos.yml does not remove it from hosts that already carry it, so
+# they are deleted by name. PPA leftovers are handled by the "remove retired
+# ppa repos" tasks instead, which derive their own filenames.
+#
+# Deliberately absent, found by audit but left alone:
+#   kubuntu-ppa/ppa, kubuntu-ppa/backports, kisak/turtle
+#       the KDE workstations (cicws23, dnpws16-25) depend on these and are
+#       provisioned outside this repo
+#   dropbox.list                     custom
+#   oem-somerville-wooper-meta.list  dnpws29 is a Dell Pro Tower Plus with the
+#                                    oem-somerville meta packages installed;
+#                                    dropping it freezes hardware enablement
+#   kelebek333-ubuntu-nvidia-legacy  cicws23 has a Fermi GF106 that modern
+#                                    drivers no longer support
+stale_repo_files:
+  - bruno.sources                  # repo is commented out in workstation/repos.yml
+  - ppa_flatpak_stable_{{ ansible_distribution_release }}.list  # deprecated
+                                   # ppa.launchpad.net host, duplicates the
+                                   # ppa.launchpadcontent.net entry we configure
+  - cuda-ubuntu2404-x86_64.list    # only cuda-keyring was installed, no toolkit
+
+# Hosts whose extra repos are intentional and must not be cleaned up.
+repo_cleanup_exempt_hosts:
+  - cichm01   # hand-tended admin box

@@ -1,0 +1,103 @@
+---
+# Replaces the bodsch.snapd galaxy role.
+#
+# The shell tasks below need bash: ansible.builtin.shell runs /bin/sh, which is
+# dash on Ubuntu, and dash rejects `set -o pipefail` outright ("Illegal option").
+# Combined with failed_when: false that would abort each loop on its first line
+# and silently remove nothing, so executable is set explicitly.
+
+- name: Snapd | Check if snap is installed
+  ansible.builtin.command: snap list
+  register: common_snap_list_result
+  failed_when: false
+  changed_when: false
+  check_mode: false  # read-only, and every when: below depends on it
+
+- name: Snapd | Remove non-canonical snaps
+  ansible.builtin.shell: |
+    set -o pipefail
+    snap list | awk 'NR>1 && $4 != "canonical**" {print $1}' | while read -r pkg; do
+      snap remove --purge "$pkg"
+    done
+  args:
+    executable: /bin/bash
+  when: common_snap_list_result.rc == 0
+  failed_when: false
+  changed_when: true
+
+- name: Snapd | Remove snap-store
+  ansible.builtin.command: snap remove --purge snap-store
+  when: common_snap_list_result.rc == 0
+  failed_when: false
+  changed_when: true
+
+- name: Snapd | Remove remaining snaps with '-' notes
+  ansible.builtin.shell: |
+    set -o pipefail
+    snap list | awk 'NR>1 && $6 == "-" {print $1}' | while read -r pkg; do
+      snap remove --purge "$pkg"
+    done
+  args:
+    executable: /bin/bash
+  when: common_snap_list_result.rc == 0
+  failed_when: false
+  changed_when: true
+
+- name: Snapd | Remove base snaps
+  ansible.builtin.shell: |
+    set -o pipefail
+    snap list | awk 'NR>1 && $6 == "base" {print $1}' | while read -r pkg; do
+      snap remove --purge "$pkg"
+    done
+  args:
+    executable: /bin/bash
+  when: common_snap_list_result.rc == 0
+  failed_when: false
+  changed_when: true
+
+- name: Snapd | Remove snapd snap
+  ansible.builtin.command: snap remove --purge snapd
+  when: common_snap_list_result.rc == 0
+  failed_when: false
+  changed_when: true
+
+- name: Snapd | Purge snapd package
+  ansible.builtin.apt:
+    name: snapd
+    state: absent
+    purge: true
+
+- name: Snapd | Autoremove leftover dependencies
+  ansible.builtin.apt:
+    autoremove: true
+
+- name: Snapd | Clear snapd cache
+  ansible.builtin.file:
+    path: /var/cache/snapd
+    state: absent
+
+# Left behind on every host by bodsch.snapd, which this file replaces. Nothing
+# manages it any more, and its other eight pins are redundant: every one of
+# those packages hard-depends on snapd, so the snapd pin in nosnap.pref already
+# makes them uninstallable.
+- name: Snapd | Remove orphaned pin from the old snapd role
+  ansible.builtin.file:
+    path: /etc/apt/preferences.d/snapd.pref
+    state: absent
+
+- name: Snapd | Deploy APT pin to block snapd reinstallation
+  ansible.builtin.copy:
+    src: nosnap.pref
+    dest: /etc/apt/preferences.d/nosnap.pref
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Snapd | Mask snapd systemd units
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    masked: true
+  loop:
+    - snapd.socket
+    - snapd.service
+  failed_when: false

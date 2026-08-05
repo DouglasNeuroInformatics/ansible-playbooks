@@ -1,0 +1,41 @@
+---
+# Shared by roles/workstation/tasks/nvidia.yml and update.yml. Both gate
+# kernel/driver upgrades on this check, and the two had already drifted apart
+# (different hold lists), so the definitions live here in one place.
+
+# Counts real interactive users, excluding the Ansible executor.
+#
+# Deliberately not `who`: that reads utmp, which gets no entry for an SSH
+# session without a PTY -- rsync, sshfs, VS Code Remote, plain `ssh host cmd`.
+# A user working over such a session counted as zero, so the host looked idle
+# and the nvidia driver could be swapped out from under them. Verified on
+# dnpws07, where `who` saw nobody while two State=active sshd sessions with an
+# empty TTY belonged to a real user.
+#
+# Excluded: greeter sessions (lightdm/sddm run as their own users) and stale
+# State=closing sessions, some of which linger for months and would otherwise
+# make an idle host look permanently busy.
+logged_in_users_command: |
+  loginctl list-sessions --no-legend | awk '{print $1}' | while read -r s; do
+    loginctl show-session "$s" -p Name -p Class -p State | paste -sd' '
+  done | grep 'Class=user' | grep -E 'State=(active|online)' \
+    | sed 's/.*Name=\([^ ]*\).*/\1/' | grep -vx localadmin | sort -u | wc -l
+
+# Counts running Slurm job steps on this node.
+#
+# The pattern matters: every node runs a persistent `/usr/sbin/slurmstepd
+# infinity` helper whether or not any job is present, so a plain
+# `pgrep slurmstepd` matches on all 59 nodes and would block reboots forever.
+# Real job steps appear as `slurmstepd: [<jobid>.extern]` / `[<jobid>.batch]`,
+# which is what the bracket anchors on. Verified against squeue on both busy
+# and idle nodes.
+#
+# Checked locally rather than with squeue so that an unreachable controller
+# cannot make a busy node look idle -- and because one node has no squeue.
+slurm_jobs_command: |
+  pgrep -f 'slurmstepd: \[' 2>/dev/null | wc -l
+
+# Held so a routine apt upgrade cannot swap a kernel or driver out from under a
+# running session; released only while the host is idle.
+held_package_patterns:
+  - '*nvidia*'

@@ -6,7 +6,7 @@
   strategy: free
   become: yes
   roles:
-    - bodsch.snapd
+    - {role: apt-proxy, tags: always}   # must precede every role that touches apt
     - mambaorg.micromamba
     - common
     - workstation
@@ -14,6 +14,6 @@
 - hosts: computenodes
   become: yes
   roles:
-    - bodsch.snapd
+    - {role: apt-proxy, tags: always}   # must precede every role that touches apt
     - mambaorg.micromamba
     - common

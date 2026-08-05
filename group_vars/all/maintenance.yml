@@ -21,6 +21,20 @@ logged_in_users_command: |
   done | grep 'Class=user' | grep -E 'State=(active|online)' \
     | sed 's/.*Name=\([^ ]*\).*/\1/' | grep -vx localadmin | sort -u | wc -l
 
+# Counts running Slurm job steps on this node.
+#
+# The pattern matters: every node runs a persistent `/usr/sbin/slurmstepd
+# infinity` helper whether or not any job is present, so a plain
+# `pgrep slurmstepd` matches on all 59 nodes and would block reboots forever.
+# Real job steps appear as `slurmstepd: [<jobid>.extern]` / `[<jobid>.batch]`,
+# which is what the bracket anchors on. Verified against squeue on both busy
+# and idle nodes.
+#
+# Checked locally rather than with squeue so that an unreachable controller
+# cannot make a busy node look idle -- and because one node has no squeue.
+slurm_jobs_command: |
+  pgrep -f 'slurmstepd: \[' 2>/dev/null | wc -l
+
 # Held so a routine apt upgrade cannot swap a kernel or driver out from under a
 # running session; released only while the host is idle.
 held_package_patterns:

@@ -27,6 +27,13 @@
       changed_when: false  # This task never changes system state
       check_mode: false    # read-only, and every when: below depends on it
 
+    # See group_vars/all/maintenance.yml -- do not simplify to `pgrep slurmstepd`.
+    - name: Count running slurm job steps
+      ansible.builtin.shell: '{{ slurm_jobs_command }}'
+      register: slurm_jobs_count
+      changed_when: false  # This task never changes system state
+      check_mode: false    # read-only, and the reboot gate depends on it
+
     - name: update apt-get cache
       apt: update_cache=yes
 
@@ -109,4 +116,5 @@
         reboot_timeout: 300
       when:
         - not (logged_in_users_count.stdout | int > 0)
+        - slurm_jobs_count.stdout | int == 0
         - (nvidia_installed.changed | default(false)) or (kernel_installed.changed | default(false))

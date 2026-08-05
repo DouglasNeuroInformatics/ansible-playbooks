@@ -3,14 +3,28 @@
     name: ca-certificates
     state: present
 
-# Matches every URIs: stanza (archive and security both point at our mirror).
-# Anchoring on 'archive'/'security' only matched the stock Ubuntu URLs, so it
-# never fired again once a host had been pointed at the mirror.
-- name: Set ubuntu mirror in ubuntu.sources
+# Each stanza is keyed on its own Suites line, not on the URI.
+#
+# Anchoring on the URI ('^URIs:.*archive') only ever matched the stock Ubuntu
+# URLs, so the task was a one-shot: once a host had been pointed at a mirror it
+# could never be corrected again. Rewriting every URIs: line instead was worse
+# -- it pointed noble-security at the archive mirror too, which broke security
+# updates fleet-wide. Keying on Suites: is idempotent and keeps the two stanzas
+# independent, so this also repairs hosts already in that state.
+#
+# Relies on URIs: being immediately followed by Suites:, which holds for the
+# stock deb822 layout and was verified across every host in the fleet.
+- name: Set ubuntu archive mirror in ubuntu.sources
   ansible.builtin.replace:
     path: /etc/apt/sources.list.d/ubuntu.sources
-    regexp: '^URIs:.*$'
-    replace: 'URIs: {{ ubuntu_mirror_uri }}'
+    regexp: '^URIs:.*\n(Suites:(?!.*-security).*)$'
+    replace: 'URIs: {{ ubuntu_mirror_uri }}\n\1'
+
+- name: Set ubuntu security source in ubuntu.sources
+  ansible.builtin.replace:
+    path: /etc/apt/sources.list.d/ubuntu.sources
+    regexp: '^URIs:.*\n(Suites:.*-security.*)$'
+    replace: 'URIs: {{ ubuntu_security_uri }}\n\1'
 
 - name: disable ubuntu pro messages
   command: pro config set apt_news=false

@@ -24,6 +24,10 @@ apt_cache_port: 3142
 apt_cached_repos:
   - name: ubunturepo
     url: ca.archive.ubuntu.com/ubuntu
+  # Separate from the archive: noble-security is served from here so updates
+  # are not delayed by mirror lag. acng already caches it as its own repo.
+  - name: ubuntusecurity
+    url: security.ubuntu.com/ubuntu
   - name: launchpadppa
     url: ppa.launchpadcontent.net
   - name: dockerrepo

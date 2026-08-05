@@ -1,5 +1,10 @@
 ubuntu_mirror_uri: http://ca.archive.ubuntu.com/ubuntu/
 
+# Kept separate from the archive mirror. Security updates are published to
+# security.ubuntu.com first and archive mirrors lag behind it, so pointing
+# noble-security at the mirror delays them.
+ubuntu_security_uri: http://security.ubuntu.com/ubuntu/
+
 # pipx itself lives here; the tool venvs it manages stay in PIPX_HOME=/opt/pipx.
 pipx_venv: /opt/pipx-venv
 pipx_executable: "{{ pipx_venv }}/bin/pipx"

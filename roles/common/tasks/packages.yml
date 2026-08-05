@@ -10,7 +10,7 @@
     update_cache: yes
     state: present
     pkg:
-    - rclone
+    - linux-zabbly
     - pv
     - sqlite3
     - squashfuse
@@ -22,7 +22,6 @@
     - autoconf-archive
     - fzf
     - pandoc
-    - fd-find
     - python3-pip
     - neovim
     - btop

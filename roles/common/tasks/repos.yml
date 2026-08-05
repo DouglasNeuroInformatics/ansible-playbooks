@@ -34,11 +34,15 @@
     path: /etc/apt/preferences.d/nonvidiaopen
     state: absent
 
+# creates: keeps this from re-running once the PPA exists. Without it,
+# apt-add-repository would not recognise the http:// entry the apt-cache pass
+# leaves behind and would add a duplicate https:// stanza on every run.
 - name: add ppa repos
-  command: apt-add-repository -y -n {{ item }}
+  command:
+    cmd: apt-add-repository -y -n {{ item }}
+    creates: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
   with_items:
     - ppa:git-core/ppa
-    - ppa:apt-fast/stable
     - ppa:yubico/stable
     - ppa:apptainer/ppa
     - ppa:rapier1/hpnssh

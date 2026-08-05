@@ -3,8 +3,11 @@
 - name: config use mozilla firefox binary
   copy: src=files/mozillateamppa dest=/etc/apt/preferences.d/mozillateamppa
 
+# See the note on the matching task in the common role.
 - name: add ppa repos
-  command: apt-add-repository -y -n {{ item }}
+  command:
+    cmd: apt-add-repository -y -n {{ item }}
+    creates: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
   with_items:
     - ppa:lubuntu-dev/backports
     - ppa:obsproject/obs-studio

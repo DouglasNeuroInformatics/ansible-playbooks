@@ -1,0 +1,26 @@
+---
+# See group_vars/all/maintenance.yml for why this is not `who`.
+- name: Get logged-in users (excluding Ansible executor) count
+  ansible.builtin.shell: '{{ logged_in_users_command }}'
+  register: logged_in_users_count
+  changed_when: false  # This task never changes system state
+  check_mode: false    # read-only, and the gate below depends on it
+
+- name: Check if nvidia-driver is needed
+  ansible.builtin.shell: |
+    ubuntu-drivers list | cut -d, -f1 | grep -v server | sort -V | tail -1 | grep nvidia-driver
+  ignore_errors: true
+  register: nvidia_driver_needed
+  changed_when: false  # This task never changes system state
+  check_mode: false    # read-only; skipping it under --check leaves the apt
+                       # task below with an empty package name and a false failure
+
+- name: Install or upgrade nvidia driver
+  ansible.builtin.apt:
+    name:  "{{ nvidia_driver_needed.stdout }}"
+    state: latest
+    allow_change_held_packages: true
+  register: nvidia_installed
+  when:
+    - nvidia_driver_needed.rc == 0
+    - not (logged_in_users_count.stdout | int > 0)

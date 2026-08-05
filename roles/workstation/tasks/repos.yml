@@ -81,7 +81,11 @@
     suites: "{{ ansible_distribution_release }}"
     components: universe
     architectures: amd64
-    signed_by: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xbfd90f4daaefa72b67bbaf48e3ca1a89941c42e6
+    # keys.openpgp.org, not keyserver.ubuntu.com: sur5r renewed this key to
+    # 2027-02-06 but never uploaded the renewal to Ubuntu's keyserver, which
+    # still serves the copy that expired 2026-04-01 and enrols an EXPKEYSIG.
+    # Same fingerprint either way, only the self-signature differs.
+    signed_by: https://keys.openpgp.org/pks/lookup?op=get&search=0xbfd90f4daaefa72b67bbaf48e3ca1a89941c42e6
 
 - name: Add brave repo
   ansible.builtin.deb822_repository:

@@ -102,6 +102,16 @@
     architectures: amd64
     signed_by: https://apt.kitware.com/keys/kitware-archive-latest.asc
 
+# Non-PPA counterpart to the retired-ppa tasks above; see
+# group_vars/all/repo-cleanup.yml for what is deliberately left in place.
+# Runs before the sweep below so removed files are not picked up by it.
+- name: remove stale repo files
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/{{ item }}
+    state: absent
+  loop: '{{ stale_repo_files }}'
+  when: inventory_hostname not in repo_cleanup_exempt_hosts
+
 # Two passes over every source file, including ones these roles do not own:
 # vendor .list files dropped by .deb postinst (cuda, tailscale, zerotier...),
 # hand-added sources, and PPAs written by apt-add-repository.

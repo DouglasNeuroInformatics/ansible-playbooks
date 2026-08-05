@@ -5,6 +5,8 @@
   vars_files:
     - vars/kernel-nvidia.yml
   become: yes
+  roles:
+    - {role: apt-proxy, tags: always}   # roles run before tasks; everything below uses apt
   tasks:
     - name: update-pciids
       command: update-pciids

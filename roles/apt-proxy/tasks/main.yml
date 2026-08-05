@@ -1,0 +1,10 @@
+---
+# A role of its own purely for ordering: roles run in the order site.yml lists
+# them, so this is the only way to guarantee the proxy exists before anything
+# reaches apt. It previously lived in common/file-config.yml, which runs after
+# repos.yml, packages.yml and the manual debs -- so on a fresh host every one
+# of those fetched directly, bypassing the cache entirely. mambaorg.micromamba
+# also runs before common and uses ansible.builtin.package, so putting it first
+# inside common would still have been too late.
+- name: enable apt proxy
+  template: src=99proxy.j2 dest=/etc/apt/apt.conf.d/99proxy

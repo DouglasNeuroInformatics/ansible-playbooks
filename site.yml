@@ -6,6 +6,7 @@
   strategy: free
   become: yes
   roles:
+    - {role: apt-proxy, tags: always}   # must precede every role that touches apt
     - mambaorg.micromamba
     - common
     - workstation
@@ -13,5 +14,6 @@
 - hosts: computenodes
   become: yes
   roles:
+    - {role: apt-proxy, tags: always}   # must precede every role that touches apt
     - mambaorg.micromamba
     - common

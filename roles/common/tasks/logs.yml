@@ -1,2 +1,12 @@
+---
+# The config below is dead weight without logwatch itself, and on hosts that
+# never had it the template task fails outright with "Destination directory
+# /etc/logwatch/conf does not exist". Install the package that owns the
+# directory rather than assuming someone did it by hand.
+- name: Install logwatch
+  ansible.builtin.apt:
+    name: logwatch
+    state: present
+
 - name: generate logwatch config
   template: src=logwatch.conf.j2 dest=/etc/logwatch/conf/logwatch.conf

@@ -121,6 +121,39 @@
         dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge
       ignore_errors: yes
 
+    # fwupd is not everywhere -- the compute nodes have no 85-fwupd because they
+    # have no fwupd -- and this is not the play to start installing it.
+    - name: Check for fwupdmgr
+      ansible.builtin.stat:
+        path: /usr/bin/fwupdmgr
+      register: fwupdmgr_binary
+      changed_when: false  # This task never changes system state
+      when: reboot_pending | bool
+
+    # --force because a refresh inside the metadata's cache window exits
+    # non-zero, and non-fatal because LVFS being unreachable is not a reason to
+    # abandon a reboot the host has already earned.
+    - name: Refresh firmware metadata
+      ansible.builtin.command: fwupdmgr refresh --force
+      register: fwupd_refresh
+      changed_when: false  # Only touches the local metadata cache
+      failed_when: false
+      when:
+        - reboot_pending | bool
+        - fwupdmgr_binary.stat.exists | default(false)
+
+    # rc 2 is fwupd's "nothing to do", not a failure. --no-reboot-check stops
+    # fwupdmgr from taking the reboot into its own hands; the task below owns
+    # that, and it honours the slurm and logged-in-user gates.
+    - name: Stage firmware updates
+      ansible.builtin.command: fwupdmgr update --assume-yes --no-reboot-check
+      register: fwupd_update
+      changed_when: fwupd_update.rc == 0
+      failed_when: fwupd_update.rc not in [0, 2]
+      when:
+        - reboot_pending | bool
+        - fwupdmgr_binary.stat.exists | default(false)
+
     - name: Reboot if changes
       reboot:
         reboot_timeout: 300

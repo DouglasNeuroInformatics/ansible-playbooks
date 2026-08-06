@@ -2,7 +2,7 @@
 
 - name: Install VMware Horizon Client from local .deb
   ansible.builtin.apt:
-    deb: "/data/scratch2/.ansible/omnissa/Omnissa-Horizon-Client-2506-8.16.0-16536624989.x64.deb"
+    deb: "/data/scratch2/.ansible/omnissa/Omnissa-Horizon-Client-2603-8.18.0-24120621798.x64.deb"
 
 - name: config vmware horizon client
   copy: src=files/view-mandatory-config dest=/etc/omnissa/horizon-default-config

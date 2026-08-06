@@ -4,6 +4,16 @@
   - computenodes
   vars_files:
     - vars/kernel-nvidia.yml
+  vars:
+    # The reboot gate, named so the firmware update cannot drift from it. fwupd
+    # stages most payloads for the bootloader to apply on the next boot, so it
+    # is only worth running when that boot is actually going to happen. Lazily
+    # evaluated, so it is only valid after the registers below have all run.
+    reboot_pending: >-
+      {{ (not (logged_in_users_count.stdout | int > 0))
+         and (slurm_jobs_count.stdout | int == 0)
+         and ((nvidia_installed.changed | default(false))
+              or (kernel_installed.changed | default(false))) }}
   become: yes
   roles:
     - {role: apt-proxy, tags: always}   # roles run before tasks; everything below uses apt
@@ -114,7 +124,4 @@
     - name: Reboot if changes
       reboot:
         reboot_timeout: 300
-      when:
-        - not (logged_in_users_count.stdout | int > 0)
-        - slurm_jobs_count.stdout | int == 0
-        - (nvidia_installed.changed | default(false)) or (kernel_installed.changed | default(false))
+      when: reboot_pending | bool

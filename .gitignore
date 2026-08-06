@@ -6,3 +6,4 @@ ansible.log
 logs/
 .vscode
 tree/
+__pycache__/

@@ -1,0 +1,20 @@
+---
+# A dpkg run killed part-way through (reboot, OOM, a maintainer script that
+# hung) leaves entries in /var/lib/dpkg/updates, and from then on every apt
+# invocation refuses with "E: dpkg was interrupted, you must manually run
+# 'sudo dpkg --configure -a'". Nothing later in this role can install anything
+# until that is cleared, so clear it before the first apt task runs.
+- name: Dpkg | Check for an interrupted run
+  ansible.builtin.find:
+    paths: /var/lib/dpkg/updates
+    file_type: file
+  register: dpkg_interrupted
+  changed_when: false  # This task never changes system state
+  check_mode: false    # read-only, and the repair below depends on it
+
+- name: Dpkg | Finish the interrupted run
+  ansible.builtin.command: dpkg --configure -a --force-confdef --force-confold
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  when: dpkg_interrupted.matched | int > 0
+  changed_when: true

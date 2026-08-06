@@ -10,6 +10,8 @@
 - {import_tasks: nfs.yml, tags: nfs}
 - {import_tasks: quarantine.yml, tags: quarantine}
 - {import_tasks: repos.yml, tags: repos}
+# Must precede every apt task below it -- see the file for why.
+- {import_tasks: dpkg-repair.yml, tags: [dpkg, software]}
 - {import_tasks: snapd.yml, tags: snapd}
 - {import_tasks: packages.yml, tags: software}
 - {import_tasks: pipx.yml, tags: [software,pipx]}

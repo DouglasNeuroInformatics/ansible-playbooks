@@ -8,3 +8,13 @@
 # inside common would still have been too late.
 - name: enable apt proxy
   template: src=99proxy.j2 dest=/etc/apt/apt.conf.d/99proxy
+
+# Here for the same ordering reason as the proxy above: no use bounding apt's
+# timeouts only after the first three roles have already fetched everything.
+- name: bound apt network timeouts
+  copy:
+    src: 99-timeouts
+    dest: /etc/apt/apt.conf.d/99-timeouts
+    owner: root
+    group: root
+    mode: "0644"

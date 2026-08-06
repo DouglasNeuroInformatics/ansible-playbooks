@@ -1,0 +1,16 @@
+// Bound apt's network waits. apt's compiled-in default is 120s, and only for
+// a socket that goes completely silent -- it is an idle timeout, not a deadline
+// on the transfer. Everything here goes through apt-cacher-ng on the LAN, so
+// 30s of total silence already means something is wedged.
+Acquire::http::Timeout "30";
+Acquire::https::Timeout "30";
+Acquire::ftp::Timeout "30";
+
+// Retry the transient failures the shorter timeout will now surface, rather
+// than failing the whole run on one stalled index.
+Acquire::Retries "3";
+
+// Pipelining through a caching proxy is a long-standing source of stalled
+// downloads: acng can answer out of order and apt waits on a response that
+// never comes. Costs a little throughput, buys predictability.
+Acquire::http::Pipeline-Depth "0";

@@ -1,0 +1,62 @@
+---
+# Per-host SSH access restrictions
+#
+# Any host that appears as a key in `sshrestrict` has its SSH logins limited.
+# Each host is either USER-based or GROUP-based:
+#
+#   users:   login limited to these named accounts (static list)
+#   groups:  login limited to members of these groups, resolved live by sshd
+#            at each login (so membership changes, e.g. daily lab roster edits,
+#            take effect immediately with no Ansible run)
+#
+# Hosts not listed here are left unrestricted.
+#
+# A host must use EITHER users OR groups, never both: sshd combines AllowUsers
+# and AllowGroups with AND, so mixing them would lock out the very people the
+# list is meant to allow. The task asserts this.
+#
+# The hard-coded defaults below are added automatically so administration and
+# Ansible itself are never locked out:
+#   - user-based hosts get `ssh_restrict_default_users`
+#   - group-based hosts get `ssh_restrict_default_groups`
+#
+# Implemented by roles/workstation/tasks/ssh-access.yml, which looks up the
+# host and renders templates/50-ssh-access.conf.j2 into sshd_config.d.
+
+# Management accounts always permitted on a USER-based host. These are the
+# members of `cicadministrators` plus `localadmin`, spelled out by name because
+# sshd ANDs AllowUsers with AllowGroups, so a user-based host cannot fall back
+# to a group to let admins in.
+#
+# KEEP IN SYNC with ssh_restrict_default_groups below: adding or removing a CIC
+# administrator means updating both this list and the `cicadministrators` group,
+# otherwise admins keep access to group-based hosts but lose it on user-based
+# ones (or vice versa).
+ssh_restrict_default_users:
+  - localadmin
+  - devgab
+  - beatom
+
+# Admin groups always permitted on a GROUP-based host (keeps localadmin and
+# human admins in, since they are not members of the lab groups).
+ssh_restrict_default_groups:
+  - cicadministrators
+  - sudo
+
+sshrestrict:
+  cichm01:
+    users:
+      - devgab
+      - beatom
+  cicws45:
+    users:
+      - devgab
+      - beatom
+  cicws47:
+    users:
+      - dadmah
+      - zeiyas
+  cicws48:
+    groups:
+      - dadlab
+      - zeilab

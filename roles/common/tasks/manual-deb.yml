@@ -17,4 +17,5 @@
     - https://downloads.rclone.org/v1.75.0/rclone-v1.75.0-linux-amd64.deb
     - https://github.com/kellyjonbrazil/jc/releases/download/v1.25.7/jc_1.25.7-2_amd64.deb
     - https://github.com/sharkdp/fd/releases/download/v10.4.2/fd_10.4.2_amd64.deb
+    - https://github.com/charmbracelet/glow/releases/download/v3.0.0/glow_3.0.0_amd64.deb
   ignore_errors: yes

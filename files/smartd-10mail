@@ -1,0 +1,31 @@
+#!/bin/sh -e
+#
+# Replaces the 10mail script shipped in /etc/smartmontools/run.d. The stock one
+# pipes the report through `mail`, which sends as bare root; smartd itself has
+# no setting for the From: address. See group_vars/all/mail.yml.
+#
+# smartd-runner calls every run.d script with the report in a temporary file as
+# $1, followed by the arguments smartd_warning.sh built for the mailer:
+#   -s <subject> <address>
+# The address is whatever the -m directive in smartd.conf names, so /etc/aliases
+# still decides where it lands -- msmtp expands it.
+
+input=$1
+shift
+
+subject="SMART error detected"
+if [ "$1" = "-s" ]; then
+    subject=$2
+    shift 2
+fi
+
+recipients=$*
+[ -n "$recipients" ] || exit 0
+
+{
+    echo "From: smartd@$(hostname -s).douglas.rtss.qc.ca"
+    echo "To: $recipients"
+    echo "Subject: $subject"
+    echo
+    cat "$input"
+} | /usr/sbin/sendmail -t

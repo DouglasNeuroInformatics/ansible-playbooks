@@ -62,6 +62,11 @@ Unattended-Upgrade::MinimalSteps "true";
 // 'mailx' must be installed. E.g. "user@example.com"
 Unattended-Upgrade::Mail "root";
 
+// Sender of the report. Without this unattended-upgrades sends as bare "root",
+// which is neither a routable address nor filterable. This is a template only
+// so that this one line can carry the hostname -- see group_vars/all/mail.yml.
+Unattended-Upgrade::Sender "unattended-upgrades@{{ mail_host }}";
+
 // Set this value to one of:
 //    "always", "only-on-error" or "on-change"
 // If this is not set, then any legacy MailOnlyOnError (boolean) value

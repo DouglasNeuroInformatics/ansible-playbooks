@@ -4,8 +4,10 @@
 - name: define QUARANTINE_PATH
   copy: src=files/99quarantine_path.sh dest=/etc/profile.d
 
+# A template, not a copy, only so Unattended-Upgrade::Sender can carry the
+# hostname. See group_vars/all/mail.yml.
 - name: enable unattended upgrades
-  copy: src=files/50unattended-upgrades dest=/etc/apt/apt.conf.d/
+  template: src=50unattended-upgrades.j2 dest=/etc/apt/apt.conf.d/50unattended-upgrades
 
 - name: enable periodic upgrades
   copy: src=files/10periodic dest=/etc/apt/apt.conf.d/
@@ -26,11 +28,52 @@
   notify:
     - restart smartmontools
 
+# Overwrites the 10mail shipped by smartmontools. smartd has no From: setting
+# of its own, so the run.d script is the only place to put one.
+- name: send smartd warnings as smartd@<host>
+  copy:
+    src: files/smartd-10mail
+    dest: /etc/smartmontools/run.d/10mail
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: configure msmtp
   copy: src=files/msmtprc dest=/etc/msmtprc
 
 - name: configure aliases
   copy: src=files/aliases dest=/etc/aliases
+
+# mdadm's default From: is a bare "root" with no domain at all -- MAILFROM is
+# the only way to change it, and it exists only in the config file.
+- name: send mdadm alerts as mdadm@<host>
+  lineinfile:
+    path: /etc/mdadm/mdadm.conf
+    regexp: '^MAILFROM\s'
+    line: "MAILFROM mdadm@{{ mail_host }}"
+
+# Covers /etc/cron.d jobs and anything else the daemon mails, which otherwise
+# goes out as bare root. cron reads environment assignments in file order, so
+# this has to land above the job lines -- after SHELL=, not after PATH=, which
+# ships commented out. A regexp that matches nothing makes lineinfile append at
+# the end of the file, i.e. below the jobs, where cron would ignore it.
+#
+# Covers /etc/cron.hourly. Not covered: /etc/cron.{daily,weekly,monthly} --
+# their crontab lines are guarded with `test -x /usr/sbin/anacron ||`, anacron
+# is installed on these hosts, so those three go to anacron instead, and it
+# hardcodes "From: Anacron <root>".
+#
+# anacrontab(5) at man7.org documents a MAILFROM, but that page is cronie's
+# anacron. These hosts run Pascal Hakim's anacron (2.3-39ubuntu2), whose
+# binary holds MAILTO and no MAILFROM, and cronie's MAILFROM sets the envelope
+# sender anyway -- msmtprc already makes that uniform. Closing this needs a
+# wrapper on the three anacrontab job lines, not a setting.
+- name: send cron output as cron@<host>
+  lineinfile:
+    path: /etc/crontab
+    regexp: '^MAILFROM='
+    insertafter: '^SHELL='
+    line: "MAILFROM=cron@{{ mail_host }}"
 
 - name: watchdog enable
   lineinfile: dest=/etc/default/watchdog regexp=^run_watchdog line=run_watchdog=1

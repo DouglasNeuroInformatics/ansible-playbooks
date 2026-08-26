@@ -5,13 +5,20 @@
 # goes on batteries.
 # We send an email message to root to notify him.
 #
+# Sent through sendmail rather than $APCUPSD_MAIL so the report carries a
+# From: of apcupsd@<host>, like every other service here -- $APCUPSD_MAIL is
+# plain `mail`, which sends as bare root. See group_vars/all/mail.yml.
 
 HOSTNAME=`hostname`
 MSG="$HOSTNAME UPS $1 Power Failure !!!"
 #
 (
+   echo "From: apcupsd@$(hostname -s).douglas.rtss.qc.ca"
+   echo "To: $SYSADMIN,dnlgallino@gmail.com"
+   echo "Subject: $MSG"
+   echo
    echo "$MSG"
    echo " "
    /sbin/apcaccess status
-) | $APCUPSD_MAIL -s "$MSG" $SYSADMIN,dnlgallino@gmail.com
+) | /usr/sbin/sendmail -t
 exit 0

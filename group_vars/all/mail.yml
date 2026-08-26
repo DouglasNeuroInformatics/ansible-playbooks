@@ -1,0 +1,20 @@
+---
+# Every service on a host that mails root does so under its own address,
+# <service>@<mail_host>, so incoming mail can be sorted on the sender alone.
+# Before this, each service picked its own From: -- bare "root", a display name
+# of "root@cicws01", "Cron Daemon", a logwatch@<hostname> with no domain at all
+# because /etc/hosts carries no entry for the workstations -- and none of it
+# was filterable.
+#
+# This governs the From: HEADER only. The envelope sender stays
+# root@<host>.douglas.rtss.qc.ca: files/msmtprc builds it from %U@%H and sets
+# allow_from_override off, which is what we want for bounces and SPF.
+#
+# Recipients are unchanged -- everything still goes to root and is expanded by
+# files/aliases.
+mail_domain: douglas.rtss.qc.ca
+
+# nodename is uname -n. Split on the first dot so a host that already carries
+# an FQDN nodename does not end up with the domain twice. Shell scripts that
+# need the same string build it at runtime with `hostname -s`.
+mail_host: "{{ ansible_facts['nodename'].split('.')[0] }}.{{ mail_domain }}"

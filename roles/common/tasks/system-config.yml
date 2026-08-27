@@ -14,7 +14,7 @@
     path: /etc/sudoers.d/99-sudoers-config
     create: yes
     regexp: '^Defaults\s+mailfrom='
-    line: "Defaults mailfrom=\"sudo@{{ mail_host }}\""
+    line: 'Defaults mailfrom="\"sudo@{{ mail_host }}\" <sudo@{{ mail_host }}>"'
     validate: 'visudo -cf %s'
 
 - name: add cicadministrators to sudoers

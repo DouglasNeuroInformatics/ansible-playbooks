@@ -6,6 +6,20 @@
 # because /etc/hosts carries no entry for the workstations -- and none of it
 # was filterable.
 #
+# The header carries an explicit display name as well as the address:
+#
+#     From: "logwatch@cicws01.douglas.rtss.qc.ca" <logwatch@cicws01.douglas.rtss.qc.ca>
+#
+# The redundancy is deliberate. A bare address was tried first, on the theory
+# that a client with no display name to show falls back to the address. It does
+# not: Gmail renders the local part alone, so the whole fleet arrived as
+# "logwatch", "smartd", "cron". Two test messages from cichm01, one of each
+# form, settled it -- only the quoted form displays in full.
+#
+# The quotes are required, not decoration. An RFC 5322 display-name is a
+# sequence of atoms or a quoted-string, and an atom cannot contain "@", so the
+# unquoted form is malformed and was the one that failed to render.
+#
 # This governs the From: HEADER only. The envelope sender stays
 # root@<host>.douglas.rtss.qc.ca: files/msmtprc builds it from %U@%H and sets
 # allow_from_override off, which is what we want for bounces and SPF.

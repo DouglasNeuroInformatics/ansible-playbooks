@@ -22,8 +22,12 @@ fi
 recipients=$*
 [ -n "$recipients" ] || exit 0
 
+# The display name repeats the address on purpose -- a bare address renders as
+# the local part alone in Gmail. See group_vars/all/mail.yml.
+sender="smartd@$(hostname -s).douglas.rtss.qc.ca"
+
 {
-    echo "From: smartd@$(hostname -s).douglas.rtss.qc.ca"
+    echo "From: \"$sender\" <$sender>"
     echo "To: $recipients"
     echo "Subject: $subject"
     echo

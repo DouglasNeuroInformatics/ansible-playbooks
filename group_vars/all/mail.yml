@@ -1,0 +1,47 @@
+---
+# Every service on a host that mails root does so under its own address, with
+# the host's FQDN as the display name:
+#
+#     From: cicws01.douglas.rtss.qc.ca <logwatch@cicws01.douglas.rtss.qc.ca>
+#
+# so incoming mail sorts by host on the name and by service on the address.
+# Before this, each service picked its own From: -- bare "root", a display name
+# of "root@cicws01", "Cron Daemon", "Logwatch" -- and none of it was filterable.
+#
+# The display name is not optional. A bare address was tried first, on the
+# theory that a client with no display name falls back to showing the address.
+# It does not: Gmail renders the local part alone, so the fleet arrived as
+# "logwatch", "smartd", "cron".
+#
+# The display name is deliberately NOT quoted. An unquoted FQDN is obs-phrase
+# under RFC 5322 -- dots between atoms -- which parsers are required to accept,
+# and it renders correctly. That matters because it is the only form every
+# config format here can store: apt's parser has no escape for a double quote,
+# so a quoted display name would have left unattended-upgrades behind, and a
+# value that opens with a quote is a live hazard in /etc/crontab (see the cron
+# task in roles/common/tasks/file-config.yml). One unquoted string sidesteps
+# both. Do not "fix" this by adding quotes.
+#
+# An earlier revision put the service address in the display name too. That
+# form does need quoting, because an atom cannot contain "@", and unquoted it
+# parses as a second address rather than a name.
+#
+# This governs the From: HEADER only. The envelope sender stays
+# root@<host>.douglas.rtss.qc.ca: files/msmtprc builds it from %U@%H and sets
+# allow_from_override off, which is what we want for bounces and SPF.
+#
+# Recipients are unchanged -- everything still goes to root and is expanded by
+# files/aliases.
+mail_domain: douglas.rtss.qc.ca
+
+# nodename is uname -n. Split on the first dot so a host that already carries
+# an FQDN nodename does not end up with the domain twice. Shell scripts that
+# need the same string build it at runtime with `hostname -s`.
+#
+# Built from nodename rather than taken from ansible_fqdn, which is a runtime
+# resolver lookup: it is correct on the fleet today (checked on cicws02 and
+# dnpws02, both of which return the full name), but it degrades silently to the
+# bare short name whenever the lookup fails, and a From: address is not
+# something worth making conditional on DNS being healthy at play time. The
+# domain is a constant here, so treat it as one.
+mail_host: "{{ ansible_facts['nodename'].split('.')[0] }}.{{ mail_domain }}"

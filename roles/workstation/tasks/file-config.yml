@@ -26,6 +26,7 @@
   notify:
     - restart apcupsd
   when: inventory_hostname == "cicws13"
+  tags: mail
 
 - name: disable release upgrade notifications
   lineinfile: dest=/etc/update-manager/release-upgrades regexp=^Prompt line='Prompt=never'

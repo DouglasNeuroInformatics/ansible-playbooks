@@ -4,6 +4,7 @@
   ansible.builtin.user:
     name: root
     comment: "{{ mail_host }}"
+  tags: mail
 
 # regexp so the address is replaced in place. Without it lineinfile only ever
 # appends, and the old @douglas.mcgill.ca line stays in the file forever --
@@ -16,6 +17,7 @@
     regexp: '^Defaults\s+mailfrom='
     line: 'Defaults mailfrom="{{ mail_host }} <sudo@{{ mail_host }}>"'
     validate: 'visudo -cf %s'
+  tags: mail
 
 - name: add cicadministrators to sudoers
   lineinfile:

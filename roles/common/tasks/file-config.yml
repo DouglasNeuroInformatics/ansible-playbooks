@@ -8,6 +8,7 @@
 # hostname. See group_vars/all/mail.yml.
 - name: enable unattended upgrades
   template: src=50unattended-upgrades.j2 dest=/etc/apt/apt.conf.d/50unattended-upgrades
+  tags: mail
 
 - name: enable periodic upgrades
   copy: src=files/10periodic dest=/etc/apt/apt.conf.d/
@@ -37,12 +38,15 @@
     owner: root
     group: root
     mode: "0755"
+  tags: mail
 
 - name: configure msmtp
   copy: src=files/msmtprc dest=/etc/msmtprc
+  tags: mail
 
 - name: configure aliases
   copy: src=files/aliases dest=/etc/aliases
+  tags: mail
 
 # mdadm's default From: is a bare "root" with no domain at all -- MAILFROM is
 # the only way to change it, and it exists only in the config file.
@@ -51,6 +55,7 @@
     path: /etc/mdadm/mdadm.conf
     regexp: '^MAILFROM\s'
     line: "MAILFROM {{ mail_host }} <mdadm@{{ mail_host }}>"
+  tags: mail
 
 # Covers /etc/cron.d jobs and anything else the daemon mails, which otherwise
 # goes out as bare root. cron reads environment assignments in file order, so
@@ -84,6 +89,7 @@
     regexp: '^MAILFROM='
     insertafter: '^SHELL='
     line: "MAILFROM={{ mail_host }} <cron@{{ mail_host }}>"
+  tags: mail
 
 - name: watchdog enable
   lineinfile: dest=/etc/default/watchdog regexp=^run_watchdog line=run_watchdog=1

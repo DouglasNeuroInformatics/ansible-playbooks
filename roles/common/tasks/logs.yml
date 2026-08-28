@@ -7,6 +7,8 @@
   ansible.builtin.apt:
     name: logwatch
     state: present
+  tags: mail
 
 - name: generate logwatch config
   template: src=logwatch.conf.j2 dest=/etc/logwatch/conf/logwatch.conf
+  tags: mail

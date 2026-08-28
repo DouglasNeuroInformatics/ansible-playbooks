@@ -6,9 +6,7 @@
 #
 # so incoming mail sorts by host on the name and by service on the address.
 # Before this, each service picked its own From: -- bare "root", a display name
-# of "root@cicws01", "Cron Daemon", a logwatch@<hostname> with no domain at all
-# because /etc/hosts carries no entry for the workstations -- and none of it
-# was filterable.
+# of "root@cicws01", "Cron Daemon", "Logwatch" -- and none of it was filterable.
 #
 # The display name is not optional. A bare address was tried first, on the
 # theory that a client with no display name falls back to showing the address.
@@ -39,4 +37,11 @@ mail_domain: douglas.rtss.qc.ca
 # nodename is uname -n. Split on the first dot so a host that already carries
 # an FQDN nodename does not end up with the domain twice. Shell scripts that
 # need the same string build it at runtime with `hostname -s`.
+#
+# Built from nodename rather than taken from ansible_fqdn, which is a runtime
+# resolver lookup: it is correct on the fleet today (checked on cicws02 and
+# dnpws02, both of which return the full name), but it degrades silently to the
+# bare short name whenever the lookup fails, and a From: address is not
+# something worth making conditional on DNS being healthy at play time. The
+# domain is a constant here, so treat it as one.
 mail_host: "{{ ansible_facts['nodename'].split('.')[0] }}.{{ mail_domain }}"

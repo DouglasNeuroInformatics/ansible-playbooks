@@ -1,0 +1,78 @@
+---
+# SSH access restrictions
+#
+# A key in `sshrestrict` is either a HOST NAME or an INVENTORY GROUP NAME. A
+# host name wins over a group, so one machine can be carved out of a group-wide
+# policy. Anything matching no key is left unrestricted.
+#
+# Each entry is either USER-based or GROUP-based:
+#
+#   users:   login limited to these named accounts (static list)
+#   groups:  login limited to members of these unix groups, resolved live by
+#            sshd at each login (so membership changes, e.g. daily lab roster
+#            edits, take effect immediately with no Ansible run)
+#
+# An entry must use EITHER users OR groups, never both: sshd combines AllowUsers
+# and AllowGroups with AND, so mixing them would lock out the very people the
+# list is meant to allow. The task asserts this, and asserts that a host does
+# not match two group keys -- sshd ignores a second AllowGroups line, so the
+# two policies cannot be merged.
+#
+# The hard-coded defaults below are added automatically so administration and
+# Ansible itself are never locked out:
+#   - user-based entries get `ssh_restrict_default_users`
+#   - group-based entries get `ssh_restrict_default_groups`
+#
+# Implemented by roles/common/tasks/ssh-access.yml, which resolves the entry
+# and renders roles/common/templates/50-ssh-access.conf.j2 into sshd_config.d.
+
+# Management accounts always permitted by a USER-based entry. These are the
+# members of `cicadministrators` plus `localadmin`, spelled out by name because
+# sshd ANDs AllowUsers with AllowGroups, so a user-based entry cannot fall back
+# to a group to let admins in.
+#
+# KEEP IN SYNC with ssh_restrict_default_groups below: adding or removing a CIC
+# administrator means updating both this list and the `cicadministrators` group,
+# otherwise admins keep access to group-based hosts but lose it on user-based
+# ones (or vice versa).
+ssh_restrict_default_users:
+  - localadmin
+  - devgab
+  - beatom
+
+# Admin groups always permitted by a GROUP-based entry (keeps localadmin and
+# human admins in, since they are not members of the lab groups).
+ssh_restrict_default_groups:
+  - cicadministrators
+  - sudo
+
+sshrestrict:
+  # Inventory group: the compute nodes are reached through Slurm, so direct SSH
+  # is limited to the administrators above. Naming cicadministrators here rather
+  # than leaving the list empty keeps the "exactly one non-empty list" assert
+  # intact; it renders the same AllowGroups as the defaults alone.
+  #
+  # This does NOT affect Slurm itself, which launches work through slurmd and
+  # never over SSH. It does stop a user from opening a shell on a node their job
+  # is running on, and it would break any MPI launcher configured to use SSH
+  # between nodes.
+  computenodes:
+    groups:
+      - cicadministrators
+
+  cichm01:
+    users:
+      - devgab
+      - beatom
+  cicws45:
+    users:
+      - devgab
+      - beatom
+  cicws47:
+    users:
+      - dadmah
+      - zeiyas
+  cicws48:
+    groups:
+      - dadlab
+      - zeilab

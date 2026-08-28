@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
-# Per-host SSH access restriction, managed by the workstation role.
-{% set entry = sshrestrict[inventory_hostname] %}
+# SSH access restriction, managed by the common role.
+{% set entry = ssh_policy %}
 {% if entry.groups is defined %}
 # Login limited to members of these groups (resolved live by sshd) plus admin defaults.
 {% set allow_groups = (entry.groups | default([])) + (ssh_restrict_default_groups | default([])) %}

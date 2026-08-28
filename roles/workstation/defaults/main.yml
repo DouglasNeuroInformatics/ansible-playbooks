@@ -1,5 +1,0 @@
----
-# Per-host SSH access restrictions. Overridden by group_vars/workstations/ssh_access.yml
-# for the `workstations` group; empty here so the role is safe to apply to any host
-# (an unlisted host simply has any previously-deployed policy removed).
-sshrestrict: {}

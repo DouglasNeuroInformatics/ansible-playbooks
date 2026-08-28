@@ -6,13 +6,6 @@
 
 # A template, not a copy, only so Unattended-Upgrade::Sender can carry the
 # hostname. See group_vars/all/mail.yml.
-#
-# The one service that cannot carry the quoted display name the others do:
-# apt's config parser has no escape for a double quote, so the value can hold
-# an address but not a "name" <addr> pair. Verified against apt_pkg -- \" comes
-# back as a literal backslash, "" collapses, %22 stays literal. Reports come
-# out addressed correctly and display as "unattended-upgrades" rather than the
-# full string. MailReport is only-on-error, so this is rare.
 - name: enable unattended upgrades
   template: src=50unattended-upgrades.j2 dest=/etc/apt/apt.conf.d/50unattended-upgrades
 
@@ -57,7 +50,7 @@
   lineinfile:
     path: /etc/mdadm/mdadm.conf
     regexp: '^MAILFROM\s'
-    line: 'MAILFROM "mdadm@{{ mail_host }}" <mdadm@{{ mail_host }}>'
+    line: "MAILFROM {{ mail_host }} <mdadm@{{ mail_host }}>"
 
 # Covers /etc/cron.d jobs and anything else the daemon mails, which otherwise
 # goes out as bare root. cron reads environment assignments in file order, so
@@ -65,20 +58,15 @@
 # ships commented out. A regexp that matches nothing makes lineinfile append at
 # the end of the file, i.e. below the jobs, where cron would ignore it.
 #
-# The outer single quotes are load-bearing. cron strips one matched pair of
-# outer quotes off an environment value; a value that opens with a double quote
-# but closes with ">" is not taken literally, it is a syntax error, and cron
-# then discards THE WHOLE FILE -- "Error: bad minute" followed by "(*system*)
-# ERROR (Syntax error, this crontab file will be ignored)". That takes
-# cron.hourly and the anacron kickoff down with it. Wrapping in single quotes
-# leaves the inner "addr" <addr> intact. Checked with `crontab -n`, which dry
-# runs the same parser:
-#
-#   MAILFROM="a@h" <a@h>      bad minute, whole file ignored
-#   MAILFROM='"a@h" <a@h>'    accepted
-#
-# There is no validator for /etc/crontab itself (crontab -n wants a user
-# crontab, which has no user field), so this cannot be checked by the task.
+# Do not put quotes around this value. cron strips one matched pair of outer
+# quotes off an environment value, and a value that OPENS with a quote but does
+# not close with one is not taken literally -- it is a syntax error, and cron
+# responds by discarding THE WHOLE FILE ("Error: bad minute", then "(*system*)
+# ERROR (Syntax error, this crontab file will be ignored)"), taking cron.hourly
+# and the anacron kickoff with it. The unquoted form has no such edge. Checked
+# with `crontab -n`, which dry runs the same parser. There is no validator for
+# /etc/crontab itself -- crontab -n wants a user crontab, which has no user
+# field -- so the task cannot check this for you.
 #
 # Covers /etc/cron.hourly. Not covered: /etc/cron.{daily,weekly,monthly} --
 # their crontab lines are guarded with `test -x /usr/sbin/anacron ||`, anacron
@@ -95,7 +83,7 @@
     path: /etc/crontab
     regexp: '^MAILFROM='
     insertafter: '^SHELL='
-    line: "MAILFROM='\"cron@{{ mail_host }}\" <cron@{{ mail_host }}>'"
+    line: "MAILFROM={{ mail_host }} <cron@{{ mail_host }}>"
 
 - name: watchdog enable
   lineinfile: dest=/etc/default/watchdog regexp=^run_watchdog line=run_watchdog=1

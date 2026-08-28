@@ -22,12 +22,12 @@ fi
 recipients=$*
 [ -n "$recipients" ] || exit 0
 
-# The display name repeats the address on purpose -- a bare address renders as
-# the local part alone in Gmail. See group_vars/all/mail.yml.
-sender="smartd@$(hostname -s).douglas.rtss.qc.ca"
+# The FQDN display name is not optional -- a bare address renders as the local
+# part alone in Gmail. Unquoted on purpose. See group_vars/all/mail.yml.
+fqdn="$(hostname -s).douglas.rtss.qc.ca"
 
 {
-    echo "From: \"$sender\" <$sender>"
+    echo "From: $fqdn <smartd@$fqdn>"
     echo "To: $recipients"
     echo "Subject: $subject"
     echo

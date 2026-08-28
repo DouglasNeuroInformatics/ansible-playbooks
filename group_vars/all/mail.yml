@@ -1,24 +1,32 @@
 ---
-# Every service on a host that mails root does so under its own address,
-# <service>@<mail_host>, so incoming mail can be sorted on the sender alone.
+# Every service on a host that mails root does so under its own address, with
+# the host's FQDN as the display name:
+#
+#     From: cicws01.douglas.rtss.qc.ca <logwatch@cicws01.douglas.rtss.qc.ca>
+#
+# so incoming mail sorts by host on the name and by service on the address.
 # Before this, each service picked its own From: -- bare "root", a display name
 # of "root@cicws01", "Cron Daemon", a logwatch@<hostname> with no domain at all
 # because /etc/hosts carries no entry for the workstations -- and none of it
 # was filterable.
 #
-# The header carries an explicit display name as well as the address:
+# The display name is not optional. A bare address was tried first, on the
+# theory that a client with no display name falls back to showing the address.
+# It does not: Gmail renders the local part alone, so the fleet arrived as
+# "logwatch", "smartd", "cron".
 #
-#     From: "logwatch@cicws01.douglas.rtss.qc.ca" <logwatch@cicws01.douglas.rtss.qc.ca>
+# The display name is deliberately NOT quoted. An unquoted FQDN is obs-phrase
+# under RFC 5322 -- dots between atoms -- which parsers are required to accept,
+# and it renders correctly. That matters because it is the only form every
+# config format here can store: apt's parser has no escape for a double quote,
+# so a quoted display name would have left unattended-upgrades behind, and a
+# value that opens with a quote is a live hazard in /etc/crontab (see the cron
+# task in roles/common/tasks/file-config.yml). One unquoted string sidesteps
+# both. Do not "fix" this by adding quotes.
 #
-# The redundancy is deliberate. A bare address was tried first, on the theory
-# that a client with no display name to show falls back to the address. It does
-# not: Gmail renders the local part alone, so the whole fleet arrived as
-# "logwatch", "smartd", "cron". Two test messages from cichm01, one of each
-# form, settled it -- only the quoted form displays in full.
-#
-# The quotes are required, not decoration. An RFC 5322 display-name is a
-# sequence of atoms or a quoted-string, and an atom cannot contain "@", so the
-# unquoted form is malformed and was the one that failed to render.
+# An earlier revision put the service address in the display name too. That
+# form does need quoting, because an atom cannot contain "@", and unquoted it
+# parses as a second address rather than a name.
 #
 # This governs the From: HEADER only. The envelope sender stays
 # root@<host>.douglas.rtss.qc.ca: files/msmtprc builds it from %U@%H and sets

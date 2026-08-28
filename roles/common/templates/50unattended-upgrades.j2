@@ -65,7 +65,11 @@ Unattended-Upgrade::Mail "root";
 // Sender of the report. Without this unattended-upgrades sends as bare "root",
 // which is neither a routable address nor filterable. This is a template only
 // so that this one line can carry the hostname -- see group_vars/all/mail.yml.
-Unattended-Upgrade::Sender "unattended-upgrades@{{ mail_host }}";
+//
+// The display name is unquoted because apt's parser has no escape for a double
+// quote; the outer pair below is apt's own delimiter. That is one of the
+// reasons the whole fleet uses the unquoted form.
+Unattended-Upgrade::Sender "{{ mail_host }} <unattended-upgrades@{{ mail_host }}>";
 
 // Set this value to one of:
 //    "always", "only-on-error" or "on-change"

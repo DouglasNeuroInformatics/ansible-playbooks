@@ -12,9 +12,9 @@
 HOSTNAME=`hostname`
 MSG="$HOSTNAME UPS $1 Power Failure !!!"
 #
-SENDER="apcupsd@$(hostname -s).douglas.rtss.qc.ca"
+FQDN="$(hostname -s).douglas.rtss.qc.ca"
 (
-   echo "From: \"$SENDER\" <$SENDER>"
+   echo "From: $FQDN <apcupsd@$FQDN>"
    echo "To: $SYSADMIN,dnlgallino@gmail.com"
    echo "Subject: $MSG"
    echo

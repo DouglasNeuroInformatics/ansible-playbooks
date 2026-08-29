@@ -1,0 +1,144 @@
+---
+# SSH access restriction.
+#
+# `sshrestrict` (group_vars/all/ssh_access.yml) is keyed by host name or by
+# inventory group name; a host-name key wins, so one machine can be carved out
+# of a group-wide policy. The matched entry is either user-based (`users:`) or
+# group-based (`groups:`); group-based entries let sshd resolve membership live
+# at each login. Hosts that match no key have any previously-deployed policy
+# removed.
+
+- name: Resolve this host's SSH access policy
+  ansible.builtin.set_fact:
+    ssh_policy_keys: "{{ _match }}"
+    ssh_policy: "{{ sshrestrict[_match | first] if _match else {} }}"
+  vars:
+    _keys: "{{ sshrestrict.keys() | list }}"
+    _match: "{{ [inventory_hostname] | intersect(_keys) or group_names | intersect(_keys) }}"
+
+- name: Ensure the host matches only one sshrestrict entry
+  ansible.builtin.assert:
+    that:
+      - ssh_policy_keys | length <= 1
+    fail_msg: >
+      {{ inventory_hostname }} belongs to more than one restricted group
+      ({{ ssh_policy_keys | join(', ') }}). sshd cannot combine two policies:
+      a second AllowUsers/AllowGroups line is ignored, and the two directives
+      AND together. Give the host its own entry in sshrestrict instead.
+
+- name: Ensure sshd_config.d exists
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: ssh_policy_keys | length > 0
+
+- name: Ensure each restricted host defines exactly one non-empty users or groups list
+  ansible.builtin.assert:
+    that:
+      - ssh_policy is mapping
+      - not (ssh_policy.users is defined and ssh_policy.groups is defined)
+      - ssh_policy.users is defined or ssh_policy.groups is defined
+      - (ssh_policy.users | default(ssh_policy.groups)) | length > 0
+    fail_msg: >
+      sshrestrict entry `{{ ssh_policy_keys | first }}` must define exactly one of
+      `users` or `groups`, with at least one entry in it. sshd combines AllowUsers
+      and AllowGroups with AND, so both together lock everyone out; neither (or an
+      empty list) renders a policy that allows only the management defaults, which
+      locks out every real user on the host.
+  when: ssh_policy_keys | length > 0
+
+- name: Check whether sshd_config includes sshd_config.d
+  ansible.builtin.command: >
+    grep -Eq '^[[:space:]]*Include[[:space:]]+/etc/ssh/sshd_config\.d/\*\.conf'
+    /etc/ssh/sshd_config
+  register: sshd_include_check
+  changed_when: false
+  failed_when: sshd_include_check.rc not in [0, 1]
+  check_mode: false
+  when: ssh_policy_keys | length > 0
+
+- name: Add Include for sshd_config.d if missing
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    insertafter: BOF
+    line: "Include /etc/ssh/sshd_config.d/*.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - ssh_policy_keys | length > 0
+    - sshd_include_check.rc == 1
+  notify: Validate and reload ssh
+
+# --- Lockout safety for group-based hosts ---------------------------------
+- name: Confirm allowed SSH groups exist
+  ansible.builtin.command: "getent group {{ item }}"
+  loop: "{{ (ssh_policy.groups | default([])) + (ssh_restrict_default_groups | default([])) }}"
+  changed_when: false
+  check_mode: false
+  when:
+    - ssh_policy_keys | length > 0
+    - ssh_policy.groups is defined
+
+- name: Look up the Ansible SSH user's groups
+  ansible.builtin.command: "id -nG {{ ansible_ssh_user }}"
+  register: ansible_user_groups
+  changed_when: false
+  check_mode: false
+  when:
+    - ssh_policy_keys | length > 0
+    - ssh_policy.groups is defined
+
+- name: Refuse to apply policy if the Ansible SSH user would be locked out (group-based)
+  ansible.builtin.assert:
+    that:
+      - ansible_user_groups.stdout.split() | intersect((ssh_policy.groups | default([])) + (ssh_restrict_default_groups | default([]))) | length > 0
+    fail_msg: >
+      Refusing to apply SSH access policy: the Ansible SSH user {{ ansible_ssh_user }}
+      is not a member of any allowed group on {{ inventory_hostname }}
+      ({{ ((ssh_policy.groups | default([])) + (ssh_restrict_default_groups | default([]))) | join(', ') }}).
+  when:
+    - ssh_policy_keys | length > 0
+    - ssh_policy.groups is defined
+
+# --- Lockout safety for user-based hosts ----------------------------------
+- name: Confirm allowed SSH users exist
+  ansible.builtin.command: "getent passwd {{ item }}"
+  loop: "{{ (ssh_policy.users | default([])) + (ssh_restrict_default_users | default([])) }}"
+  changed_when: false
+  check_mode: false
+  when:
+    - ssh_policy_keys | length > 0
+    - ssh_policy.groups is not defined
+
+- name: Refuse to apply policy if the Ansible SSH user would be locked out (user-based)
+  ansible.builtin.assert:
+    that:
+      - ansible_ssh_user in ((ssh_policy.users | default([])) + (ssh_restrict_default_users | default([])))
+    fail_msg: >
+      Refusing to apply SSH access policy: the Ansible SSH user {{ ansible_ssh_user }}
+      is not in the allowed users for {{ inventory_hostname }}. Add it to
+      ssh_restrict_default_users or the host's users list.
+  when:
+    - ssh_policy_keys | length > 0
+    - ssh_policy.groups is not defined
+
+- name: Install SSH access policy
+  ansible.builtin.template:
+    src: 50-ssh-access.conf.j2
+    dest: "{{ ssh_access_policy_file | default('/etc/ssh/sshd_config.d/50-ssh-access-policy.conf') }}"
+    owner: root
+    group: root
+    mode: "0644"
+  when: ssh_policy_keys | length > 0
+  notify: Validate and reload ssh
+
+- name: Remove SSH access policy from unrestricted hosts
+  ansible.builtin.file:
+    path: "{{ ssh_access_policy_file | default('/etc/ssh/sshd_config.d/50-ssh-access-policy.conf') }}"
+    state: absent
+  when: ssh_policy_keys | length == 0
+  notify: Validate and reload ssh

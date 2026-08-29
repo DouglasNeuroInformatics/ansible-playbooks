@@ -10,3 +10,9 @@ pipx_venv: /opt/pipx-venv
 pipx_executable: "{{ pipx_venv }}/bin/pipx"
 snipeit_url: https://inventory.douglasneuroinformatics.ca
 snipeit_model_id: 1   # workstation model; override per group in group_vars
+
+# SSH access restrictions, keyed by host name or inventory group name. Set in
+# group_vars/all/ssh_access.yml; empty here so the role stays safe to apply to
+# any host (a host matching no key simply has any previously-deployed policy
+# removed).
+sshrestrict: {}

@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+# SSH access restriction, managed by the common role.
+{% set entry = ssh_policy %}
+{% if entry.groups is defined %}
+# Login limited to members of these groups (resolved live by sshd) plus admin defaults.
+{% set allow_groups = (entry.groups | default([])) + (ssh_restrict_default_groups | default([])) %}
+AllowGroups {{ allow_groups | unique | join(' ') }}
+{% else %}
+# Login limited to these users plus the default management accounts.
+{% set allow_users = (entry.users | default([])) + (ssh_restrict_default_users | default([])) %}
+AllowUsers {{ allow_users | unique | join(' ') }}
+{% endif %}

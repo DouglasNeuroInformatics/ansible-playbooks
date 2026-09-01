@@ -106,3 +106,15 @@
   copy: src=files/49-deny-packagekit-refresh.rules dest=/etc/polkit-1/rules.d
   notify:
     - restart polkit
+
+- name: check for existing unix_chkpwd statoverride
+  ansible.builtin.command: dpkg-statoverride --list /usr/sbin/unix_chkpwd
+  register: chkpwd_override
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: enforce unix_chkpwd mode across pam upgrades
+  ansible.builtin.command: >
+    dpkg-statoverride --update --add root shadow 6755 /usr/sbin/unix_chkpwd
+  when: chkpwd_override.rc != 0

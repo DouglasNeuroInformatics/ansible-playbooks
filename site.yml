@@ -1,6 +1,5 @@
 ---
 - hosts: workstations
-  ignore_unreachable: true
   vars_files:
     - vars/slurm.yml
     - vars/kernel-nvidia.yml

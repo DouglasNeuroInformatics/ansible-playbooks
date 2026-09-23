@@ -13,8 +13,12 @@
 - name: enable periodic upgrades
   copy: src=files/10periodic dest=/etc/apt/apt.conf.d/
 
-- name: prioritize mozilla ppa
-  copy: src=files/mozillateamppa dest=/etc/apt/preferences.d
+# Unattended-upgrades skips held packages. update.yml and the workstation role
+# put the holds back themselves; this covers a host they left unheld, e.g. one
+# that went unreachable in the middle of update.yml.
+- ansible.builtin.import_tasks: apt-hold.yml
+  vars:
+    apt_hold_action: hold
 
 - name: enable backports
   template: src=99-backports.j2 dest=/etc/apt/preferences.d/99-backports

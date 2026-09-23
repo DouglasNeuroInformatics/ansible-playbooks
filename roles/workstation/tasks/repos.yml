@@ -29,6 +29,24 @@
     - ppa:dtl131/nvidiaexp
     - ppa:ubuntuhandbook1/gimp   # superseded by gimp-3 above
 
+# Source of the nvidia driver: xanmod's patched builds compile against newer
+# kernels. The pin makes every nvidia package xanmod has come from here; see
+# nvidia_version in group_vars/all/maintenance.yml.
+- name: Add xanmod repo
+  ansible.builtin.deb822_repository:
+    name: xanmod
+    types: deb
+    uris: http://deb.xanmod.org
+    suites: '{{ ansible_distribution_release }}'
+    components: main non-free
+    architectures: amd64
+    signed_by: https://dl.xanmod.org/archive.key
+
+- name: Prefer xanmod for nvidia packages
+  ansible.builtin.copy:
+    src: files/nvidia-xanmod.pref
+    dest: /etc/apt/preferences.d/nvidia-xanmod.pref
+
 - name: Add wezterm repo
   ansible.builtin.deb822_repository:
     name: wezterm

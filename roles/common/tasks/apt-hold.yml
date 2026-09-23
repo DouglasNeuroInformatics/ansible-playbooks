@@ -1,0 +1,14 @@
+---
+# The one hold/unhold task for kernel and nvidia packages. Used by
+# file-config.yml, roles/workstation/tasks/nvidia.yml and update.yml, so the
+# three cannot drift apart. held_package_patterns is per host (see
+# group_vars/all/maintenance.yml): compute nodes hold only the kernel.
+#
+# apt_hold_action: hold (default) or unhold. apt-mark reports "was already" for
+# every package it left alone, in both directions.
+- name: "{{ (apt_hold_action | default('hold')) | capitalize }} kernel and nvidia"
+  ansible.builtin.command: >-
+    apt-mark {{ apt_hold_action | default('hold') }}
+    {{ held_package_patterns | map('quote') | join(' ') }}
+  register: apt_hold_result
+  changed_when: apt_hold_result.stdout_lines | reject('search', 'was already') | list | length > 0

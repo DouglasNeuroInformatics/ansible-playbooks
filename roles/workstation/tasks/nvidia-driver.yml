@@ -1,0 +1,113 @@
+---
+# The driver steps, shared by nvidia.yml (site.yml) and update.yml so the two
+# set up the driver the same way. No gate and no holds here: each caller runs
+# this inside its maintenance window, after the unhold, and puts the holds back
+# in an always: block.
+#
+# nvidia_driver_state: present (site.yml) installs nvidia_version where it is
+# missing; latest (update.yml) also takes point releases inside the branch.
+# nvidia_version is in group_vars/all/maintenance.yml.
+
+# 034be3f pinned nvidia*open to -10 when the open builds were broken, and
+# c4e28ad stopped deploying it when the fleet moved to the xanmod -open builds.
+# A host that still has it cannot install nvidia_version: it sorts ahead of
+# nvidia-xanmod.pref and apt takes the first matching pin. Here rather than in
+# repos.yml because update.yml can reach a host before site.yml does.
+- name: Remove nvidia open block
+  ansible.builtin.file:
+    path: /etc/apt/preferences.d/nonvidiaopen
+    state: absent
+
+# Only the "has an NVIDIA GPU" test. The package it names is ignored: taking
+# the newest one it lists is what moved hosts onto whatever branch a repo
+# published last.
+- name: Check if nvidia-driver is needed
+  ansible.builtin.shell: |
+    ubuntu-drivers list | cut -d, -f1 | grep -v server | sort -V | tail -1 | grep nvidia-driver
+  register: nvidia_driver_needed
+  failed_when: false
+  changed_when: false  # This task never changes system state
+  check_mode: false    # read-only, and every when: below depends on it
+
+- name: Get installed packages
+  ansible.builtin.package_facts:
+  when: nvidia_driver_needed.rc == 0
+
+# Only on a branch change. Purging on every run left the host with no driver
+# whenever the reinstall below then failed.
+- name: Purge nvidia when the branch changes
+  ansible.builtin.command: apt-get --autoremove -y purge '*nvidia*'
+  changed_when: true
+  when:
+    - nvidia_driver_needed.rc == 0
+    - ansible_facts.packages | select('search', 'nvidia') | list | length > 0
+    - (nvidia_version not in ansible_facts.packages)
+      or (bad_nvidia_version in ansible_facts.packages)
+
+- name: Install nvidia driver
+  ansible.builtin.apt:
+    name: "{{ nvidia_version }}"
+    state: "{{ nvidia_driver_state | default('present') }}"
+  register: nvidia_installed
+  when: nvidia_driver_needed.rc == 0
+
+- name: Rebuild all dkms packages
+  ansible.builtin.shell: |
+    ls /boot/initrd.img-* | cut -d- -f2- | xargs -n1 /usr/lib/dkms/dkms_autoinstaller start
+  when:
+    - nvidia_driver_needed.rc == 0
+    - (nvidia_installed.changed | default(false)) or (kernel_installed.changed | default(false))
+
+# GRUB boots the newest kernel by default, so that is the one that must have
+# the module. dkms_autoinstaller does not fail when a build fails.
+- name: Find newest kernel
+  ansible.builtin.shell: linux-version list | linux-version sort | tail -1
+  register: newest_kernel
+  changed_when: false  # This task never changes system state
+  check_mode: false    # read-only, and the checks below depend on it
+  when: nvidia_driver_needed.rc == 0
+
+- name: Verify nvidia module for newest kernel
+  ansible.builtin.command: modinfo -k {{ newest_kernel.stdout | quote }} nvidia
+  register: nvidia_module
+  failed_when: false
+  changed_when: false  # This task never changes system state
+  check_mode: false    # read-only, and the checks below depend on it
+  when: nvidia_driver_needed.rc == 0
+
+# Never the running kernel. Any other kernel is safe to remove, including one
+# an earlier run installed that the host has not booted yet. Removing the image
+# also takes the linux-zabbly metapackage with it; the holds are already
+# released by the caller.
+- name: Find package of the new kernel
+  ansible.builtin.command: dpkg-query -S /boot/vmlinuz-{{ newest_kernel.stdout }}
+  register: newest_kernel_package
+  changed_when: false  # This task never changes system state
+  check_mode: false
+  when:
+    - nvidia_driver_needed.rc == 0
+    - nvidia_module.rc != 0
+    - newest_kernel.stdout != ansible_kernel
+
+- name: Remove the new kernel
+  ansible.builtin.apt:
+    name:
+      - "{{ newest_kernel_package.stdout.split(':')[0] }}"
+      - "linux-headers-{{ newest_kernel.stdout }}"
+      - "linux-modules-{{ newest_kernel.stdout }}"
+    state: absent
+    purge: true
+  register: newest_kernel_removed
+  when: newest_kernel_package is not skipped
+
+- name: Stop on a broken nvidia module
+  ansible.builtin.fail:
+    msg: >-
+      No nvidia module for kernel {{ newest_kernel.stdout }} with
+      {{ nvidia_version }}.
+      {{ 'Removed that kernel; the host stays on ' ~ ansible_kernel ~ '.'
+         if newest_kernel_removed is not skipped
+         else 'It is the running kernel, so it was not removed. Repair by hand before the next reboot.' }}
+  when:
+    - nvidia_driver_needed.rc == 0
+    - nvidia_module.rc != 0

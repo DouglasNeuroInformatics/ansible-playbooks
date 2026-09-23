@@ -33,6 +33,23 @@
   ansible.builtin.package_facts:
   when: nvidia_driver_needed.rc == 0
 
+# Fetch the new driver before the purge below can remove the old one. A repo
+# that lists a version it cannot serve (xanmod's https pool answered 404 for a
+# new 595 point release) then fails the host here, with its old driver intact.
+# Only ahead of a purge: without one, apt downloads everything before it
+# removes anything, so a failed install already leaves the old driver in place.
+# A command because this ansible-core's apt module has no download_only.
+- name: Download nvidia driver before the purge
+  ansible.builtin.command: >-
+    apt-get install -y --download-only -o DPkg::Lock::Timeout=60
+    {{ nvidia_version | quote }}
+  changed_when: false  # Only fills /var/cache/apt/archives
+  when:
+    - nvidia_driver_needed.rc == 0
+    - ansible_facts.packages | select('search', 'nvidia') | list | length > 0
+    - (nvidia_version not in ansible_facts.packages)
+      or (bad_nvidia_version in ansible_facts.packages)
+
 # Only on a branch change. Purging on every run left the host with no driver
 # whenever the reinstall below then failed.
 - name: Purge nvidia when the branch changes

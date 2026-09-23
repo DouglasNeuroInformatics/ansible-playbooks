@@ -4,6 +4,10 @@
 # this inside its maintenance window, after the unhold, and puts the holds back
 # in an always: block.
 #
+# Order in both callers: this file, then the kernel (common/tasks/kernel.yml),
+# then nvidia-verify.yml. The driver goes first so that a new kernel's DKMS
+# hook builds the pinned driver, not an old branch that cannot build for it.
+#
 # nvidia_driver_state: present (site.yml) installs nvidia_version where it is
 # missing; latest (update.yml) also takes point releases inside the branch.
 # nvidia_version is in group_vars/all/maintenance.yml.
@@ -67,64 +71,3 @@
     state: "{{ nvidia_driver_state | default('present') }}"
   register: nvidia_installed
   when: nvidia_driver_needed.rc == 0
-
-- name: Rebuild all dkms packages
-  ansible.builtin.shell: |
-    ls /boot/initrd.img-* | cut -d- -f2- | xargs -n1 /usr/lib/dkms/dkms_autoinstaller start
-  when:
-    - nvidia_driver_needed.rc == 0
-    - (nvidia_installed.changed | default(false)) or (kernel_installed.changed | default(false))
-
-# GRUB boots the newest kernel by default, so that is the one that must have
-# the module. dkms_autoinstaller does not fail when a build fails.
-- name: Find newest kernel
-  ansible.builtin.shell: linux-version list | linux-version sort | tail -1
-  register: newest_kernel
-  changed_when: false  # This task never changes system state
-  check_mode: false    # read-only, and the checks below depend on it
-  when: nvidia_driver_needed.rc == 0
-
-- name: Verify nvidia module for newest kernel
-  ansible.builtin.command: modinfo -k {{ newest_kernel.stdout | quote }} nvidia
-  register: nvidia_module
-  failed_when: false
-  changed_when: false  # This task never changes system state
-  check_mode: false    # read-only, and the checks below depend on it
-  when: nvidia_driver_needed.rc == 0
-
-# Never the running kernel. Any other kernel is safe to remove, including one
-# an earlier run installed that the host has not booted yet. Removing the image
-# also takes the linux-zabbly metapackage with it; the holds are already
-# released by the caller.
-- name: Find package of the new kernel
-  ansible.builtin.command: dpkg-query -S /boot/vmlinuz-{{ newest_kernel.stdout }}
-  register: newest_kernel_package
-  changed_when: false  # This task never changes system state
-  check_mode: false
-  when:
-    - nvidia_driver_needed.rc == 0
-    - nvidia_module.rc != 0
-    - newest_kernel.stdout != ansible_kernel
-
-- name: Remove the new kernel
-  ansible.builtin.apt:
-    name:
-      - "{{ newest_kernel_package.stdout.split(':')[0] }}"
-      - "linux-headers-{{ newest_kernel.stdout }}"
-      - "linux-modules-{{ newest_kernel.stdout }}"
-    state: absent
-    purge: true
-  register: newest_kernel_removed
-  when: newest_kernel_package is not skipped
-
-- name: Stop on a broken nvidia module
-  ansible.builtin.fail:
-    msg: >-
-      No nvidia module for kernel {{ newest_kernel.stdout }} with
-      {{ nvidia_version }}.
-      {{ 'Removed that kernel; the host stays on ' ~ ansible_kernel ~ '.'
-         if newest_kernel_removed is not skipped
-         else 'It is the running kernel, so it was not removed. Repair by hand before the next reboot.' }}
-  when:
-    - nvidia_driver_needed.rc == 0
-    - nvidia_module.rc != 0

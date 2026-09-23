@@ -60,6 +60,9 @@ maintenance_window: >-
 # uninstalled flavour in the cache (hundreds of stale holds on cichm01).
 held_kernel_patterns:
   - 'linux-zabbly'
+  # Left over from before the switch to zabbly (dnpws26 got a new xanmod LTS
+  # kernel its nvidia driver could not build for).
+  - 'linux-xanmod*'
   - 'linux-generic*'
   - 'linux-image-generic*'
   - 'linux-headers-generic*'

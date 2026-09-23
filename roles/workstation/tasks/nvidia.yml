@@ -16,9 +16,9 @@
 # Same structure as update.yml. The hold in always: has no gate, so it also
 # puts back holds that an earlier failed or interrupted run left released.
 # Imports, not includes, so the nvidia tag reaches the tasks inside.
-- name: Nvidia driver
+- name: Nvidia driver and kernel
   block:
-    - name: Nvidia driver in the maintenance window
+    - name: Nvidia driver and kernel in the maintenance window
       when: maintenance_window | bool
       block:
         - ansible.builtin.import_role:
@@ -28,6 +28,14 @@
             apt_hold_action: unhold
 
         - ansible.builtin.import_tasks: nvidia-driver.yml
+
+        - ansible.builtin.import_role:
+            name: common
+            tasks_from: kernel
+          vars:
+            kernel_rollback: true
+
+        - ansible.builtin.import_tasks: nvidia-verify.yml
   always:
     - ansible.builtin.import_role:
         name: common

@@ -57,19 +57,24 @@
               vars:
                 apt_hold_action: unhold
 
-            - name: Install or upgrade kernels
-              ansible.builtin.apt:
-                state: latest
-                pkg:
-                  - linux-zabbly
-              register: kernel_installed
-
-            # The same steps site.yml runs; see the file.
+            # The same steps and order as site.yml; see nvidia-driver.yml.
             - ansible.builtin.import_role:
                 name: workstation
                 tasks_from: nvidia-driver
               vars:
                 nvidia_driver_state: latest
+              when: "'workstations' in group_names"
+
+            - ansible.builtin.import_role:
+                name: common
+                tasks_from: kernel
+              vars:
+                kernel_state: latest
+                kernel_rollback: "{{ 'workstations' in group_names }}"
+
+            - ansible.builtin.import_role:
+                name: workstation
+                tasks_from: nvidia-verify
               when: "'workstations' in group_names"
       always:
         - ansible.builtin.import_role:

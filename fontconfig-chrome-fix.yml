@@ -1,0 +1,85 @@
+---
+# TEMPORARY FIX: Chrome breaks KDE through the user fontconfig cache.
+#
+# Google Chrome 154 bundles fontconfig with cache format 12. When it starts,
+# it writes <hash>-le64.cache-12 files into $XDG_CACHE_HOME/fontconfig and
+# replaces the older names (cache-9, -10, -11) with symlinks to them. The
+# system fontconfig 2.15 on Ubuntu 24.04 reads cache-9, follows the link,
+# accepts the newer file and crashes on it. The results are a dead
+# plasmashell at the next login and "the screen locker is broken" at the next
+# screen lock (kscreenlocker_greet dies with a GPF in libfontconfig.so.1).
+#
+# Deleting the cache-9 links is safe: Chrome keeps its cache-12 files and the
+# system fontconfig rebuilds real cache-9 files. Deleting them once is not
+# enough, because Chrome makes the links again each time it starts. So this
+# playbook installs a systemd user path unit that watches the cache directory
+# and deletes the links as soon as they appear, in every user session.
+#
+# $XDG_CACHE_HOME is /var/tmp/xdgcache-$USER, from files/xdg.cache.sh. The
+# unit uses that path; it does not cover the mktemp fallback in that script.
+#
+# Remove this playbook, the two units in /etc/systemd/user and the
+# default.target.wants link when Chrome or Ubuntu's fontconfig is fixed.
+#
+# Run: ansible-playbook fontconfig-chrome-fix.yml
+
+- hosts: workstations
+  become: yes
+  vars:
+    fontconfig_fix_unit: fontconfig-cache9-clean
+  tasks:
+    - name: Install the service that deletes cache-9 links
+      ansible.builtin.copy:
+        dest: /etc/systemd/user/{{ fontconfig_fix_unit }}.service
+        mode: "0644"
+        content: |
+          # Managed by ansible: fontconfig-chrome-fix.yml (temporary)
+          [Unit]
+          Description=Delete fontconfig cache-9 links written by Chrome
+
+          [Service]
+          Type=oneshot
+          # Loop for a few seconds, because Chrome writes the links in a burst
+          # and events that come while this runs do not trigger it again.
+          ExecStart=/bin/sh -c 'for i in 1 2 3; do find /var/tmp/xdgcache-%u/fontconfig -maxdepth 1 -type l -name "*.cache-9" -delete 2>/dev/null; sleep 2; done'
+
+    - name: Install the path unit that watches the user fontconfig cache
+      ansible.builtin.copy:
+        dest: /etc/systemd/user/{{ fontconfig_fix_unit }}.path
+        mode: "0644"
+        content: |
+          # Managed by ansible: fontconfig-chrome-fix.yml (temporary)
+          [Unit]
+          Description=Watch the fontconfig cache for links written by Chrome
+
+          [Path]
+          PathChanged=/var/tmp/xdgcache-%u/fontconfig
+          Unit={{ fontconfig_fix_unit }}.service
+
+          [Install]
+          WantedBy=default.target
+
+    - name: Enable the path unit for all users
+      ansible.builtin.command: systemctl --global enable {{ fontconfig_fix_unit }}.path
+      args:
+        creates: /etc/systemd/user/default.target.wants/{{ fontconfig_fix_unit }}.path
+
+    - name: Delete cache-9 links that already exist
+      ansible.builtin.shell: |
+        find /var/tmp/xdgcache-*/fontconfig -maxdepth 1 -type l -name '*.cache-9' -print -delete 2>/dev/null | sed 's|/fontconfig/.*||' | sort | uniq -c
+      register: fontconfig_links_removed
+      changed_when: fontconfig_links_removed.stdout | length > 0
+
+    # New sessions start the unit from default.target. Sessions that are open
+    # now need a daemon-reload and a start in their own user manager.
+    - name: Start the path unit in the user sessions that are open now
+      ansible.builtin.shell: |
+        for uid in $(loginctl list-users --no-legend | awk '{print $1}'); do
+          u=$(id -nu "$uid") || continue
+          systemctl --user -M "$u@" is-active --quiet {{ fontconfig_fix_unit }}.path && continue
+          systemctl --user -M "$u@" daemon-reload &&
+            systemctl --user -M "$u@" start {{ fontconfig_fix_unit }}.path &&
+            echo "started for $u"
+        done
+      register: fontconfig_fix_started
+      changed_when: fontconfig_fix_started.stdout | length > 0

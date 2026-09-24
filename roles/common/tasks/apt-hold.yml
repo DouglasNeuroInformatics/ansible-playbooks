@@ -11,6 +11,10 @@
 # that fails the whole call. A pattern can match nothing on a host without the
 # repo (linux-xanmod* on a compute node, or a new workstation before the
 # workstation role adds xanmod).
+#
+# apt-mark does not wait for the dpkg lock. unattended-upgrades held it on
+# cicws44 and every call failed, so wait for it -- up to 10 minutes, and only
+# on a lock error.
 - name: "{{ (apt_hold_action | default('hold')) | capitalize }} kernel and nvidia"
   ansible.builtin.command: apt-mark {{ apt_hold_action | default('hold') }} {{ item | quote }}
   loop: "{{ held_package_patterns }}"
@@ -19,3 +23,6 @@
   failed_when:
     - apt_hold_result.rc != 0
     - "'No packages found' not in apt_hold_result.stderr"
+  until: "'lock' not in apt_hold_result.stderr"
+  retries: 20
+  delay: 30

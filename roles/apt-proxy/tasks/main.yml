@@ -18,3 +18,30 @@
     owner: root
     group: root
     mode: "0644"
+
+# The idle timeout in 99-timeouts did not stop an `apt-get update` on cicws44
+# that waited on half-closed connections for 24 days, holding the apt lock the
+# whole time. Only the list refresh: stopping apt-daily-upgrade could kill dpkg
+# in the middle of a configure.
+- name: bound apt-daily run time
+  ansible.builtin.file:
+    path: /etc/systemd/system/apt-daily.service.d
+    state: directory
+    mode: "0755"
+
+- name: bound apt-daily run time
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/apt-daily.service.d/timeout.conf
+    content: |
+      # Deployed by ansible (roles/apt-proxy).
+      [Service]
+      TimeoutStartSec=2h
+    owner: root
+    group: root
+    mode: "0644"
+  register: apt_daily_timeout
+
+- name: reload systemd for the apt-daily limit
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: apt_daily_timeout is changed

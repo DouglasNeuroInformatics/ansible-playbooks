@@ -1,0 +1,15 @@
+---
+# The kernel install, shared by packages.yml (compute nodes),
+# roles/workstation/tasks/nvidia.yml and update.yml.
+#
+# kernel_state: present (site.yml) or latest (update.yml).
+# kernel_rollback: true where nvidia-verify.yml runs next. The nvidia DKMS hook
+# fails for a kernel the driver cannot build for, and leaves it half-configured;
+# nvidia-verify.yml removes that kernel and then fails the host. Without it the
+# failure stops the host here.
+- name: Install or upgrade kernels
+  ansible.builtin.apt:
+    name: linux-zabbly
+    state: "{{ kernel_state | default('present') }}"
+  register: kernel_installed
+  ignore_errors: "{{ kernel_rollback | default(false) | bool }}"

@@ -1,0 +1,28 @@
+---
+# The one hold/unhold task for kernel and nvidia packages. Used by
+# file-config.yml, roles/workstation/tasks/nvidia.yml and update.yml, so the
+# three cannot drift apart. held_package_patterns is per host (see
+# group_vars/all/maintenance.yml): compute nodes hold only the kernel.
+#
+# apt_hold_action: hold (default) or unhold. apt-mark reports "was already" for
+# every package it left alone, in both directions.
+#
+# One call per pattern: apt-mark exits 100 when a glob matches nothing, and
+# that fails the whole call. A pattern can match nothing on a host without the
+# repo (linux-xanmod* on a compute node, or a new workstation before the
+# workstation role adds xanmod).
+#
+# apt-mark does not wait for the dpkg lock. unattended-upgrades held it on
+# cicws44 and every call failed, so wait for it -- up to 10 minutes, and only
+# on a lock error.
+- name: "{{ (apt_hold_action | default('hold')) | capitalize }} kernel and nvidia"
+  ansible.builtin.command: apt-mark {{ apt_hold_action | default('hold') }} {{ item | quote }}
+  loop: "{{ held_package_patterns }}"
+  register: apt_hold_result
+  changed_when: apt_hold_result.stdout_lines | reject('search', 'was already') | list | length > 0
+  failed_when:
+    - apt_hold_result.rc != 0
+    - "'No packages found' not in apt_hold_result.stderr"
+  until: "'lock' not in apt_hold_result.stderr"
+  retries: 20
+  delay: 30

@@ -1,7 +1,8 @@
 ---
-# Shared by roles/workstation/tasks/nvidia.yml and update.yml. Both gate
-# kernel/driver upgrades on this check, and the two had already drifted apart
-# (different hold lists), so the definitions live here in one place.
+# Shared by update.yml, roles/workstation/tasks/nvidia.yml and the hold task in
+# roles/common. All of them gate kernel/driver changes on the checks below, and
+# update.yml and the workstation role had already drifted apart once (different
+# hold lists), so the definitions live here in one place.
 
 # Counts real interactive users, excluding the Ansible executor.
 #
@@ -35,7 +36,45 @@ logged_in_users_command: |
 slurm_jobs_command: |
   pgrep -f 'slurmstepd: \[' 2>/dev/null | wc -l
 
+# Both gates together. Workstations run slurmd too, so a driver swap under a
+# running GPU job breaks it just as surely as one under a logged-in user.
+host_idle: >-
+  {{ (logged_in_users_count.stdout | int == 0)
+     and (slurm_jobs_count.stdout | int == 0) }}
+
+# -e force_maintenance=true runs the kernel and nvidia changes on a busy host,
+# e.g. cichm01, where your own session always counts as a user. It does not
+# force the reboot: after a forced driver change, CUDA and nvidia-smi fail with
+# "Driver/library version mismatch" until the host reboots. For that, add
+# -e force_reboot=true (update.yml), which reboots with users or jobs on it.
+maintenance_window: >-
+  {{ (force_maintenance | default(false) | bool) or (host_idle | bool) }}
+
 # Held so a routine apt upgrade cannot swap a kernel or driver out from under a
-# running session; released only while the host is idle.
-held_package_patterns:
+# running session; released only inside the maintenance window, and put back
+# even when the maintenance fails. Keep in step with Package-Blacklist in
+# roles/common/templates/50unattended-upgrades.j2.
+#
+# Only the kernel metapackages: every new kernel has a new package name that
+# only the metapackage pulls in. Not 'linux-*' -- a glob that wide holds every
+# uninstalled flavour in the cache (hundreds of stale holds on cichm01).
+held_kernel_patterns:
+  - 'linux-zabbly'
+  # Left over from before the switch to zabbly (dnpws26 got a new xanmod LTS
+  # kernel its nvidia driver could not build for).
+  - 'linux-xanmod*'
+  - 'linux-generic*'
+  - 'linux-image-generic*'
+  - 'linux-headers-generic*'
+held_nvidia_patterns:
   - '*nvidia*'
+held_package_patterns: >-
+  {{ held_kernel_patterns
+     + (held_nvidia_patterns if 'workstations' in group_names else []) }}
+
+# The driver branch for every GPU workstation, from the xanmod repo (see
+# roles/workstation/tasks/repos.yml). Change this to move the workstations to a
+# new branch; update.yml and site.yml both act on it. update.yml also takes
+# point releases inside the branch, site.yml only installs it where missing.
+nvidia_version: nvidia-driver-595-open
+bad_nvidia_version: nvidia-driver-390

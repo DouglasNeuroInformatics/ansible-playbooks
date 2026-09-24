@@ -1,0 +1,73 @@
+---
+# The driver steps, shared by nvidia.yml (site.yml) and update.yml so the two
+# set up the driver the same way. No gate and no holds here: each caller runs
+# this inside its maintenance window, after the unhold, and puts the holds back
+# in an always: block.
+#
+# Order in both callers: this file, then the kernel (common/tasks/kernel.yml),
+# then nvidia-verify.yml. The driver goes first so that a new kernel's DKMS
+# hook builds the pinned driver, not an old branch that cannot build for it.
+#
+# nvidia_driver_state: present (site.yml) installs nvidia_version where it is
+# missing; latest (update.yml) also takes point releases inside the branch.
+# nvidia_version is in group_vars/all/maintenance.yml.
+
+# 034be3f pinned nvidia*open to -10 when the open builds were broken, and
+# c4e28ad stopped deploying it when the fleet moved to the xanmod -open builds.
+# A host that still has it cannot install nvidia_version: it sorts ahead of
+# nvidia-xanmod.pref and apt takes the first matching pin. Here rather than in
+# repos.yml because update.yml can reach a host before site.yml does.
+- name: Remove nvidia open block
+  ansible.builtin.file:
+    path: /etc/apt/preferences.d/nonvidiaopen
+    state: absent
+
+# Only the "has an NVIDIA GPU" test. The package it names is ignored: taking
+# the newest one it lists is what moved hosts onto whatever branch a repo
+# published last.
+- name: Check if nvidia-driver is needed
+  ansible.builtin.shell: |
+    ubuntu-drivers list | cut -d, -f1 | grep -v server | sort -V | tail -1 | grep nvidia-driver
+  register: nvidia_driver_needed
+  failed_when: false
+  changed_when: false  # This task never changes system state
+  check_mode: false    # read-only, and every when: below depends on it
+
+- name: Get installed packages
+  ansible.builtin.package_facts:
+  when: nvidia_driver_needed.rc == 0
+
+# Fetch the new driver before the purge below can remove the old one. A repo
+# that lists a version it cannot serve (xanmod's https pool answered 404 for a
+# new 595 point release) then fails the host here, with its old driver intact.
+# Only ahead of a purge: without one, apt downloads everything before it
+# removes anything, so a failed install already leaves the old driver in place.
+# A command because this ansible-core's apt module has no download_only.
+- name: Download nvidia driver before the purge
+  ansible.builtin.command: >-
+    apt-get install -y --download-only -o DPkg::Lock::Timeout=60
+    {{ nvidia_version | quote }}
+  changed_when: false  # Only fills /var/cache/apt/archives
+  when:
+    - nvidia_driver_needed.rc == 0
+    - ansible_facts.packages | select('search', 'nvidia') | list | length > 0
+    - (nvidia_version not in ansible_facts.packages)
+      or (bad_nvidia_version in ansible_facts.packages)
+
+# Only on a branch change. Purging on every run left the host with no driver
+# whenever the reinstall below then failed.
+- name: Purge nvidia when the branch changes
+  ansible.builtin.command: apt-get --autoremove -y purge '*nvidia*'
+  changed_when: true
+  when:
+    - nvidia_driver_needed.rc == 0
+    - ansible_facts.packages | select('search', 'nvidia') | list | length > 0
+    - (nvidia_version not in ansible_facts.packages)
+      or (bad_nvidia_version in ansible_facts.packages)
+
+- name: Install nvidia driver
+  ansible.builtin.apt:
+    name: "{{ nvidia_version }}"
+    state: "{{ nvidia_driver_state | default('present') }}"
+  register: nvidia_installed
+  when: nvidia_driver_needed.rc == 0

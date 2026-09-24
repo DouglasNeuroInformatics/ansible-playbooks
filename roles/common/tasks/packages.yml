@@ -5,12 +5,16 @@
 - name: default libmkl-rt-libs
   debconf: name='libmkl-rt' question='libmkl-rt/exact-so-3-selections' value='libblas.so.3, liblapack.so.3, libblas64.so.3, liblapack64.so.3' vtype='multiselect'
 
+# Workstations install the kernel in the workstation role, after the nvidia
+# driver; see roles/workstation/tasks/nvidia-driver.yml.
+- ansible.builtin.import_tasks: kernel.yml
+  when: "'workstations' not in group_names"
+
 - name: Install Common APT Packages
   apt:
     update_cache: yes
     state: present
     pkg:
-    - linux-zabbly
     - pv
     - sqlite3
     - squashfuse

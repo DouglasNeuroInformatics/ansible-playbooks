@@ -9,9 +9,10 @@
     # stages most payloads for the bootloader to apply on the next boot, so it
     # is only worth running when that boot is actually going to happen. Lazily
     # evaluated, so it is only valid after the registers below have all run.
+    # Gated on host_idle, not maintenance_window, so force_maintenance alone
+    # never reboots a busy host; see group_vars/all/maintenance.yml.
     reboot_pending: >-
-      {{ (not (logged_in_users_count.stdout | int > 0))
-         and (slurm_jobs_count.stdout | int == 0)
+      {{ ((force_reboot | default(false) | bool) or (host_idle | bool))
          and ((nvidia_installed.changed | default(false))
               or (kernel_installed.changed | default(false))) }}
   become: yes
@@ -23,12 +24,6 @@
 
     - name: update-smart-drive-db
       command: update-smart-drivedb
-
-    # - name: For overriding user check
-    #   ansible.builtin.shell: |
-    #     echo 0
-    #   register: logged_in_users_count
-    #   changed_when: false  # This task never changes system state
 
     # See group_vars/all/maintenance.yml for why this is not `who`.
     - name: Get logged-in users (excluding Ansible executor) count
@@ -47,62 +42,46 @@
     - name: update apt-get cache
       apt: update_cache=yes
 
-    - name: Unhold packages
-      command: apt-mark unhold {{ held_package_patterns | map('quote') | join(' ') }}
-      register: unhold_result
-      changed_when: unhold_result.stdout_lines | reject('search', 'was already') | list | length > 0
-      when:
-        - not (logged_in_users_count.stdout | int > 0)
+    # Held packages are released only inside the maintenance window, and the
+    # hold in always: has no gate: it puts the holds back when a step fails,
+    # and on a busy host it restores holds an earlier run left released. A
+    # failure still stops the host here, before the upgrades and the reboot.
+    - name: Kernel and nvidia maintenance
+      block:
+        - name: Kernel and nvidia in the maintenance window
+          when: maintenance_window | bool
+          block:
+            - ansible.builtin.import_role:
+                name: common
+                tasks_from: apt-hold
+              vars:
+                apt_hold_action: unhold
 
-    - name: Remove nvidia and kernel
-      command: >
-        apt-get --autoremove -y purge '*nvidia*'
-      when:
-        - not (logged_in_users_count.stdout | int > 0)
+            # The same steps and order as site.yml; see nvidia-driver.yml.
+            - ansible.builtin.import_role:
+                name: workstation
+                tasks_from: nvidia-driver
+              vars:
+                nvidia_driver_state: latest
+              when: "'workstations' in group_names"
 
-    - name: Install or upgrade kernels
-      ansible.builtin.apt:
-        state: latest
-        allow_change_held_packages: true
-        pkg:
-          - linux-zabbly
-      register: kernel_installed
-      when:
-        - not (logged_in_users_count.stdout | int > 0)
+            - ansible.builtin.import_role:
+                name: common
+                tasks_from: kernel
+              vars:
+                kernel_state: latest
+                kernel_rollback: "{{ 'workstations' in group_names }}"
 
-    - name: Check if nvidia-driver is needed
-      ansible.builtin.shell: |
-        ubuntu-drivers list | cut -d, -f1 | grep -v server | sort -V | tail -1 | grep nvidia-driver
-      ignore_errors: true
-      register: nvidia_driver_needed
-      changed_when: false  # This task never changes system state
-
-    - name: Install or upgrade nvidia driver
-      ansible.builtin.apt:
-        name:  "{{ nvidia_driver_needed.stdout }}"
-        state: latest
-        allow_change_held_packages: true
-      register: nvidia_installed
-      when:
-        - nvidia_driver_needed.rc == 0
-        - not (logged_in_users_count.stdout | int > 0)
-
-    - name: Rebuild all dkms packages
-      ansible.builtin.shell: |
-        ls /boot/initrd.img-* | cut -d- -f2- | xargs -n1 /usr/lib/dkms/dkms_autoinstaller start
-      when:
-        - nvidia_driver_needed.rc == 0
-        - (nvidia_installed.changed | default(false)) or (kernel_installed.changed | default(false))
-
-    # Guarded like the rest: if the host was busy we never unheld anything, so
-    # there is nothing to re-hold. Running it unconditionally also meant a bare
-    # command: reporting changed on every play.
-    - name: Hold kernel and nvidia
-      command: apt-mark hold {{ held_package_patterns | map('quote') | join(' ') }}
-      register: hold_result
-      changed_when: hold_result.stdout_lines | reject('search', 'was already') | list | length > 0
-      when:
-        - not (logged_in_users_count.stdout | int > 0)
+            - ansible.builtin.import_role:
+                name: workstation
+                tasks_from: nvidia-verify
+              when: "'workstations' in group_names"
+      always:
+        - ansible.builtin.import_role:
+            name: common
+            tasks_from: apt-hold
+          vars:
+            apt_hold_action: hold
 
     - name: setuid bit on /sbin/unix_chkpwd
       ansible.builtin.file:

@@ -9,6 +9,21 @@ Unattended-Upgrade::Origins-Pattern {
 
 // Python regular expressions, matching packages to exclude from upgrading
 Unattended-Upgrade::Package-Blacklist {
+    // Kernels and the nvidia driver change only through update.yml, which
+    // waits for an idle host and checks the nvidia module before it reboots.
+    // Keep in step with held_*_patterns (group_vars/all/maintenance.yml).
+    // Matched with re.match, so each entry is a prefix.
+    "linux-zabbly";
+    "linux-xanmod";
+    "linux-generic";
+    "linux-image-";
+    "linux-headers-";
+    "linux-modules-";
+    "linux-hwe-";
+{% if 'workstations' in group_names %}
+    ".*nvidia";
+{% endif %}
+
     // The following matches all packages starting with linux-
 //  "linux-";
 

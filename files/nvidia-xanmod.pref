@@ -1,0 +1,7 @@
+# Deployed by roles/workstation/tasks/repos.yml. The nvidia driver comes from
+# xanmod, whose patched builds compile against newer kernels. 700 beats the
+# CUDA repo pin (600) and Ubuntu and the graphics-drivers PPA (500). The xanmod
+# Release file has no Origin field, so this matches on the host name.
+Package: *nvidia*
+Pin: origin deb.xanmod.org
+Pin-Priority: 700

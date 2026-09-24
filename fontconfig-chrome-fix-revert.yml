@@ -1,0 +1,47 @@
+---
+# Reverts fontconfig-chrome-fix.yml: stops and removes the systemd user units
+# that delete the fontconfig cache-9 links written by Chrome.
+#
+# Run this only when Chrome or Ubuntu's fontconfig is fixed; until then, a
+# user who opens Chrome can again break plasmashell and the screen locker.
+#
+# Run: ansible-playbook fontconfig-chrome-fix-revert.yml
+
+- hosts: workstations
+  become: yes
+  vars:
+    fontconfig_fix_unit: fontconfig-cache9-clean
+  tasks:
+    # Before the unit files go away, so that systemd can still stop the units.
+    - name: Stop the path unit in the user sessions that are open now
+      ansible.builtin.shell: |
+        for uid in $(loginctl list-users --no-legend | awk '{print $1}'); do
+          u=$(id -nu "$uid") || continue
+          systemctl --user -M "$u@" is-active --quiet {{ fontconfig_fix_unit }}.path || continue
+          systemctl --user -M "$u@" stop {{ fontconfig_fix_unit }}.path {{ fontconfig_fix_unit }}.service &&
+            echo "stopped for $u"
+        done
+      register: fontconfig_fix_stopped
+      changed_when: fontconfig_fix_stopped.stdout | length > 0
+
+    - name: Disable the path unit for all users
+      ansible.builtin.command: systemctl --global disable {{ fontconfig_fix_unit }}.path
+      args:
+        removes: /etc/systemd/user/default.target.wants/{{ fontconfig_fix_unit }}.path
+
+    - name: Remove the unit files
+      ansible.builtin.file:
+        path: /etc/systemd/user/{{ fontconfig_fix_unit }}.{{ item }}
+        state: absent
+      loop:
+        - path
+        - service
+      register: fontconfig_fix_files
+
+    - name: Reload the user managers that are open now
+      ansible.builtin.shell: |
+        for uid in $(loginctl list-users --no-legend | awk '{print $1}'); do
+          u=$(id -nu "$uid") || continue
+          systemctl --user -M "$u@" daemon-reload
+        done
+      when: fontconfig_fix_files.changed

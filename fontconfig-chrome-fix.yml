@@ -18,8 +18,8 @@
 # $XDG_CACHE_HOME is /var/tmp/xdgcache-$USER, from files/xdg.cache.sh. The
 # unit uses that path; it does not cover the mktemp fallback in that script.
 #
-# Remove this playbook, the two units in /etc/systemd/user and the
-# default.target.wants link when Chrome or Ubuntu's fontconfig is fixed.
+# When Chrome or Ubuntu's fontconfig is fixed, run
+# fontconfig-chrome-fix-revert.yml, then delete both playbooks.
 #
 # Run: ansible-playbook fontconfig-chrome-fix.yml
 

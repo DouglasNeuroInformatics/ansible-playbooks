@@ -15,10 +15,15 @@
     # Before the unit files go away, so that systemd can still stop the units.
     - name: Stop the path unit in the user sessions that are open now
       ansible.builtin.shell: |
+        # Only users with a running user manager; closing sessions have none.
+        # The private socket works where `systemctl --user -M user@` fails
+        # with "Transport endpoint is not connected" (long-lived sessions).
         for uid in $(loginctl list-users --no-legend | awk '{print $1}'); do
+          systemctl -q is-active "user@$uid.service" || continue
           u=$(id -nu "$uid") || continue
-          systemctl --user -M "$u@" is-active --quiet {{ fontconfig_fix_unit }}.path || continue
-          systemctl --user -M "$u@" stop {{ fontconfig_fix_unit }}.path {{ fontconfig_fix_unit }}.service &&
+          us() { runuser -u "$u" -- env XDG_RUNTIME_DIR="/run/user/$uid" systemctl --user "$@"; }
+          us is-active --quiet {{ fontconfig_fix_unit }}.path || continue
+          us stop {{ fontconfig_fix_unit }}.path {{ fontconfig_fix_unit }}.service &&
             echo "stopped for $u"
         done
       register: fontconfig_fix_stopped
@@ -41,7 +46,9 @@
     - name: Reload the user managers that are open now
       ansible.builtin.shell: |
         for uid in $(loginctl list-users --no-legend | awk '{print $1}'); do
+          systemctl -q is-active "user@$uid.service" || continue
           u=$(id -nu "$uid") || continue
-          systemctl --user -M "$u@" daemon-reload
+          us() { runuser -u "$u" -- env XDG_RUNTIME_DIR="/run/user/$uid" systemctl --user "$@"; }
+          us daemon-reload
         done
       when: fontconfig_fix_files.changed

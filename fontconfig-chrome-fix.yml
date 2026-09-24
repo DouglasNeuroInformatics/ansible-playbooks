@@ -74,11 +74,16 @@
     # now need a daemon-reload and a start in their own user manager.
     - name: Start the path unit in the user sessions that are open now
       ansible.builtin.shell: |
+        # Only users with a running user manager; closing sessions have none.
+        # The private socket works where `systemctl --user -M user@` fails
+        # with "Transport endpoint is not connected" (long-lived sessions).
         for uid in $(loginctl list-users --no-legend | awk '{print $1}'); do
+          systemctl -q is-active "user@$uid.service" || continue
           u=$(id -nu "$uid") || continue
-          systemctl --user -M "$u@" is-active --quiet {{ fontconfig_fix_unit }}.path && continue
-          systemctl --user -M "$u@" daemon-reload &&
-            systemctl --user -M "$u@" start {{ fontconfig_fix_unit }}.path &&
+          us() { runuser -u "$u" -- env XDG_RUNTIME_DIR="/run/user/$uid" systemctl --user "$@"; }
+          us is-active --quiet {{ fontconfig_fix_unit }}.path && continue
+          us daemon-reload &&
+            us start {{ fontconfig_fix_unit }}.path &&
             echo "started for $u"
         done
       register: fontconfig_fix_started

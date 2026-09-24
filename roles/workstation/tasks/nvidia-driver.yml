@@ -8,9 +8,10 @@
 # then nvidia-verify.yml. The driver goes first so that a new kernel's DKMS
 # hook builds the pinned driver, not an old branch that cannot build for it.
 #
-# nvidia_driver_state: present (site.yml) installs nvidia_version where it is
+# nvidia_driver_state: present (site.yml) installs the driver where it is
 # missing; latest (update.yml) also takes point releases inside the branch.
-# nvidia_version is in group_vars/all/maintenance.yml.
+# nvidia_version and nvidia_legacy_version are in
+# group_vars/all/maintenance.yml.
 
 # 034be3f pinned nvidia*open to -10 when the open builds were broken, and
 # c4e28ad stopped deploying it when the fleet moved to the xanmod -open builds.
@@ -22,20 +23,68 @@
     path: /etc/apt/preferences.d/nonvidiaopen
     state: absent
 
-# Only the "has an NVIDIA GPU" test. The package it names is ignored: taking
-# the newest one it lists is what moved hosts onto whatever branch a repo
-# published last.
-- name: Check if nvidia-driver is needed
-  ansible.builtin.shell: |
-    ubuntu-drivers list | cut -d, -f1 | grep -v server | sort -V | tail -1 | grep nvidia-driver
-  register: nvidia_driver_needed
-  failed_when: false
+# Here and not in repos.yml for the same reason: update.yml must get the 580
+# stanza to the legacy hosts before it installs their driver.
+- name: Prefer xanmod for nvidia packages
+  ansible.builtin.copy:
+    src: files/nvidia-xanmod.pref
+    dest: /etc/apt/preferences.d/nvidia-xanmod.pref
+
+- name: Check for an NVIDIA GPU
+  ansible.builtin.shell: >-
+    lspci -n -d 10de: | awk '$2 ~ /^030[02]:/'
+  register: nvidia_gpu
   changed_when: false  # This task never changes system state
   check_mode: false    # read-only, and every when: below depends on it
 
+# ubuntu-drivers lists each driver package whose modaliases match the GPU, so
+# it only lists a branch that supports it. Do not take the newest one it lists:
+# that moved hosts onto whatever branch a repo published last.
+- name: List drivers for the GPU
+  ansible.builtin.command: ubuntu-drivers list
+  register: ubuntu_drivers
+  changed_when: false  # This task never changes system state
+  check_mode: false    # read-only, and every when: below depends on it
+  when: nvidia_gpu.stdout | length > 0
+
+# One of three for a host with an NVIDIA GPU:
+# - nvidia_version, for Turing and newer.
+# - nvidia_legacy_version, for Maxwell, Pascal and Volta. 590 and newer dropped
+#   them, and the open modules need Turing: cicws24 (GTX 1050) and cicws29
+#   (GTX 750) got 595-open and were left with no working driver.
+# - '' (nouveau), for Fermi and Kepler: no branch that supports them builds
+#   for a current kernel. cicws02 and nine more GTS 450 hosts run nouveau.
+# ubuntu-drivers only lists -open packages for Turing and newer. A host that
+# lists one but not nvidia_version stops in the next task, so an incomplete
+# package list cannot move a new GPU to the legacy branch or to nouveau.
+- name: Choose the nvidia driver
+  ansible.builtin.set_fact:
+    nvidia_target: >-
+      {{ nvidia_version if nvidia_version in nvidia_listed
+         else nvidia_legacy_version
+           if (nvidia_legacy_version in nvidia_listed) and not (nvidia_open_listed | bool)
+         else '' }}
+    nvidia_supports_open: "{{ nvidia_open_listed }}"
+  vars:
+    nvidia_listed: >-
+      {{ ubuntu_drivers.stdout_lines | default([])
+         | map('split', ',') | map('first') | map('trim') | list }}
+    nvidia_open_listed: "{{ nvidia_listed | select('search', '-open$') | list | length > 0 }}"
+
+- name: Stop when the GPU needs a driver the repos do not list
+  ansible.builtin.fail:
+    msg: >-
+      ubuntu-drivers lists -open drivers for this GPU, but not
+      {{ nvidia_version }}. Check that the xanmod repo is configured and the
+      apt lists are current. The installed driver was not changed.
+  when:
+    - nvidia_gpu.stdout | length > 0
+    - nvidia_supports_open | bool
+    - nvidia_target | length == 0
+
 - name: Get installed packages
   ansible.builtin.package_facts:
-  when: nvidia_driver_needed.rc == 0
+  when: nvidia_gpu.stdout | length > 0
 
 # Fetch the new driver before the purge below can remove the old one. A repo
 # that lists a version it cannot serve (xanmod's https pool answered 404 for a
@@ -46,12 +95,12 @@
 - name: Download nvidia driver before the purge
   ansible.builtin.command: >-
     apt-get install -y --download-only -o DPkg::Lock::Timeout=60
-    {{ nvidia_version | quote }}
+    {{ nvidia_target | quote }}
   changed_when: false  # Only fills /var/cache/apt/archives
   when:
-    - nvidia_driver_needed.rc == 0
+    - nvidia_target | length > 0
     - ansible_facts.packages | select('search', 'nvidia') | list | length > 0
-    - (nvidia_version not in ansible_facts.packages)
+    - (nvidia_target not in ansible_facts.packages)
       or (bad_nvidia_version in ansible_facts.packages)
 
 # Only on a branch change. Purging on every run left the host with no driver
@@ -60,14 +109,43 @@
   ansible.builtin.command: apt-get --autoremove -y purge '*nvidia*'
   changed_when: true
   when:
-    - nvidia_driver_needed.rc == 0
+    - nvidia_target | length > 0
     - ansible_facts.packages | select('search', 'nvidia') | list | length > 0
-    - (nvidia_version not in ansible_facts.packages)
+    - (nvidia_target not in ansible_facts.packages)
       or (bad_nvidia_version in ansible_facts.packages)
 
 - name: Install nvidia driver
   ansible.builtin.apt:
-    name: "{{ nvidia_version }}"
+    name: "{{ nvidia_target }}"
     state: "{{ nvidia_driver_state | default('present') }}"
   register: nvidia_installed
-  when: nvidia_driver_needed.rc == 0
+  when: nvidia_target | length > 0
+
+# Nouveau hosts. The nvidia packages blacklist nouveau, so a host with a
+# driver for a GPU it does not support has no working display driver. The
+# purge removes the blacklist with them.
+- name: Count GPUs the nvidia module drives
+  ansible.builtin.shell: ls /proc/driver/nvidia/gpus 2>/dev/null | wc -l
+  register: nvidia_driven_gpus
+  changed_when: false  # This task never changes system state
+  check_mode: false    # read-only, and the checks below depend on it
+  when:
+    - nvidia_gpu.stdout | length > 0
+    - nvidia_target | length == 0
+    - ansible_facts.packages | select('match', 'nvidia-(dkms|kernel-common)-') | list | length > 0
+
+# A driver that works shows the choice above is wrong. Stop, do not purge it.
+- name: Stop before purging a working nvidia driver
+  ansible.builtin.fail:
+    msg: >-
+      This host was chosen for nouveau, but the nvidia module drives its GPU.
+      Check ubuntu-drivers list. The driver was not removed.
+  when:
+    - nvidia_driven_gpus is not skipped
+    - nvidia_driven_gpus.stdout | int > 0
+
+- name: Purge nvidia for nouveau
+  ansible.builtin.command: apt-get --autoremove -y purge '*nvidia*'
+  register: nvidia_removed
+  changed_when: true
+  when: nvidia_driven_gpus is not skipped

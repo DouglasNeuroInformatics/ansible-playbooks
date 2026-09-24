@@ -14,6 +14,7 @@
     reboot_pending: >-
       {{ ((force_reboot | default(false) | bool) or (host_idle | bool))
          and ((nvidia_installed.changed | default(false))
+              or (nvidia_removed.changed | default(false))
               or (kernel_installed.changed | default(false))) }}
   become: yes
   roles:

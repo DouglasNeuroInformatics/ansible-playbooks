@@ -72,9 +72,16 @@ held_package_patterns: >-
   {{ held_kernel_patterns
      + (held_nvidia_patterns if 'workstations' in group_names else []) }}
 
-# The driver branch for every GPU workstation, from the xanmod repo (see
-# roles/workstation/tasks/repos.yml). Change this to move the workstations to a
-# new branch; update.yml and site.yml both act on it. update.yml also takes
-# point releases inside the branch, site.yml only installs it where missing.
+# The driver branch for each GPU workstation. update.yml and site.yml both act
+# on these; update.yml also takes point releases inside the branch, site.yml
+# only installs it where missing. roles/workstation/tasks/nvidia-driver.yml
+# chooses per host from what ubuntu-drivers lists for its GPU:
+# - nvidia_version, from xanmod, for Turing and newer. Change this to move
+#   them to a new branch.
+# - nvidia_legacy_version, from Ubuntu (see files/nvidia-xanmod.pref), for
+#   Maxwell, Pascal and Volta, which 590 and newer dropped.
+# - no nvidia driver (nouveau) for older GPUs: no branch that supports them
+#   builds for a current kernel.
 nvidia_version: nvidia-driver-595-open
+nvidia_legacy_version: nvidia-driver-580
 bad_nvidia_version: nvidia-driver-390

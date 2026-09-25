@@ -1,7 +1,16 @@
-# Deployed by roles/workstation/tasks/repos.yml. The nvidia driver comes from
-# xanmod, whose patched builds compile against newer kernels. 700 beats the
-# CUDA repo pin (600) and Ubuntu and the graphics-drivers PPA (500). The xanmod
-# Release file has no Origin field, so this matches on the host name.
+# Deployed by roles/workstation/tasks/nvidia-driver.yml. The nvidia driver
+# comes from xanmod, whose patched builds compile against newer kernels. 700
+# beats the CUDA repo pin (600) and Ubuntu and the graphics-drivers PPA (500).
+# The xanmod Release file has no Origin field, so this matches on the host name.
+#
+# Except the 580 legacy branch (nvidia_legacy_version): xanmod's 580.142 does
+# not build for 7.2 kernels (linux/of_gpio.h is gone), and Ubuntu's 580.178.04
+# does. 400 puts xanmod under Ubuntu for 580 only. apt takes the first stanza
+# that matches, so this one must come first.
+Package: *nvidia*580*
+Pin: origin deb.xanmod.org
+Pin-Priority: 400
+
 Package: *nvidia*
 Pin: origin deb.xanmod.org
 Pin-Priority: 700

@@ -61,6 +61,7 @@ export MCR_CACHE_ROOT="${XDG_CACHE_HOME}/mcr"
 export CUDA_CACHE_PATH="${XDG_CACHE_HOME}/nv/ComputeCache"
 export __GL_SHADER_DISK_CACHE_PATH="${XDG_CACHE_HOME}/nv/GLCache"
 export TRITON_HOME="${XDG_CACHE_HOME}/triton"
+export CUPY_CACHE_DIR="${XDG_CACHE_HOME}/cupy"
 export XCOMPOSECACHE="${XDG_CACHE_HOME}/X11/xcompose"
 export TEXMFVAR="${XDG_CACHE_HOME}/texlive/texmf-var"
 export STARSHIP_CACHE="${XDG_CACHE_HOME}/starship"
@@ -83,6 +84,7 @@ export STARSHIP_CACHE="${XDG_CACHE_HOME}/starship"
   "${CUDA_CACHE_PATH}" \
   "${__GL_SHADER_DISK_CACHE_PATH}" \
   "${TRITON_HOME}" \
+  "${CUPY_CACHE_DIR}" \
   "${XCOMPOSECACHE}" \
   "${TEXMFVAR}" \
   "${STARSHIP_CACHE}" \

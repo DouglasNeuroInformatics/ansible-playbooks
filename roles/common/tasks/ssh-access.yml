@@ -85,7 +85,7 @@
 
 - name: Look up the Ansible SSH user's groups
   ansible.builtin.command: "id -nG {{ ansible_ssh_user }}"
-  register: ansible_user_groups
+  register: ssh_user_groups
   changed_when: false
   check_mode: false
   when:
@@ -95,7 +95,7 @@
 - name: Refuse to apply policy if the Ansible SSH user would be locked out (group-based)
   ansible.builtin.assert:
     that:
-      - ansible_user_groups.stdout.split() | intersect((ssh_policy.groups | default([])) + (ssh_restrict_default_groups | default([]))) | length > 0
+      - ssh_user_groups.stdout.split() | intersect((ssh_policy.groups | default([])) + (ssh_restrict_default_groups | default([]))) | length > 0
     fail_msg: >
       Refusing to apply SSH access policy: the Ansible SSH user {{ ansible_ssh_user }}
       is not a member of any allowed group on {{ inventory_hostname }}

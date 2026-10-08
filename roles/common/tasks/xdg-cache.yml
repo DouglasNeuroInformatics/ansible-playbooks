@@ -1,0 +1,73 @@
+---
+# Keep the user caches off the NFS $HOME.
+#
+# /etc/profile.d reaches a login shell only. `ssh host command`, scp, sftp,
+# rsync, the VS Code remote server and cron read no profile, and they then write
+# the caches to the home directory over NFS. pam_env is in the stack of every
+# one of those services (sshd, hpnsshd, login, su, cron, sudo and lightdm), so
+# the variables go there and this role gives them to all hosts, not to the
+# workstations alone.
+
+- name: Redirect the user caches with pam_env
+  ansible.builtin.blockinfile:
+    path: /etc/security/pam_env.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK -- xdg cache"
+    block: "{{ lookup('file', 'files/pam_env_xdg_cache.conf') }}"
+    owner: root
+    group: root
+    mode: '0644'
+
+# pam_env sets the variable but makes no directory. The user instance of systemd
+# runs systemd-tmpfiles at the start of each logind session, which covers a
+# session that reads no profile.
+#
+# In --user mode, systemd-tmpfiles reads the XDG directories, not
+# /etc/user-tmpfiles.d. `SYSTEMD_LOG_LEVEL=debug systemd-tmpfiles --user
+# --create` on cichm01 gives this order: /etc/xdg/user-tmpfiles.d,
+# ~/.config/user-tmpfiles.d, $XDG_RUNTIME_DIR/user-tmpfiles.d,
+# ~/.local/share/user-tmpfiles.d, the XDG_DATA_DIRS values,
+# /usr/local/share/user-tmpfiles.d and /usr/share/user-tmpfiles.d. /etc/xdg is
+# the first one, and it is the place for the configuration of an administrator.
+- name: Create the user tmpfiles directory
+  ansible.builtin.file:
+    path: /etc/xdg/user-tmpfiles.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Make the cache directory at each session start
+  ansible.builtin.copy:
+    src: files/xdgcache-tmpfiles.conf
+    dest: /etc/xdg/user-tmpfiles.d/xdgcache.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+# The user instance has systemd-tmpfiles-setup.service in its preset but not in
+# basic.target.wants, so it does not start. This is `systemctl --global enable`
+# as a file, which keeps the task idempotent.
+- name: Create the user basic.target.wants directory
+  ansible.builtin.file:
+    path: /etc/systemd/user/basic.target.wants
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Enable the user tmpfiles service for every user
+  ansible.builtin.file:
+    src: /usr/lib/systemd/user/systemd-tmpfiles-setup.service
+    dest: /etc/systemd/user/basic.target.wants/systemd-tmpfiles-setup.service
+    state: link
+    force: true
+
+# The login shells get the directories of the single programs, the flatpak path
+# and the test of an inherited directory. See the comments in the file.
+- name: more XDG cache files to tmp
+  ansible.builtin.copy:
+    src: files/xdg.cache.sh
+    dest: /etc/profile.d/xdg.cache.sh
+    owner: root
+    group: root
+    mode: '0644'

@@ -30,7 +30,8 @@ done
 # The age test compares against a stamp file, because -newer is in POSIX and
 # -newermt is not. A failure removes the stamp and stops the run.
 stamp="$(mktemp)" || exit 1
-trap 'rm -f "${stamp}"' EXIT HUP INT TERM
+trap 'rm -f "${stamp}"' EXIT
+trap 'rm -f "${stamp}"; exit 1' HUP INT TERM
 touch -d "${age_days} days ago" "${stamp}" || exit 1
 
 for dir in /var/tmp/xdgcache-*; do
@@ -62,6 +63,12 @@ for dir in /var/tmp/xdgcache-*; do
   # Keep the cache of a user with a session on this host, and of a user whose
   # systemd manager still runs.
   loginctl show-user "${owner_uid}" > /dev/null 2>&1 && continue
+
+  # Keep the cache of a user with a process on this host. A slurm job step has
+  # no logind session -- the compute nodes have PrologFlags=Contain and no
+  # UsePAM -- and a job can read MCR_CACHE_ROOT or TRITON_HOME for its full
+  # run. A tmux session after a logout and a cron job have no session either.
+  pgrep -u "${owner_uid}" > /dev/null 2>&1 && continue
 
   # Keep the directory if anything in it is newer than the stamp. -quit stops
   # the walk at the first file that is new enough. A find that fails keeps the

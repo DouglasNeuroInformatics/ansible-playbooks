@@ -7,7 +7,7 @@
 - name: add ppa repos
   command:
     cmd: apt-add-repository -y -n {{ item }}
-    creates: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
+    creates: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_facts['distribution_release'] }}.sources"
   with_items:
     - ppa:lubuntu-dev/backports
     - ppa:obsproject/obs-studio
@@ -23,7 +23,7 @@
 # See the note on the matching task in the common role.
 - name: remove retired ppa repos
   ansible.builtin.file:
-    path: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
+    path: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_facts['distribution_release'] }}.sources"
     state: absent
   with_items:
     - ppa:dtl131/nvidiaexp
@@ -37,7 +37,7 @@
     name: xanmod
     types: deb
     uris: http://deb.xanmod.org
-    suites: '{{ ansible_distribution_release }}'
+    suites: "{{ ansible_facts['distribution_release'] }}"
     components: main non-free
     architectures: amd64
     signed_by: https://dl.xanmod.org/archive.key
@@ -64,7 +64,7 @@
   ansible.builtin.deb822_repository:
     name: xpra
     uris: http://xpra.org
-    suites: "{{ ansible_distribution_release }}"
+    suites: "{{ ansible_facts['distribution_release'] }}"
     components: main
     architectures: amd64
     signed_by: https://xpra.org/xpra.asc
@@ -91,7 +91,7 @@
   ansible.builtin.deb822_repository:
     name: i3
     uris: http://debian.sur5r.net/i3/
-    suites: "{{ ansible_distribution_release }}"
+    suites: "{{ ansible_facts['distribution_release'] }}"
     components: universe
     architectures: amd64
     # keys.openpgp.org, not keyserver.ubuntu.com: sur5r renewed this key to

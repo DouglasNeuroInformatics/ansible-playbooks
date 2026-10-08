@@ -57,7 +57,7 @@
 
 - name: Installing SLURM
   become: yes
-  shell: make -j {{ ansible_processor_vcpus }} && make install && make -j {{ ansible_processor_vcpus }} contrib && make install-contrib
+  shell: make -j {{ ansible_facts['processor_vcpus'] }} && make install && make -j {{ ansible_facts['processor_vcpus'] }} contrib && make install-contrib
   args:
     chdir: "{{ slurm_src_dir }}"
   when: slurm_configure is changed

@@ -118,3 +118,12 @@
   ansible.builtin.command: >
     dpkg-statoverride --update --add root shadow 6755 /usr/sbin/unix_chkpwd
   when: chkpwd_override.rc != 0
+
+- name: Restrict workstation crontab access to approved users
+  ansible.builtin.copy:
+    dest: /etc/cron.allow
+    owner: root
+    group: root
+    mode: '0644'
+    content: "{{ (cron_access_default_users + cron_access.get(inventory_hostname, {}).get('users', [])) | unique | join('\n') }}\n"
+  tags: cron

@@ -1,0 +1,9 @@
+cron_access_default_users:
+  - localadmin
+  - beatom
+  - devgab
+
+cron_access:
+  dnpws14:
+    users:
+      - moncia

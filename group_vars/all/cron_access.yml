@@ -1,9 +1,9 @@
-cron_restrict_default_users:
+cron_access_default_users:
   - localadmin
   - beatom
   - devgab
 
-cronrestrict:
+cron_access:
   dnpws14:
     users:
       - moncia

@@ -6,7 +6,7 @@
 
 - name: get system RAM in GB
   set_fact:
-    ram: "{{ ansible_memtotal_mb // 1024 }}" # Convert to GB
+    ram: "{{ ansible_facts['memtotal_mb'] // 1024 }}" # Convert to GB
 
 - name: get free disk space in GB
   ansible.builtin.shell:

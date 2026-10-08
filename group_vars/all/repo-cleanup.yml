@@ -16,7 +16,7 @@
 #                                    drivers no longer support
 stale_repo_files:
   - bruno.sources                  # repo is commented out in workstation/repos.yml
-  - ppa_flatpak_stable_{{ ansible_distribution_release }}.list  # deprecated
+  - "ppa_flatpak_stable_{{ ansible_facts['distribution_release'] }}.list"  # deprecated
                                    # ppa.launchpad.net host, duplicates the
                                    # ppa.launchpadcontent.net entry we configure
   - cuda-ubuntu2404-x86_64.list    # only cuda-keyring was installed, no toolkit

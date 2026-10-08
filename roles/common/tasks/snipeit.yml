@@ -177,20 +177,20 @@
   # every rerun, so sending them would clobber values edited in the Snipe-IT UI.
   set_fact:
     snipeit_body:
-      name: "{{ ansible_hostname }}"
+      name: "{{ ansible_facts['hostname'] }}"
       model_id: "{{ snipeit_model_id }}"
       status_id: 4  # Online status
       serial: "{{ serial_number }}"
       _snipeit_bios_15: "{{ bios_version }}"
       _snipeit_motherboard_16: "{{ motherboard }}"
-      _snipeit_os_8: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
-      _snipeit_ram_10: "{{ ansible_memtotal_mb }} MB"
+      _snipeit_os_8: "{{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+      _snipeit_ram_10: "{{ ansible_facts['memtotal_mb'] }} MB"
       _snipeit_cpu_11: "{{ cpu }}"
       _snipeit_gpu_9: "{{ gpu_model }}"
       _snipeit_storage_17: "{{ storage }}"
       _snipeit_memory_slots_18: "{{ memory_slots }}"
-      _snipeit_ip_address_12: "{{ ansible_all_ipv4_addresses | join(', ') }}"
-      _snipeit_mac_address_1: "{{ ansible_default_ipv4.macaddress }}"
+      _snipeit_ip_address_12: "{{ ansible_facts['all_ipv4_addresses'] | join(', ') }}"
+      _snipeit_mac_address_1: "{{ ansible_facts['default_ipv4']['macaddress'] }}"
       _snipeit_service_status_13: "in service"
 
 - name: Look up existing Snipe-IT asset by name
@@ -200,7 +200,7 @@
   # Snipe-IT has no by-name endpoint, so search then filter to an exact match.
   no_log: true
   uri:
-    url: "{{ snipeit_url }}/api/v1/hardware?search={{ ansible_hostname | urlencode }}&limit=100"
+    url: "{{ snipeit_url }}/api/v1/hardware?search={{ ansible_facts['hostname'] | urlencode }}&limit=100"
     headers: "{{ snipeit_headers }}"
     timeout: 30
   delegate_to: localhost
@@ -209,12 +209,12 @@
 
 - name: Select exact-name match (search is fuzzy, so filter precisely)
   set_fact:
-    snipeit_matches: "{{ snipeit_lookup.json.rows | default([]) | selectattr('name', 'equalto', ansible_hostname) | list }}"
+    snipeit_matches: "{{ snipeit_lookup.json.rows | default([]) | selectattr('name', 'equalto', ansible_facts['hostname']) | list }}"
 
 - name: Refuse to guess when a hostname maps to multiple assets
   assert:
     that: snipeit_matches | length <= 1
-    fail_msg: "Multiple Snipe-IT assets named {{ ansible_hostname }} (ids {{ snipeit_matches | map(attribute='id') | list }}); resolve the duplicate before running."
+    fail_msg: "Multiple Snipe-IT assets named {{ ansible_facts['hostname'] }} (ids {{ snipeit_matches | map(attribute='id') | list }}); resolve the duplicate before running."
 
 - name: Update existing asset in Snipe-IT
   # PATCH reconciles the record on every run: backfills new fields and refreshes
@@ -245,7 +245,7 @@
     method: POST
     headers: "{{ snipeit_headers }}"
     body_format: json
-    body: "{{ snipeit_body | combine({'asset_tag': ansible_hostname}) }}"
+    body: "{{ snipeit_body | combine({'asset_tag': ansible_facts['hostname']}) }}"
     status_code: 200
     timeout: 30
   delegate_to: localhost

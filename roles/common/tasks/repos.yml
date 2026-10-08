@@ -46,7 +46,7 @@
 - name: add ppa repos
   command:
     cmd: apt-add-repository -y -n {{ item }}
-    creates: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
+    creates: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_facts['distribution_release'] }}.sources"
   with_items:
     - ppa:git-core/ppa
     - ppa:apptainer/ppa
@@ -61,7 +61,7 @@
 # usable repo.
 - name: remove retired ppa repos
   ansible.builtin.file:
-    path: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_distribution_release }}.sources"
+    path: "/etc/apt/sources.list.d/{{ item | replace('ppa:', '') | replace('.', '_') | replace('/', '-ubuntu-') }}-{{ ansible_facts['distribution_release'] }}.sources"
     state: absent
   with_items:
     - ppa:apt-fast/stable
@@ -72,7 +72,7 @@
     name: docker
     types: deb
     uris: http://download.docker.com/linux/ubuntu
-    suites: '{{ ansible_distribution_release }}'
+    suites: "{{ ansible_facts['distribution_release'] }}"
     components: stable
     architectures: amd64
     signed_by: https://download.docker.com/linux/ubuntu/gpg
@@ -82,7 +82,7 @@
     name: zabbly
     types: deb
     uris: http://pkgs.zabbly.com/kernel/stable
-    suites: '{{ ansible_distribution_release }}'
+    suites: "{{ ansible_facts['distribution_release'] }}"
     components: main
     architectures: amd64
     signed_by: https://pkgs.zabbly.com/key.asc
@@ -92,7 +92,7 @@
     name: cmake
     types: deb
     uris: http://apt.kitware.com/ubuntu/
-    suites: '{{ ansible_distribution_release }}'
+    suites: "{{ ansible_facts['distribution_release'] }}"
     components: main
     architectures: amd64
     signed_by: https://apt.kitware.com/keys/kitware-archive-latest.asc

@@ -40,7 +40,7 @@
   when:
     - nvidia_target | length > 0
     - nvidia_module.rc != 0
-    - newest_kernel.stdout != ansible_kernel
+    - newest_kernel.stdout != ansible_facts['kernel']
 
 - name: Remove the new kernel
   ansible.builtin.apt:
@@ -58,7 +58,7 @@
     msg: >-
       No nvidia module for kernel {{ newest_kernel.stdout }} with
       {{ nvidia_target }}.
-      {{ 'Removed that kernel; the host stays on ' ~ ansible_kernel ~ '.'
+      {{ 'Removed that kernel; the host stays on ' ~ ansible_facts['kernel'] ~ '.'
          if newest_kernel_removed is not skipped
          else 'It is the running kernel, so it was not removed. Repair by hand before the next reboot.' }}
   when:

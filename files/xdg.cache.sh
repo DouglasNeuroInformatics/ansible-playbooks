@@ -1,12 +1,15 @@
-# Keep the user caches off the NFS $HOME.
+# Keep the user caches off the NFS home directories.
 #
-# pam_env sets XDG_CACHE_HOME and the other cache variables for every login
-# type -- see files/pam_env_xdg_cache.conf. This script makes the directories,
-# tests that an inherited directory is safe, and holds the parts that pam_env
-# cannot do. It also works on a host where pam_env did not run.
+# pam_env sets XDG_CACHE_HOME and the other cache variables for every type of
+# login: see files/pam_env_xdg_cache.conf. In a login shell, this script also:
+#   - examines the cache directory, and replaces it if it is not safe,
+#   - makes the cache directory of each tool,
+#   - sets the flatpak path.
+# The script also works on a host where pam_env does not set the variables.
 #
-# Sourced by /etc/profile and, through /etc/zsh/zprofile, by zsh. Keep it POSIX
-# sh. Do not define a function here: the shell of the user keeps it.
+# /etc/profile sources this file, and zsh sources it through /etc/zsh/zprofile.
+# Use POSIX sh only. Do not define functions: they stay in the shell of the
+# user.
 
 _xdg_user="${USER:-$(id -un)}"
 
@@ -14,10 +17,10 @@ if [ -z "${XDG_CACHE_HOME}" ] ; then
   XDG_CACHE_HOME="/var/tmp/xdgcache-${_xdg_user}"
 fi
 
-# /var/tmp has mode 1777, so another user can make this directory first. Use it
-# only if it is a directory, not a symbolic link, and we are the owner. If it
-# fails these tests, make a private directory instead. `test -O` is not in the
-# POSIX list, but bash, dash, zsh and busybox sh all have it.
+# /var/tmp has mode 1777, so another user can make this directory first. Use
+# the directory only if it is a real directory (not a symbolic link) and the
+# user owns it. Otherwise, make a private directory with mktemp.
+# `test -O` is not in POSIX, but bash, dash, zsh and busybox sh support it.
 _xdg_ok=yes
 if [ -L "${XDG_CACHE_HOME}" ]; then
   _xdg_ok=no
@@ -35,7 +38,7 @@ if [ "${_xdg_ok}" = no ]; then
   if [ -n "${_xdg_tmp}" ] && [ -d "${_xdg_tmp}" ]; then
     XDG_CACHE_HOME="${_xdg_tmp}"
   else
-    # Nothing else is left. The home directory is slow, but it works.
+    # Last fallback: the home directory is slow, but it works.
     XDG_CACHE_HOME="${HOME}/.cache"
     (umask 077 && mkdir -p "${XDG_CACHE_HOME}") 2> /dev/null
   fi
@@ -43,10 +46,10 @@ if [ "${_xdg_ok}" = no ]; then
 fi
 export XDG_CACHE_HOME
 
-# The variables that pam_env also sets. Set them again, because the tests above
-# can select a different XDG_CACHE_HOME, and because pam_env is not on a host
-# that this play has not reached yet. The names come from the tools and from
-# https://github.com/b3nj5m1n/xdg-ninja -- see files/pam_env_xdg_cache.conf.
+# pam_env also sets these variables. Set them again here for two reasons: the
+# checks above can change XDG_CACHE_HOME, and pam_env does not set them on a
+# host that has not received this change yet. For the source of the names, see
+# files/pam_env_xdg_cache.conf.
 export CONDA_PKGS_DIRS="${XDG_CACHE_HOME}/.condapkg"
 export APPTAINER_CACHEDIR="${XDG_CACHE_HOME}/.apptainer"
 export SINGULARITY_CACHEDIR="${XDG_CACHE_HOME}/.singularity"
@@ -62,9 +65,12 @@ export XCOMPOSECACHE="${XDG_CACHE_HOME}/X11/xcompose"
 export TEXMFVAR="${XDG_CACHE_HOME}/texlive/texmf-var"
 export STARSHIP_CACHE="${XDG_CACHE_HOME}/starship"
 
-# pip, uv, GOCACHE, ccache, huggingface, torch, matplotlib, mesa, fontconfig,
-# the nvidia GL cache and the other XDG programs need no variable: they read
-# XDG_CACHE_HOME.
+# Tools that read XDG_CACHE_HOME need no variable: pip, uv, GOCACHE, ccache,
+# huggingface, torch, matplotlib, mesa, fontconfig, the nvidia GL cache and
+# others.
+#
+# $XDG_CACHE_HOME/.cache comes from commit cfa65e0. No file in this repository
+# uses it.
 (umask 077 && mkdir -p \
   "${CONDA_PKGS_DIRS}" \
   "${APPTAINER_CACHEDIR}" \
@@ -82,15 +88,16 @@ export STARSHIP_CACHE="${XDG_CACHE_HOME}/starship"
   "${STARSHIP_CACHE}" \
   "${XDG_CACHE_HOME}/.cache") 2> /dev/null
 
-# Custom user flatpak dir, on the local disk. Not every host has /scratch.
+# Put the user flatpak installation on the local disk. Some hosts do not have
+# /scratch.
 if [ -d /scratch ]; then
   FLATPAK_USER_DIR="/scratch/${_xdg_user}/flatpak"
   export FLATPAK_USER_DIR
   mkdir -p "${FLATPAK_USER_DIR}" 2> /dev/null
 
-  # Add the exports one time only. A login shell inside a login shell runs this
-  # script again, and a value that ends with a colon makes the programs lose
-  # the default /usr/local/share:/usr/share.
+  # Add the flatpak exports only once, because a nested login shell runs this
+  # script again. If XDG_DATA_DIRS is empty, also add the default
+  # /usr/local/share:/usr/share. A value that ends with a colon drops it.
   case ":${XDG_DATA_DIRS}:" in
     *":${FLATPAK_USER_DIR}/exports/share:"*)
       ;;

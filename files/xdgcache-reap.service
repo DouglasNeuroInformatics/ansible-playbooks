@@ -1,11 +1,11 @@
 [Unit]
-Description=Remove the local user caches of the users who do not use this host
+Description=Remove the /var/tmp caches of users who no longer use this host
 Documentation=file:/usr/local/sbin/xdgcache-reap
 
 [Service]
 Type=oneshot
-# The age in days is the argument: nothing in a directory may be newer than
-# this. Use --dry-run by hand to see what a run would remove.
+# The argument is the age in days: keep a directory that has a file newer than
+# this. To see what a run would remove, run `xdgcache-reap --dry-run` by hand.
 ExecStart=/usr/local/sbin/xdgcache-reap 30
 Nice=19
 IOSchedulingClass=idle

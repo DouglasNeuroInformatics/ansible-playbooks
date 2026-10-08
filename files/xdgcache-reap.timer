@@ -1,10 +1,9 @@
 [Unit]
-Description=Weekly removal of the local user caches of the users who do not use this host
+Description=Weekly removal of the /var/tmp caches of users who no longer use this host
 
 [Timer]
 OnCalendar=weekly
-# The workstations are not all on at the same time, so a run that the host
-# missed starts after the next boot.
+# If the host is off at the scheduled time, run the job after the next boot.
 Persistent=true
 AccuracySec=1h
 RandomizedDelaySec=1h

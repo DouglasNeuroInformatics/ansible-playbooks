@@ -1,12 +1,12 @@
 ---
-# Keep the user caches off the NFS $HOME.
+# Keep the user caches off the NFS home directories.
 #
-# /etc/profile.d reaches a login shell only. `ssh host command`, scp, sftp,
-# rsync, the VS Code remote server and cron read no profile, and they then write
-# the caches to the home directory over NFS. pam_env is in the stack of every
-# one of those services (sshd, hpnsshd, login, su, cron, sudo and lightdm), so
-# the variables go there and this role gives them to all hosts, not to the
-# workstations alone.
+# A script in /etc/profile.d runs in a login shell only. `ssh host command`,
+# scp, sftp, rsync, the VS Code remote server and cron start no login shell, so
+# they wrote their caches to the NFS home. pam_env runs for each of these
+# services (sshd, hpnsshd, login, su, cron, sudo and lightdm). This file sets
+# the variables through pam_env, and the common role installs them on the
+# workstations and the compute nodes.
 
 - name: Redirect the user caches with pam_env
   ansible.builtin.blockinfile:
@@ -17,17 +17,21 @@
     group: root
     mode: '0644'
 
-# pam_env sets the variable but makes no directory. The user instance of systemd
-# runs systemd-tmpfiles at the start of each logind session, which covers a
-# session that reads no profile.
+# pam_env sets the variables, but it does not make the directory. The user
+# instance of systemd makes it: it runs systemd-tmpfiles when it starts, at the
+# first session of a user on the host. This includes a session with no login
+# shell.
 #
-# In --user mode, systemd-tmpfiles reads the XDG directories, not
-# /etc/user-tmpfiles.d. `SYSTEMD_LOG_LEVEL=debug systemd-tmpfiles --user
-# --create` on cichm01 gives this order: /etc/xdg/user-tmpfiles.d,
-# ~/.config/user-tmpfiles.d, $XDG_RUNTIME_DIR/user-tmpfiles.d,
-# ~/.local/share/user-tmpfiles.d, the XDG_DATA_DIRS values,
-# /usr/local/share/user-tmpfiles.d and /usr/share/user-tmpfiles.d. /etc/xdg is
-# the first one, and it is the place for the configuration of an administrator.
+# In --user mode, systemd-tmpfiles reads its configuration from the XDG
+# directories. It does not read /etc/user-tmpfiles.d. On cichm01,
+# `SYSTEMD_LOG_LEVEL=debug systemd-tmpfiles --user --create` shows this order:
+#   /etc/xdg/user-tmpfiles.d
+#   ~/.config/user-tmpfiles.d
+#   $XDG_RUNTIME_DIR/user-tmpfiles.d
+#   ~/.local/share/user-tmpfiles.d
+#   <entry>/user-tmpfiles.d for each entry in XDG_DATA_DIRS
+# /etc/xdg/user-tmpfiles.d is first, and it is the location for local
+# administrator configuration.
 - name: Create the user tmpfiles directory
   ansible.builtin.file:
     path: /etc/xdg/user-tmpfiles.d
@@ -36,7 +40,7 @@
     group: root
     mode: '0755'
 
-- name: Make the cache directory at each session start
+- name: Install the rule that makes the cache directory
   ansible.builtin.copy:
     src: files/xdgcache-tmpfiles.conf
     dest: /etc/xdg/user-tmpfiles.d/xdgcache.conf
@@ -44,9 +48,10 @@
     group: root
     mode: '0644'
 
-# The user instance has systemd-tmpfiles-setup.service in its preset but not in
-# basic.target.wants, so it does not start. This is `systemctl --global enable`
-# as a file, which keeps the task idempotent.
+# The preset of the user instance enables systemd-tmpfiles-setup.service, but
+# the link in basic.target.wants does not exist, so the service does not start.
+# The next two tasks make the link that `systemctl --global enable` makes. A
+# file task is idempotent; the command is not.
 - name: Create the user basic.target.wants directory
   ansible.builtin.file:
     path: /etc/systemd/user/basic.target.wants
@@ -62,13 +67,14 @@
     state: link
     force: true
 
-# Nothing cleans /var/tmp: Ubuntu ships the `q /var/tmp ... 30d` line as a
-# comment and the hosts have no tmpreaper. The two parts below hold that state
-# steady. The exclude keeps a clean-up with an age away from the caches, because
-# such a clean-up takes single files out of a cache that is in use and makes it
-# bad. The reaper then holds the growth down, and it removes a full directory
-# only.
-- name: Keep the clean-ups with an age away from the caches
+# No job cleans /var/tmp. Ubuntu ships the `q /var/tmp ... 30d` rule as a
+# comment, and the hosts do not have tmpreaper. The next five tasks manage the
+# caches in /var/tmp:
+#   - The exclude rule stops every age-based cleanup of the caches. An
+#     age-based cleanup removes single files from a cache that is in use, and
+#     the cache then becomes corrupt.
+#   - The reaper limits the growth. It removes full directories only.
+- name: Exclude the caches from age-based cleanup
   ansible.builtin.copy:
     src: files/xdgcache-exclude.conf
     dest: /etc/tmpfiles.d/xdgcache-exclude.conf
@@ -100,8 +106,8 @@
     group: root
     mode: '0644'
 
-# The name holds the .timer part on purpose: without it, systemd takes the
-# service, and the timer then never starts.
+# Give the full unit name, with .timer. Without the suffix, the systemd module
+# uses the service, and the timer does not start.
 - name: Enable the cache reaper timer
   ansible.builtin.systemd:
     name: xdgcache-reap.timer
@@ -109,9 +115,9 @@
     enabled: true
     daemon_reload: true
 
-# The login shells get the directories of the single programs, the flatpak path
-# and the test of an inherited directory. See the comments in the file.
-- name: more XDG cache files to tmp
+# Login shells also run files/xdg.cache.sh. It examines the cache directory,
+# makes the cache directory of each tool, and sets the flatpak path.
+- name: Install the cache script for login shells
   ansible.builtin.copy:
     src: files/xdg.cache.sh
     dest: /etc/profile.d/xdg.cache.sh

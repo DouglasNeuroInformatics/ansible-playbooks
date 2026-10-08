@@ -125,8 +125,5 @@
     owner: root
     group: root
     mode: '0644'
-    content: |
-      localadmin
-      beatom
-      devgab
+    content: "{{ (cron_restrict_default_users + cronrestrict.get(inventory_hostname, {}).get('users', [])) | unique | join('\n') }}\n"
   tags: cron

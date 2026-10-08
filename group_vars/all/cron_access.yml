@@ -1,0 +1,9 @@
+cron_restrict_default_users:
+  - localadmin
+  - beatom
+  - devgab
+
+cronrestrict:
+  dnpws14:
+    users:
+      - moncia

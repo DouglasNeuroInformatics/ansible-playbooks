@@ -62,6 +62,53 @@
     state: link
     force: true
 
+# Nothing cleans /var/tmp: Ubuntu ships the `q /var/tmp ... 30d` line as a
+# comment and the hosts have no tmpreaper. The two parts below hold that state
+# steady. The exclude keeps a clean-up with an age away from the caches, because
+# such a clean-up takes single files out of a cache that is in use and makes it
+# bad. The reaper then holds the growth down, and it removes a full directory
+# only.
+- name: Keep the clean-ups with an age away from the caches
+  ansible.builtin.copy:
+    src: files/xdgcache-exclude.conf
+    dest: /etc/tmpfiles.d/xdgcache-exclude.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install the cache reaper
+  ansible.builtin.copy:
+    src: files/xdgcache-reap.sh
+    dest: /usr/local/sbin/xdgcache-reap
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install the cache reaper service
+  ansible.builtin.copy:
+    src: files/xdgcache-reap.service
+    dest: /etc/systemd/system/xdgcache-reap.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install the cache reaper timer
+  ansible.builtin.copy:
+    src: files/xdgcache-reap.timer
+    dest: /etc/systemd/system/xdgcache-reap.timer
+    owner: root
+    group: root
+    mode: '0644'
+
+# The name holds the .timer part on purpose: without it, systemd takes the
+# service, and the timer then never starts.
+- name: Enable the cache reaper timer
+  ansible.builtin.systemd:
+    name: xdgcache-reap.timer
+    state: started
+    enabled: true
+    daemon_reload: true
+
 # The login shells get the directories of the single programs, the flatpak path
 # and the test of an inherited directory. See the comments in the file.
 - name: more XDG cache files to tmp

@@ -1,0 +1,13 @@
+[Unit]
+Description=Weekly removal of the local user caches of the users who do not use this host
+
+[Timer]
+OnCalendar=weekly
+# The workstations are not all on at the same time, so a run that the host
+# missed starts after the next boot.
+Persistent=true
+AccuracySec=1h
+RandomizedDelaySec=1h
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Remove the local user caches of the users who do not use this host
+Documentation=file:/usr/local/sbin/xdgcache-reap
+
+[Service]
+Type=oneshot
+# The age in days is the argument: nothing in a directory may be newer than
+# this. Use --dry-run by hand to see what a run would remove.
+ExecStart=/usr/local/sbin/xdgcache-reap 30
+Nice=19
+IOSchedulingClass=idle

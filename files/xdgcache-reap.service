@@ -9,3 +9,8 @@ Type=oneshot
 ExecStart=/usr/local/sbin/xdgcache-reap 30
 Nice=19
 IOSchedulingClass=idle
+# The script writes only in /var/tmp, and its stamp file goes in the runtime
+# directory. Everything else is read-only for it.
+ProtectSystem=strict
+ReadWritePaths=/var/tmp
+RuntimeDirectory=xdgcache-reap

@@ -1,0 +1,63 @@
+#!/bin/sh
+# Managed by Ansible: roles/common/templates/xdgcache-setup.sh.j2.
+#
+# Make the local cache directory of the user who opens a PAM session, with mode
+# 0700, and the cache directory of each tool in it.
+#
+# pam_exec runs this script as root at the start of each session, from the
+# xdgcache profile in /usr/share/pam-configs. This covers every type of login,
+# cron included. A cron session starts no systemd user manager, so a user
+# tmpfiles rule cannot do this work.
+#
+# Root owns {{ xdgcache_root }}, with mode 0755, so only root can make or rename
+# an entry in it. No user can take the path of another user, or replace a
+# directory with a symbolic link. The work inside the directory of a user runs
+# as that user, through setpriv, because the user controls that content and
+# root must not follow a link that the user made.
+#
+# This script must never stop a login. It exits 0 in all cases, and the PAM
+# profile also marks it optional.
+
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+export PATH
+
+[ "${PAM_TYPE:-}" = open_session ] || exit 0
+user="${PAM_USER:-}"
+[ -n "${user}" ] || exit 0
+uid="$(id -u -- "${user}" 2> /dev/null)" || exit 0
+gid="$(id -g -- "${user}" 2> /dev/null)" || exit 0
+
+root="{{ xdgcache_root }}"
+dir="${root}/${user}"
+
+# Ansible makes the root directory. If it is not a real directory that root
+# owns, do nothing: Ansible repairs it at its next run.
+if [ ! -e "${root}" ] && [ ! -L "${root}" ]; then
+  mkdir -m 0755 -- "${root}" 2> /dev/null || exit 0
+fi
+[ -d "${root}" ] && [ ! -L "${root}" ] && [ "$(stat -c %u -- "${root}")" = 0 ] || exit 0
+
+# Only root makes entries in the root directory, so an entry with another owner
+# is a leftover: for example, from a deleted account whose UID went to someone
+# else. Move it out of the way; xdgcache-reap removes it later.
+if [ -L "${dir}" ] || { [ -e "${dir}" ] && { [ ! -d "${dir}" ] || [ "$(stat -c %u -- "${dir}")" != "${uid}" ]; }; }; then
+  mv -f -- "${dir}" "${root}/.stale-${user}-$(date +%s)" 2> /dev/null || exit 0
+fi
+
+if [ ! -d "${dir}" ]; then
+  mkdir -m 0700 -- "${dir}" 2> /dev/null || exit 0
+  chown -- "${uid}:${gid}" "${dir}" 2> /dev/null || exit 0
+fi
+chmod 0700 -- "${dir}" 2> /dev/null
+
+# The tool directories, made as the user. Some tools do not make their own
+# cache directory: for example, libX11 does not use the compose cache if
+# X11/xcompose is missing.
+setpriv --reuid="${uid}" --regid="${gid}" --init-groups -- \
+  /bin/sh -c 'umask 077 && cd -- "$1" && shift && mkdir -p -- "$@"' sh "${dir}" \
+{% for v in xdgcache_vars %}
+  {{ v.path }} \
+{% endfor %}
+  2> /dev/null
+
+exit 0

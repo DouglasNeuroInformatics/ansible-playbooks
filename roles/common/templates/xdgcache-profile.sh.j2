@@ -1,0 +1,86 @@
+# Managed by Ansible: roles/common/templates/xdgcache-profile.sh.j2.
+#
+# Keep the user caches off the NFS home directories.
+#
+# The xdgcache PAM profile sets XDG_CACHE_HOME and the tool variables for every
+# type of login, and its hook makes the directories: see
+# roles/common/tasks/xdg-cache.yml. In a login shell, this script also:
+#   - checks that the cache directory is usable, and else uses $HOME/.cache,
+#   - sets the flatpak path.
+#
+# Flatpak apps keep their caches in ~/.var/app/<id>/cache, on NFS. Flatpak sets
+# XDG_CACHE_HOME inside the sandbox itself, and an override does not change it
+# (tested with Flatpak 1.18.4).
+#
+# /etc/profile sources this file, and zsh sources it through /etc/zsh/zprofile.
+# Use POSIX sh only. Do not define functions: they stay in the shell of the
+# user.
+
+_xdg_user="$(id -un)"
+
+if [ -z "${XDG_CACHE_HOME}" ]; then
+  XDG_CACHE_HOME="{{ xdgcache_root }}/${_xdg_user}"
+fi
+
+# A user can choose a path outside {{ xdgcache_root }}: make it if it is missing.
+# Never make anything under {{ xdgcache_root }}. Only the PAM hook makes those
+# directories, and mkdir -p here could make the root directory itself, owned by
+# the user.
+case "${XDG_CACHE_HOME}" in
+  "{{ xdgcache_root }}"|"{{ xdgcache_root }}"/*) ;;
+  *)
+    if [ ! -e "${XDG_CACHE_HOME}" ]; then
+      (umask 077 && mkdir -p "${XDG_CACHE_HOME}") 2> /dev/null
+    fi
+    ;;
+esac
+
+# Use the directory only if it is a real directory (not a symbolic link) that
+# the user owns and can write. Else use $HOME/.cache, which is slow on NFS but
+# safe, and say so in an interactive shell. `test -O` is not in POSIX, but bash,
+# dash, zsh and busybox sh support it.
+if [ -L "${XDG_CACHE_HOME}" ] || [ ! -d "${XDG_CACHE_HOME}" ] || [ ! -O "${XDG_CACHE_HOME}" ] || [ ! -w "${XDG_CACHE_HOME}" ]; then
+  case $- in
+    *i*) echo "xdg.cache.sh: ${XDG_CACHE_HOME} is not usable; the caches go to ${HOME}/.cache" >&2 ;;
+  esac
+  XDG_CACHE_HOME="${HOME}/.cache"
+  (umask 077 && mkdir -p "${XDG_CACHE_HOME}") 2> /dev/null
+fi
+export XDG_CACHE_HOME
+
+# The PAM profile also sets these variables. Set them again here, because the
+# check above can change XDG_CACHE_HOME. The list is xdgcache_vars in
+# roles/common/defaults/main.yml.
+{% for v in xdgcache_vars %}
+export {{ v.name }}="${XDG_CACHE_HOME}/{{ v.path }}"
+{% endfor %}
+
+# The PAM hook makes these directories too. $XDG_CACHE_HOME/.cache comes from
+# commit cfa65e0; no file in this repository uses it.
+(umask 077 && cd "${XDG_CACHE_HOME}" && mkdir -p \
+{% for v in xdgcache_vars %}
+  {{ v.path }} \
+{% endfor %}
+  .cache) 2> /dev/null
+
+# Put the user flatpak installation on the local disk. Some hosts do not have
+# /scratch.
+if [ -d /scratch ]; then
+  FLATPAK_USER_DIR="/scratch/${_xdg_user}/flatpak"
+  export FLATPAK_USER_DIR
+  mkdir -p "${FLATPAK_USER_DIR}" 2> /dev/null
+
+  # Add the flatpak exports only once, because a nested login shell runs this
+  # script again. If XDG_DATA_DIRS is empty, also add the default
+  # /usr/local/share:/usr/share. A value that ends with a colon drops it.
+  case ":${XDG_DATA_DIRS}:" in
+    *":${FLATPAK_USER_DIR}/exports/share:"*)
+      ;;
+    *)
+      XDG_DATA_DIRS="${FLATPAK_USER_DIR}/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+      export XDG_DATA_DIRS
+      ;;
+  esac
+fi
+
+unset _xdg_user

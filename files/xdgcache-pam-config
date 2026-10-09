@@ -1,0 +1,7 @@
+Name: Local user caches in /var/tmp/xdgcache (managed by Ansible)
+Default: yes
+Priority: 64
+Session-Type: Additional
+Session:
+	optional	pam_exec.so quiet seteuid /usr/local/sbin/xdgcache-setup
+	optional	pam_env.so readenv=0 conffile=/etc/security/pam_env_xdgcache.conf

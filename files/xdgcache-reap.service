@@ -1,0 +1,16 @@
+[Unit]
+Description=Remove the /var/tmp caches of users who no longer use this host
+Documentation=file:/usr/local/sbin/xdgcache-reap
+
+[Service]
+Type=oneshot
+# The argument is the age in days: keep a directory that has a file newer than
+# this. To see what a run would remove, run `xdgcache-reap --dry-run` by hand.
+ExecStart=/usr/local/sbin/xdgcache-reap 30
+Nice=19
+IOSchedulingClass=idle
+# The script writes only in /var/tmp, and its stamp file goes in the runtime
+# directory. Everything else is read-only for it.
+ProtectSystem=strict
+ReadWritePaths=/var/tmp
+RuntimeDirectory=xdgcache-reap

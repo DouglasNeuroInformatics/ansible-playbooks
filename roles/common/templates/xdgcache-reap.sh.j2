@@ -1,0 +1,109 @@
+#!/bin/sh
+# Managed by Ansible: roles/common/templates/xdgcache-reap.sh.j2.
+#
+# Remove the cache directory of a user who no longer uses this host.
+#
+# No job cleans /var/tmp (see /etc/tmpfiles.d/xdgcache-exclude.conf), so the
+# caches grow without limit. On these hosts, /var/tmp and /scratch are on the
+# root file system. This script is not a quota: it never touches the cache of
+# a user who is active.
+#
+# It removes full directories only. It never removes single files from a
+# directory, because that makes the cache corrupt. It handles three kinds of
+# directory:
+#   {{ xdgcache_root }}/<user>
+#       The cache of a user. Removed only if the user has no session and no
+#       process on this host, and no file in it is newer than the age.
+#   {{ xdgcache_root }}/.stale-*
+#       Moved aside by xdgcache-setup. Age test only.
+#   /var/tmp/xdgcache-<user>
+#       The layout before {{ xdgcache_root }}. Age test only.
+#
+# The removal runs as the owner of the directory, through setpriv, so root
+# never walks a tree that a user controls. The owner cannot remove an entry
+# from {{ xdgcache_root }}, so root then removes the empty directory.
+#
+# Usage: xdgcache-reap [--dry-run] [AGE_IN_DAYS]
+#   --dry-run    show the directories that a run would remove, and remove none
+#   AGE_IN_DAYS  keep a directory that has a file newer than this (default 30)
+#
+# roles/common/tasks/xdg-cache.yml installs this script, and xdgcache-reap.timer
+# starts it each week.
+
+set -u
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+export PATH
+
+dry_run=no
+age_days=30
+
+for arg in "$@"; do
+  case "${arg}" in
+    --dry-run) dry_run=yes ;;
+    [0-9]*) age_days="${arg}" ;;
+    *) echo "usage: $0 [--dry-run] [AGE_IN_DAYS]" >&2; exit 2 ;;
+  esac
+done
+
+# Compare file times with a stamp file: `find -newer` is in POSIX, and
+# `-newermt` is not. If the stamp file cannot be made, stop and remove nothing.
+stamp="$(mktemp -p "${RUNTIME_DIRECTORY:-/tmp}")" || exit 1
+trap 'rm -f "${stamp}"' EXIT
+trap 'rm -f "${stamp}"; exit 1' HUP INT TERM
+touch -d "${age_days} days ago" "${stamp}" || exit 1
+
+# reap DIR live|old
+#   live: also keep the directory if its owner has a session or a process.
+reap() {
+  dir="$1"
+  # If no directory matches, the loop gives the pattern itself.
+  [ -d "${dir}" ] && [ ! -L "${dir}" ] || return 0
+
+  owner_uid="$(stat -c %u -- "${dir}" 2> /dev/null)" || return 0
+  owner_gid="$(stat -c %g -- "${dir}" 2> /dev/null)" || return 0
+  owner_name="$(stat -c %U -- "${dir}" 2> /dev/null)" || return 0
+
+  # Keep the directories of system accounts (UID below 1000). These caches are
+  # small, and a service can use its cache without a logind session.
+  [ "${owner_uid}" -ge 1000 ] 2> /dev/null || return 0
+
+  if [ "$2" = live ]; then
+    # Keep the cache if the user has a session on this host, or a systemd user
+    # manager that still runs.
+    loginctl show-user "${owner_uid}" > /dev/null 2>&1 && return 0
+    # Keep the cache if the user has a process on this host. Some processes
+    # have no logind session: a Slurm job step (the compute nodes use
+    # PrologFlags=Contain and no UsePAM), a tmux session after logout, and a
+    # cron job.
+    pgrep -u "${owner_uid}" > /dev/null 2>&1 && return 0
+  fi
+
+  # Keep the directory if it contains a file newer than the stamp. -quit stops
+  # at the first match. If find fails, keep the directory: an error must never
+  # cause a removal.
+  newer="$(find "${dir}" -newer "${stamp}" -print -quit 2> /dev/null)" || return 0
+  [ -n "${newer}" ] && return 0
+
+  if [ "${dry_run}" = yes ]; then
+    echo "would remove ${dir} (${owner_name}, nothing newer than ${age_days} days)"
+    return 0
+  fi
+
+  echo "removing ${dir} (${owner_name}, nothing newer than ${age_days} days)"
+  # go makes its module cache read-only, so first give the owner write
+  # permission on each directory. find does not follow symbolic links. The
+  # `cd /` is necessary because find fails if the owner cannot enter the
+  # current directory, for example an NFS home that squashes root.
+  setpriv --reuid="${owner_uid}" --regid="${owner_gid}" --clear-groups -- \
+    /bin/sh -c 'cd / && find "$1" -xdev -type d ! -perm -u+w -exec chmod u+w {} + ; rm -rf --one-file-system -- "$1"' \
+    sh "${dir}" 2> /dev/null
+  # rmdir does not follow a symbolic link, and it removes only an empty
+  # directory.
+  [ -d "${dir}" ] && rmdir -- "${dir}" 2> /dev/null
+  return 0
+}
+
+for d in "{{ xdgcache_root }}"/*; do reap "${d}" live; done
+for d in "{{ xdgcache_root }}"/.stale-*; do reap "${d}" old; done
+for d in /var/tmp/xdgcache-*; do reap "${d}" old; done
+exit 0

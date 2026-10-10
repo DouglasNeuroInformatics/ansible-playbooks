@@ -1,0 +1,20 @@
+# Managed by Ansible: roles/common/templates/xdgcache-exclude.conf.j2.
+#
+# Exclude the user caches in /var/tmp from every age-based cleanup.
+#
+# No host has a /var/tmp rule now. Ubuntu ships `q /var/tmp 1777 root root 30d`
+# as a comment in /usr/lib/tmpfiles.d/tmp.conf, and the hosts do not have
+# tmpreaper. Such a rule can become active through a package update, a drop-in
+# file or a manual change. The daily systemd-tmpfiles-clean.service then
+# removes old files from inside caches that are in use. The caches become
+# corrupt, not empty:
+#   - go stops a build with a checksum error.
+#   - npm needs `npm cache verify`.
+#   - conda cannot use a package directory without its info/ directory.
+#
+# An `x` line excludes a path and its contents from every age-based cleanup. It
+# has no effect on `r` and `R` lines, or on /usr/local/sbin/xdgcache-reap,
+# which removes full directories. The second line covers the layout from
+# before {{ xdgcache_root }}, until the reaper removes those directories.
+x {{ xdgcache_root }}
+x /var/tmp/xdgcache-*

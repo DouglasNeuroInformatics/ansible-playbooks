@@ -25,24 +25,6 @@
 # A Slurm job step is not a PAM session (no UsePAM on the compute nodes), so it
 # gets the variables only from the environment of the job submission.
 
-# The first version of this change used other mechanisms. Remove them.
-- name: Remove the old pam_env block
-  ansible.builtin.blockinfile:
-    path: /etc/security/pam_env.conf
-    marker: "# {mark} ANSIBLE MANAGED BLOCK -- xdg cache"
-    state: absent
-    backup: true
-
-- name: Remove the old user tmpfiles rule
-  ansible.builtin.file:
-    path: /etc/xdg/user-tmpfiles.d
-    state: absent
-
-- name: Remove the old link that enabled the user tmpfiles service
-  ansible.builtin.file:
-    path: /etc/systemd/user/basic.target.wants/systemd-tmpfiles-setup.service
-    state: absent
-
 # A user could make /var/tmp/xdgcache before this play first runs. Move such
 # a directory, or a link, out of the way before root takes the path.
 - name: Examine the cache root

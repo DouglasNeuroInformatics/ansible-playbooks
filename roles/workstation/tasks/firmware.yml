@@ -1,0 +1,35 @@
+---
+# Device firmware, shared by main.yml (site.yml) and update.yml. Not gated on
+# the maintenance window: firmware only loads at the next boot.
+#
+# A '*nvidia*' purge used to remove linux-firmware: the glob matched
+# linux-firmware-nvidia-graphics, which linux-firmware depends on, and
+# --autoremove took the rest of the firmware with it. dnpws29 (Arrow Lake
+# graphics, no NVIDIA GPU) then booted with no i915 DMC or GuC firmware. The
+# purge no longer matches firmware (nvidia_purge_pattern); this puts back what
+# it already removed.
+
+# The old '*nvidia*' hold left linux-firmware-nvidia-graphics held, and apt
+# will not install linux-firmware while a dependency is held. The hold patterns
+# no longer match it, so this only clears what they left behind. apt-mark does
+# not wait for the dpkg lock; see apt-hold.yml.
+- name: Release the old hold on nvidia firmware
+  ansible.builtin.command: apt-mark unhold linux-firmware-nvidia-graphics
+  register: firmware_unhold
+  changed_when: "'Canceled hold' in firmware_unhold.stdout"
+  until: "'lock' not in firmware_unhold.stderr"
+  retries: 20
+  delay: 30
+
+# Replaces linux-firmware-minimal where the OEM kernel pulled that in instead.
+# The nvidia firmware is named, with allow_change_held_packages, only for check
+# mode: it skips the unhold above, and apt installs a held package only when
+# it is named.
+- name: Install linux-firmware
+  ansible.builtin.apt:
+    name:
+      - linux-firmware
+      - linux-firmware-nvidia-graphics
+    state: present
+    allow_change_held_packages: true
+  register: firmware_installed

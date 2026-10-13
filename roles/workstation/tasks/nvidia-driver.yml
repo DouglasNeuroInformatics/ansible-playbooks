@@ -10,7 +10,7 @@
 #
 # nvidia_driver_state: present (site.yml) installs the driver where it is
 # missing; latest (update.yml) also takes point releases inside the branch.
-# nvidia_version and nvidia_legacy_version are in
+# nvidia_version, nvidia_legacy_version and nvidia_purge_pattern are in
 # group_vars/all/maintenance.yml.
 
 # 034be3f pinned nvidia*open to -10 when the open builds were broken, and
@@ -106,7 +106,7 @@
 # Only on a branch change. Purging on every run left the host with no driver
 # whenever the reinstall below then failed.
 - name: Purge nvidia when the branch changes
-  ansible.builtin.command: apt-get --autoremove -y purge '*nvidia*'
+  ansible.builtin.command: apt-get --autoremove -y purge {{ nvidia_purge_pattern | quote }}
   changed_when: true
   when:
     - nvidia_target | length > 0
@@ -145,7 +145,7 @@
     - nvidia_driven_gpus.stdout | int > 0
 
 - name: Purge nvidia for nouveau
-  ansible.builtin.command: apt-get --autoremove -y purge '*nvidia*'
+  ansible.builtin.command: apt-get --autoremove -y purge {{ nvidia_purge_pattern | quote }}
   register: nvidia_removed
   changed_when: true
   when: nvidia_driven_gpus is not skipped

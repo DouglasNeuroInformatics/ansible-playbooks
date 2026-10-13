@@ -21,7 +21,10 @@ Unattended-Upgrade::Package-Blacklist {
     "linux-modules-";
     "linux-hwe-";
 {% if 'workstations' in group_names %}
-    ".*nvidia";
+    // Not ".*nvidia": that also blocks linux-firmware-nvidia-graphics.
+    "nvidia-";
+    "libnvidia-";
+    "xserver-xorg-video-nvidia-";
 {% endif %}
 
     // The following matches all packages starting with linux-

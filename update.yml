@@ -15,7 +15,8 @@
       {{ ((force_reboot | default(false) | bool) or (host_idle | bool))
          and ((nvidia_installed.changed | default(false))
               or (nvidia_removed.changed | default(false))
-              or (kernel_installed.changed | default(false))) }}
+              or (kernel_installed.changed | default(false))
+              or (firmware_installed.changed | default(false))) }}
   become: yes
   roles:
     - {role: apt-proxy, tags: always}   # roles run before tasks; everything below uses apt
@@ -42,6 +43,12 @@
 
     - name: update apt-get cache
       apt: update_cache=yes
+
+    # Ahead of the kernel install, so a new kernel's initramfs gets the firmware.
+    - ansible.builtin.import_role:
+        name: workstation
+        tasks_from: firmware
+      when: "'workstations' in group_names"
 
     # Held packages are released only inside the maintenance window, and the
     # hold in always: has no gate: it puts the holds back when a step fails,

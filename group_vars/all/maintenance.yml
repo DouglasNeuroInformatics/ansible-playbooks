@@ -66,8 +66,13 @@ held_kernel_patterns:
   - 'linux-generic*'
   - 'linux-image-generic*'
   - 'linux-headers-generic*'
+# Not '*nvidia*': that also holds linux-firmware-nvidia-graphics, which the
+# linux-firmware metapackage depends on, so the held firmware kept every
+# firmware upgrade back and blocked reinstalling linux-firmware (firmware.yml).
 held_nvidia_patterns:
-  - '*nvidia*'
+  - 'nvidia-*'
+  - 'libnvidia-*'
+  - 'xserver-xorg-video-nvidia-*'
 held_package_patterns: >-
   {{ held_kernel_patterns
      + (held_nvidia_patterns if 'workstations' in group_names else []) }}
@@ -85,3 +90,12 @@ held_package_patterns: >-
 nvidia_version: nvidia-driver-595-open
 nvidia_legacy_version: nvidia-driver-580
 bad_nvidia_version: nvidia-driver-390
+
+# What nvidia-driver.yml purges. Never '*nvidia*': that glob matches
+# linux-firmware-nvidia-graphics, and purging it takes the linux-firmware
+# metapackage with it; --autoremove then removes every other firmware package
+# and any kernel metapackage that needs linux-firmware. On 2026-09-17 that left
+# dnpws29 (Intel graphics, no NVIDIA GPU) with no i915 firmware and no OEM
+# kernel. The apt pattern keeps linux-firmware* out and, unlike a list from
+# package_facts, still catches the i386 libraries.
+nvidia_purge_pattern: '?and(?installed,?name(nvidia),?not(?name(^linux-firmware)))'

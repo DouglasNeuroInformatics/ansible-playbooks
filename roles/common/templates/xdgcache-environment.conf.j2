@@ -1,0 +1,9 @@
+# Managed by Ansible: roles/common/templates/xdgcache-environment.conf.j2.
+#
+# The systemd user manager reads this file, so the user services that it
+# starts get the same cache paths as a login. See
+# /etc/security/pam_env_xdgcache.conf for the reason.
+XDG_CACHE_HOME={{ xdgcache_root }}/${USER}
+{% for v in xdgcache_vars %}
+{{ v.name }}=${XDG_CACHE_HOME}/{{ v.path }}
+{% endfor %}

@@ -46,9 +46,6 @@
     path: /etc/apt/apt.conf.d/99update-notifier
     state: absent
 
-- name: more XDG cache files to tmp
-  copy: src=files/xdg.cache.sh dest=/etc/profile.d
-
 - name: disable shutdown, reboot and suspend
   copy: src=files/20-disallow-shutdown.pkla dest=/etc/polkit-1/localauthority/50-local.d/
   notify:

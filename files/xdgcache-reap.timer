@@ -1,0 +1,12 @@
+[Unit]
+Description=Weekly removal of the /var/tmp caches of users who no longer use this host
+
+[Timer]
+OnCalendar=weekly
+# If the host is off at the scheduled time, run the job after the next boot.
+Persistent=true
+AccuracySec=1h
+RandomizedDelaySec=1h
+
+[Install]
+WantedBy=timers.target

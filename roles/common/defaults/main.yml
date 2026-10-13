@@ -16,3 +16,60 @@ snipeit_model_id: 1   # workstation model; override per group in group_vars
 # any host (a host matching no key simply has any previously-deployed policy
 # removed).
 sshrestrict: {}
+
+# The local user caches: see roles/common/tasks/xdg-cache.yml. Root owns
+# xdgcache_root, and a PAM hook makes one directory in it for each user.
+xdgcache_root: /var/tmp/xdgcache
+
+# One entry for each tool that keeps a cache in $HOME and ignores
+# XDG_CACHE_HOME. Do not add a tool that reads XDG_CACHE_HOME: the base variable
+# is enough for it. The templates make the pam_env file, the environment.d
+# file, the profile script and the directory list of the PAM hook from this
+# list, so the copies cannot drift apart. The names come from the documentation
+# of each tool and from https://github.com/b3nj5m1n/xdg-ninja.
+xdgcache_vars:
+  - name: CONDA_PKGS_DIRS
+    path: .condapkg
+    note: conda, mamba and micromamba package cache (micromamba reads it too)
+  - name: APPTAINER_CACHEDIR
+    path: .apptainer
+    note: apptainer image cache
+  - name: SINGULARITY_CACHEDIR
+    path: .singularity
+    note: singularity image cache
+  - name: NPM_CONFIG_CACHE
+    path: npm
+    note: npm and node-gyp download cache, was ~/.npm
+  - name: YARN_CACHE_FOLDER
+    path: yarn
+    note: yarn download cache
+  - name: GOMODCACHE
+    path: go/mod
+    note: go module cache, was ~/go/pkg/mod (GOCACHE reads XDG_CACHE_HOME)
+  - name: PYTHON_EGG_CACHE
+    path: python-eggs
+    note: setuptools egg cache, was ~/.python-eggs
+  - name: MCR_CACHE_ROOT
+    path: mcr
+    note: MATLAB Runtime cache, was ~/.mcrCache*
+  - name: CUDA_CACHE_PATH
+    path: nv/ComputeCache
+    note: CUDA kernel cache, was ~/.nv/ComputeCache
+  - name: __GL_SHADER_DISK_CACHE_PATH
+    path: nv/GLCache
+    note: nvidia GL cache of older drivers, was ~/.nv/GLCache
+  - name: TRITON_HOME
+    path: triton
+    note: triton (pytorch GPU kernel compiler), was ~/.triton
+  - name: CUPY_CACHE_DIR
+    path: cupy
+    note: CuPy kernel cache, was ~/.cupy/kernel_cache
+  - name: XCOMPOSECACHE
+    path: X11/xcompose
+    note: libX11 compose cache, was ~/.compose-cache (libX11 does not make it)
+  - name: TEXMFVAR
+    path: texlive/texmf-var
+    note: texlive formats and font caches, was ~/.texlive*/texmf-var
+  - name: STARSHIP_CACHE
+    path: starship
+    note: starship, which writes ~/.cache/starship even with XDG_CACHE_HOME set

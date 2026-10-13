@@ -1,0 +1,21 @@
+# Managed by Ansible: roles/common/templates/xdgcache-pam_env.conf.j2.
+#
+# Keep the user caches off the NFS home directories.
+#
+# The xdgcache profile in /usr/share/pam-configs loads this file with pam_env
+# in the common session stacks. So every type of login gets these values: an
+# ssh login shell, `ssh host command`, scp, sftp, rsync, the VS Code remote
+# server, the lightdm session, a console login, su, sudo, cron and the systemd
+# user manager. A Slurm job step is not a PAM session and does not get them.
+#
+# @{PAM_USER} is the name of the user who logs in. pam_env reads the lines in
+# order, so each line after the first can use ${XDG_CACHE_HOME}. pam_env always
+# sets the DEFAULT value.
+XDG_CACHE_HOME              DEFAULT={{ xdgcache_root }}/@{PAM_USER}
+
+# Tools that keep a cache in $HOME and ignore XDG_CACHE_HOME. The list is
+# xdgcache_vars in roles/common/defaults/main.yml.
+{% for v in xdgcache_vars %}
+# {{ v.note }}
+{{ '%-27s' | format(v.name) }} DEFAULT=${XDG_CACHE_HOME}/{{ v.path }}
+{% endfor %}

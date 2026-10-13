@@ -1,0 +1,172 @@
+---
+# Keep the user caches off the NFS home directories.
+#
+# Each user gets a local cache directory, /var/tmp/xdgcache/<user>, and
+# XDG_CACHE_HOME plus one variable for each tool in xdgcache_vars
+# (roles/common/defaults/main.yml) point into it.
+#
+#   - A pam-auth-update profile adds two optional modules to common-session and
+#     common-session-noninteractive, so they run for every type of login, cron
+#     and the systemd user manager included:
+#       pam_exec  runs xdgcache-setup as root: it makes the directory, mode
+#                 0700, and the tool directories in it. The seteuid option is
+#                 necessary: without it, pam_exec uses the real UID of the
+#                 caller, which under sudo or su is the invoking user.
+#       pam_env   sets the variables from /etc/security/pam_env_xdgcache.conf.
+#     The profile does not edit /etc/security/pam_env.conf, which is a dpkg
+#     conffile. Because both modules are optional, a fault costs the variables,
+#     not the login.
+#   - /etc/environment.d gives the same variables to systemd user services.
+#   - The profile script in /etc/profile.d checks the directory in login shells
+#     and sets the flatpak path.
+#   - Root owns /var/tmp/xdgcache, mode 0755, so no user can take the path of
+#     another user.
+#
+# A Slurm job step is not a PAM session (no UsePAM on the compute nodes), so it
+# gets the variables only from the environment of the job submission.
+
+# A user could make /var/tmp/xdgcache before this play first runs. Move such
+# a directory, or a link, out of the way before root takes the path.
+- name: Examine the cache root
+  ansible.builtin.stat:
+    path: "{{ xdgcache_root }}"
+    follow: false
+  register: xdgcache_root_stat
+
+- name: Move a cache root that root does not own out of the way
+  ansible.builtin.command:
+    argv:
+      - mv
+      - -T
+      - "{{ xdgcache_root }}"
+      - "{{ xdgcache_root }}.untrusted-{{ ansible_facts['date_time']['epoch'] }}"
+  when:
+    - xdgcache_root_stat.stat.exists
+    - xdgcache_root_stat.stat.islnk or not xdgcache_root_stat.stat.isdir or xdgcache_root_stat.stat.uid != 0
+
+- name: Create the cache root
+  ansible.builtin.file:
+    path: "{{ xdgcache_root }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install the PAM hook that makes the cache directories
+  ansible.builtin.template:
+    src: xdgcache-setup.sh.j2
+    dest: /usr/local/sbin/xdgcache-setup
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install the pam_env file with the cache variables
+  ansible.builtin.template:
+    src: xdgcache-pam_env.conf.j2
+    dest: /etc/security/pam_env_xdgcache.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Give the cache variables to systemd user services
+  ansible.builtin.template:
+    src: xdgcache-environment.conf.j2
+    dest: /etc/environment.d/60-xdgcache.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+# The hook and the pam_env file must exist before pam-auth-update enables the
+# profile.
+- name: Install the xdgcache PAM profile
+  ansible.builtin.copy:
+    src: files/xdgcache-pam-config
+    dest: /usr/share/pam-configs/xdgcache
+    owner: root
+    group: root
+    mode: '0644'
+  register: xdgcache_pam_profile
+
+- name: Check that the common session stacks hold the PAM hook
+  ansible.builtin.command:
+    argv: [grep, -c, xdgcache-setup, /etc/pam.d/common-session, /etc/pam.d/common-session-noninteractive]
+  register: xdgcache_pam_present
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+# --package does not prompt. --enable is explicit, because --package alone
+# does not enable again a profile that was removed once.
+- name: Enable the xdgcache PAM profile
+  ansible.builtin.command:
+    argv: [pam-auth-update, --package, --enable, xdgcache]
+  when: xdgcache_pam_profile.changed or xdgcache_pam_present.rc != 0
+
+# pam-auth-update does not write a common-* file that someone changed by hand.
+# Stop here if the lines are not in both stacks, so the gap is visible. Check
+# mode does not run pam-auth-update, so this check would always fail there.
+- name: Confirm that both common session stacks hold the PAM hook
+  ansible.builtin.command:
+    argv: [grep, -q, xdgcache-setup, "{{ item }}"]
+  loop:
+    - /etc/pam.d/common-session
+    - /etc/pam.d/common-session-noninteractive
+  changed_when: false
+  when: not ansible_check_mode
+
+# No job cleans /var/tmp. Ubuntu ships the `q /var/tmp ... 30d` rule as a
+# comment, and the hosts do not have tmpreaper. The next five tasks manage the
+# caches in /var/tmp:
+#   - The exclude rule stops every age-based cleanup of the caches. An
+#     age-based cleanup removes single files from a cache that is in use, and
+#     the cache then becomes corrupt.
+#   - The reaper removes the caches of users who no longer use the host. It
+#     removes full directories only. It is not a quota.
+- name: Exclude the caches from age-based cleanup
+  ansible.builtin.template:
+    src: xdgcache-exclude.conf.j2
+    dest: /etc/tmpfiles.d/xdgcache-exclude.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install the cache reaper
+  ansible.builtin.template:
+    src: xdgcache-reap.sh.j2
+    dest: /usr/local/sbin/xdgcache-reap
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install the cache reaper service
+  ansible.builtin.copy:
+    src: files/xdgcache-reap.service
+    dest: /etc/systemd/system/xdgcache-reap.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install the cache reaper timer
+  ansible.builtin.copy:
+    src: files/xdgcache-reap.timer
+    dest: /etc/systemd/system/xdgcache-reap.timer
+    owner: root
+    group: root
+    mode: '0644'
+
+# Give the full unit name, with .timer. Without the suffix, the systemd module
+# uses the service, and the timer does not start.
+- name: Enable the cache reaper timer
+  ansible.builtin.systemd:
+    name: xdgcache-reap.timer
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Install the cache script for login shells
+  ansible.builtin.template:
+    src: xdgcache-profile.sh.j2
+    dest: /etc/profile.d/xdg.cache.sh
+    owner: root
+    group: root
+    mode: '0644'

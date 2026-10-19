@@ -33,3 +33,6 @@
 
 - name: restart polkit
   service: name=polkit state=restarted
+
+- name: update dconf
+  ansible.builtin.command: dconf update

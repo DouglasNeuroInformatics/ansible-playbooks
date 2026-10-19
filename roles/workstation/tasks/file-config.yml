@@ -104,6 +104,30 @@
   notify:
     - restart polkit
 
+# With the rule above, the GNOME Software background refresh fails for every
+# unprivileged session, does not record a check-timestamp, and so retries each
+# hour, which fills logwatch with PackageKit auth failures. With
+# download-updates off it skips the refresh; unattended-upgrades still updates.
+- name: enable the local system dconf database
+  copy: src=files/dconf-profile-user dest=/etc/dconf/profile/user
+  notify:
+    - update dconf
+
+- name: create dconf locks directory
+  ansible.builtin.file:
+    path: /etc/dconf/db/local.d/locks
+    state: directory
+
+- name: disable gnome-software background refresh
+  copy: src=files/50-gnome-software.dconf dest=/etc/dconf/db/local.d/50-gnome-software
+  notify:
+    - update dconf
+
+- name: lock gnome-software background refresh setting
+  copy: src=files/50-gnome-software.dconf-locks dest=/etc/dconf/db/local.d/locks/50-gnome-software
+  notify:
+    - update dconf
+
 - name: check for existing unix_chkpwd statoverride
   ansible.builtin.command: dpkg-statoverride --list /usr/sbin/unix_chkpwd
   register: chkpwd_override

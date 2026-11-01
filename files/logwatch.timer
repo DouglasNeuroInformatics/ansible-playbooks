@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily logwatch report at 05:00
+
+[Timer]
+OnCalendar=*-*-* 05:00:00
+# If the host is off at the scheduled time, run the job after the next boot.
+Persistent=true
+# Do not send the reports from all hosts to the relay at the same time.
+RandomizedDelaySec=10m
+
+[Install]
+WantedBy=timers.target

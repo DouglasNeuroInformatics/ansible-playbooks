@@ -12,3 +12,36 @@
 - name: generate logwatch config
   template: src=logwatch.conf.j2 dest=/etc/logwatch/conf/logwatch.conf
   tags: mail
+
+- name: Install the logwatch service
+  ansible.builtin.copy:
+    src: files/logwatch.service
+    dest: /etc/systemd/system/logwatch.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install the logwatch timer
+  ansible.builtin.copy:
+    src: files/logwatch.timer
+    dest: /etc/systemd/system/logwatch.timer
+    owner: root
+    group: root
+    mode: '0644'
+
+# Give the full unit name, with .timer. Without the suffix, the systemd module
+# uses the service, and the timer does not start.
+- name: Enable the logwatch timer
+  ansible.builtin.systemd:
+    name: logwatch.timer
+    state: started
+    enabled: true
+    daemon_reload: true
+
+# The package runs logwatch from cron.daily, which anacron starts at 07:30 or
+# later. The timer replaces it; if this file stays, each host sends two reports.
+# The file is a conffile, so a package upgrade does not put it back.
+- name: Remove the cron.daily logwatch job
+  ansible.builtin.file:
+    path: /etc/cron.daily/00logwatch
+    state: absent

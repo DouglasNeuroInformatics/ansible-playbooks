@@ -1,0 +1,14 @@
+[Unit]
+Description=Send the daily logwatch report
+# A run that the timer starts after a boot needs the network to send the mail.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Same command as /etc/cron.daily/00logwatch. The report covers yesterday, so
+# the time of the run does not change what the report contains.
+ExecStart=/usr/sbin/logwatch --output mail
+# A oneshot service has no default time limit. If msmtp hangs on the relay, the
+# service stays active and the timer does not start the next report.
+TimeoutStartSec=1h
